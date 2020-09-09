@@ -1,0 +1,38 @@
+<div class="g_content">
+  <section>
+    <div class="g_section-header">
+      <h1>Categories</h1>
+    </div>
+    <div class="g_section-content">
+      <div class="g_grid">
+        <!-- Admin: Add Category -->
+        <div class="g_grid-item-3-2" *ngIf="adminModeActive">
+          <div class="g_grid-item-content">
+            <app-add-category-thumbnail></app-add-category-thumbnail>
+          </div>
+        </div>
+
+        <!-- All Journals -->
+        <div class="g_grid-item-3-2">
+          <div class="g_grid-item-content">
+            <app-journal-category [category]="allJournalsCategory" specialIcon="apps"></app-journal-category>
+          </div>
+        </div>
+
+        <!-- Favorites -->
+        <div class="g_grid-item-3-2" *ngIf="isLoggedIn">
+          <div class="g_grid-item-content">
+            <app-journal-category [category]="favoritesCategory" specialIcon="favorite"></app-journal-category>
+          </div>
+        </div>
+
+        <!-- Other Categories -->
+        <div class="g_grid-item-3-2" *ngFor="let category of categories">
+          <div class="g_grid-item-content">
+            <app-journal-category [category]="category"></app-journal-category>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

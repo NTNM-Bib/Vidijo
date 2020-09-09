@@ -1,0 +1,48 @@
+<div class="g_content">
+    <!-- Header -->
+    <section>
+        <div class="g_section-header">
+            <h1>Users</h1>
+            <p>Manage the users of this Vidijo installation</p>
+        </div>
+
+        <div class="g_section-content">
+            <div>
+                <input class="g_dynamic-shadow search-input" placeholder="Filter Users"
+                    [formControl]="filterUsersFormControl">
+            </div>
+        </div>
+    </section>
+
+    <!-- No Results -->
+    <section *ngIf="noSearchResults">
+        <div class="g_section-header">
+            <h2>No Results for "{{ searchTerm }}"</h2>
+        </div>
+    </section>
+
+    <!-- Admins -->
+    <section *ngIf="adminUsersResults.length > 0">
+        <div class="g_section-header">
+            <div class="g_section-header-row">
+                <h2>Administrators</h2>
+            </div>
+        </div>
+        <div class="g_section-content">
+            <app-users-list [users]="adminUsersResults"></app-users-list>
+        </div>
+    </section>
+
+    <!-- Default Users -->
+    <section *ngIf="defaultUsersResults.length > 0">
+        <div class="g_section-header">
+            <div class="g_section-header-row">
+                <h2>Normal Users</h2>
+            </div>
+        </div>
+        <div class="g_section-content">
+            <app-users-list [users]="defaultUsersResults"></app-users-list>
+        </div>
+    </section>
+
+</div>

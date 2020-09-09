@@ -1,0 +1,691 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~@angular/material/theming";
+
+$config: mat-typography-config();
+$handset-breakpoint: 500px;
+$section-gap: 50px;
+
+// Variables
+:root {
+  // Layers
+  --layer-f4: 1000;
+  --layer-f3: 750;
+  --layer-f2: 500;
+  --layer-f1: 250;
+  --layer-0: 0;
+  --layer-b1: -250;
+  --layer-b2: -500;
+  --layer-b3: -750;
+  --layer-b4: -1000;
+
+  // Colors
+  --background-color: rgb(250, 250, 250);
+  --background-color-translucent: rgba(250, 250, 250, 0.9);
+  --primary-color: #37474f;
+  --accent-color: #0097a7;
+  --warn-color: #d62f05;
+  --font-color: #37474f;
+  --font-color-lighter: #485d68;
+
+  // Filters
+  --backdrop-blur: blur(20px) saturate(180%);
+
+  // Layout
+  --side-padding: 10px;
+  --grid-gap: 15px 10px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background-color: #303030;
+    --background-color-translucent: #303030e0;
+    --primary-color: #fafafa;
+    --font-color: #f0f0f0;
+    --font-color-lighter: #c5c5c5;
+  }
+}
+
+@media (min-width: $handset-breakpoint) {
+  :root {
+    // Layout
+    --side-padding: 20px;
+    --grid-gap: 30px 20px;
+  }
+}
+
+body {
+  margin: 0;
+  font-family: "Roboto", sans-serif;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  color: var(--font-color);
+  background: var(--background-color);
+}
+
+@media (min-width: $handset-breakpoint) {
+  * {
+    --scrollbarBG: none;
+    --thumbBG: rgb(200, 200, 200);
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--thumbBG) var(--scrollbarBG);
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--scrollbarBG);
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: var(--thumbBG);
+    border: 3px solid var(--scrollbarBG);
+  }
+}
+
+[hidden] {
+  display: none !important;
+}
+
+h1 {
+  font-size: mat-font-size($config, display-1);
+  font-family: mat-font-family($config);
+  font-weight: lighter;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+  padding: 0;
+  color: var(--font-color);
+}
+
+@media (min-width: $handset-breakpoint) {
+  h1 {
+    font-size: mat-font-size($config, display-2);
+  }
+}
+
+h2 {
+  font-size: mat-font-size($config, headline);
+  font-family: mat-font-family($config);
+  font-weight: lighter;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+  padding: 0;
+  color: var(--font-color);
+}
+
+h3 {
+  font-size: mat-font-size($config, title);
+  font-family: mat-font-family($config);
+  font-weight: lighter;
+  max-width: 100%;
+  margin-top: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: start;
+  margin: 0;
+  padding: 0;
+  color: var(--font-color);
+}
+
+h4 {
+  color: var(--font-color-lighter);
+}
+
+p {
+  //font-size: mat-font-size($config, body-1);
+  font-family: mat-font-family($config);
+  font-weight: normal;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+  padding: 0;
+  color: var(--font-color);
+}
+
+mat-checkbox {
+  color: var(--font-color) !important;
+}
+
+.mat-checkbox-frame {
+  border-color: var(--font-color) !important;
+}
+
+mat-form-field {
+  color: var(--font-color) !important;
+}
+
+.mat-form-field-label {
+  color: var(--font-color) !important;
+}
+
+.mat-form-field-underline {
+  background-color: var(--font-color) !important;
+}
+
+.mat-menu-panel,
+.mat-menu-content,
+.mat-menu-item {
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+
+  background-color: var(--background-color);
+  color: var(--font-color) !important;
+
+  * {
+    color: var(--font-color) !important;
+  }
+}
+
+.g_snackbar {
+  background-color: var(--font-color);
+  color: var(--background-color);
+}
+
+.g_snackbar-error {
+  background-color: var(--warn-color);
+  color: #ffffff !important;
+}
+
+.g_button {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  border-radius: 15px;
+
+  @extend .g_neumorphism-on-hover;
+}
+
+.g_raised-icon-button {
+  color: var(--background-color) !important;
+  background: var(--primary-color) !important;
+  @extend .g_dynamic-shadow;
+}
+
+.g_raised-icon-button-accent {
+  color: var(--background-color) !important;
+  background: var(--accent-color) !important;
+  @extend .g_dynamic-shadow;
+}
+
+// Display switcher button
+.g_main-button {
+  color: var(--background-color) !important;
+  background-color: var(--primary-color) !important;
+}
+
+// Big rounded button
+.g_rounded-button {
+  @extend .g_button;
+  @extend .g_dynamic-shadow;
+
+  border-radius: 20px !important;
+  width: 80%;
+  max-width: 200px;
+
+  color: var(--background-color) !important;
+  background-color: var(--primary-color) !important;
+}
+
+.g_side-button-left {
+  position: absolute !important;
+  left: var(--side-padding);
+}
+
+.g_side-button-right {
+  position: absolute !important;
+  right: var(--side-padding);
+}
+
+// Main content of a page
+.g_content {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-auto-rows: auto;
+  gap: $section-gap;
+  width: 100%;
+  max-width: 2000px;
+  height: 100%;
+  //padding: 10px 0;
+  padding: 0;
+  margin: 0 auto;
+  overflow: visible; // !
+}
+
+.g_router-outlet {
+  //margin-top: 60px;
+  margin-top: 75px; // 60px for navbar, 15px padding
+  margin-bottom: 60px;
+}
+
+.g_toolbar {
+  z-index: var(--layer-f3);
+  position: fixed;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: space-evenly;
+  bottom: 0;
+  height: 60px;
+  width: 100%;
+  background-color: var(--background-color-translucent);
+  backdrop-filter: var(--backdrop-blur);
+}
+/*
+.g_toolbar {
+  z-index: var(--layer-f3);
+  position: fixed;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: var(--side-padding);
+  align-items: center;
+  bottom: 0;
+  height: 60px;
+  width: 100%;
+  background-color: var(--background-color-translucent);
+  backdrop-filter: var(--backdrop-blur);
+}
+*/
+
+// Section contained in the main content
+section {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-auto-rows: auto;
+  gap: 20px;
+  width: 100%;
+  height: fit-content;
+  overflow: visible; // !
+}
+
+.g_section-header {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-auto-rows: auto;
+  gap: 5px;
+  width: 100%;
+  height: fit-content;
+}
+
+.g_section-header > * {
+  padding: 0 var(--side-padding);
+  box-sizing: border-box;
+  width: fit-content;
+}
+
+.g_section-header-row {
+  width: 100%;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: baseline;
+  justify-content: flex-start;
+}
+
+@media (max-width: $handset-breakpoint) {
+  .g_section-header-row {
+    justify-content: space-between;
+  }
+}
+
+.g_section-header-row > * {
+  width: fit-content;
+  margin-right: 10px;
+}
+
+.g_section-content {
+  display: grid;
+  grid-template-columns: 100%;
+  grid-auto-rows: auto;
+  gap: 10px;
+  width: 100%;
+  height: fit-content;
+  overflow: visible; // !
+}
+
+.g_section-content > * {
+  padding: 0 var(--side-padding) !important;
+  overflow: visible; // !
+}
+
+.g_section-action-row {
+  position: relative;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: fit-content;
+  padding: 15px var(--side-padding);
+  box-sizing: border-box;
+}
+
+// Action row with fixed position
+.g_section-action-row-fixed {
+  @extend .g_section-action-row;
+  position: fixed;
+  bottom: 60px;
+  z-index: var(--layer-f3);
+  padding: 5px var(--side-padding);
+}
+
+.g_content-centered {
+  position: relative;
+  display: flex;
+  flex-flow: column nowrap;
+  margin: 0 auto;
+  max-width: 500px;
+  top: 30vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.g_grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 1fr);
+  grid-template-rows: 1fr;
+  gap: var(--grid-gap);
+  justify-content: start;
+  overflow: visible;
+}
+
+@media (min-width: 300px) {
+  .g_grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 800px) {
+  .g_grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1000px) {
+  .g_grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1400px) {
+  .g_grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (min-width: 1800px) {
+  .g_grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+.g_grid-lg {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  gap: var(--grid-gap);
+  justify-content: start;
+  overflow: visible;
+}
+
+@media (min-width: 1000px) {
+  .g_grid-lg {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1800px) {
+  .g_grid-lg {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+// Default grid cell with 3 / 5 aspect ratio
+.g_grid-item {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: visible; // !
+}
+
+.g_grid-item::before {
+  content: "";
+  display: block;
+  height: 0;
+  width: 0;
+  padding-bottom: calc(5 / 3 * 100%);
+  overflow: visible; // !
+}
+
+// Grid cell with 3 / 2 aspect ratio
+.g_grid-item-3-2 {
+  @extend .g_grid-item;
+}
+
+.g_grid-item-3-2::before {
+  content: "";
+  display: block;
+  height: 0;
+  width: 0;
+  padding-bottom: calc(2 / 3 * 100%);
+}
+
+.g_grid-item-2-1 {
+  @extend .g_grid-item;
+}
+
+.g_grid-item-2-1::before {
+  content: "";
+  display: block;
+  height: 0;
+  width: 0;
+  padding-bottom: calc(1 / 2 * 100%);
+}
+
+.g_grid-item-1-1 {
+  @extend .g_grid-item;
+}
+
+.g_grid-item-1-1::before {
+  content: "";
+  display: block;
+  height: 0;
+  width: 0;
+  padding-bottom: 100%;
+}
+
+// Place this inside g_grid-item to position content correctly
+.g_grid-item-content {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: visible; // !
+}
+
+// Grid with horizontal scrolling (displays 1 item)
+.g_grid-with-horizontal-scrolling-1 {
+  //@extend .g_grid;
+  display: grid;
+  justify-content: start;
+  gap: var(--grid-gap);
+  grid-auto-columns: 90%;
+  grid-auto-flow: column;
+  overflow-x: scroll;
+  overflow-y: hidden; // !
+  scroll-snap-type: x proximity;
+  grid-template-columns: 0;
+  padding: 0 !important;
+}
+
+.g_grid-with-horizontal-scrolling-1::-webkit-scrollbar {
+  display: none;
+}
+
+.g_grid-with-horizontal-scrolling-1::before {
+  content: "";
+  width: 0px;
+}
+
+.g_grid-with-horizontal-scrolling-1::after {
+  content: "";
+  width: 1px; // TODO: this should be 0px, but then the grid gap disappears
+}
+
+.g_grid-with-horizontal-scrolling-1 > * {
+  scroll-snap-align: center;
+}
+
+// Horizontally scrolling grid with 2 items side by side
+.g_grid-with-horizontal-scrolling-2 {
+  @extend .g_grid-with-horizontal-scrolling-1;
+  grid-auto-columns: 45%;
+  scroll-snap-type: none;
+  scroll-snap-align: none;
+}
+
+.g_dynamic-shadow {
+  @include mat-elevation(5);
+  @include mat-elevation-transition;
+
+  &:hover {
+    @include mat-elevation(15);
+  }
+}
+
+.g_shadow-on-hover {
+  @include mat-elevation(0);
+  @include mat-elevation-transition;
+
+  &:hover {
+    @include mat-elevation(5);
+  }
+}
+
+.g_dialog-sm {
+  width: 100%;
+  max-width: 500px !important;
+}
+
+.g_dialog-md {
+  width: 100%;
+  max-width: 1000px !important;
+}
+
+.g_dialog-lg {
+  width: 100%;
+  max-width: 1500px !important;
+}
+
+.g_dialog-backdrop {
+  backdrop-filter: var(--backdrop-blur) saturate(25%) !important;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+mat-snackbar {
+  z-index: var(--layer-f4);
+}
+
+// Overrides Angular Material drawer backgrop
+.mat-drawer-backdrop.mat-drawer-shown {
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: var(--backdrop-blur);
+}
+
+mat-dialog-container {
+  background: var(--background-color) !important;
+}
+
+/*
+::-webkit-scrollbar {
+  display: none;
+  width: 7px;
+  background: none !important;
+}
+*/
+
+.g_neumorphism {
+  background: var(--background-color);
+  box-shadow: 6px 6px 12px #d9d9d9, -6px -6px 12px #ffffff;
+}
+
+.g_neumorphism-high {
+  background: var(--background-color);
+  box-shadow: 15px 15px 30px #d9d9d9, -15px -15px 30px #ffffff;
+}
+
+.g_neumorphism-inset {
+  background: var(--background-color);
+  box-shadow: inset 6px 6px 12px #d9d9d9, inset -6px -6px 12px #ffffff;
+}
+
+.g_neumorphism-inset-translucent {
+  background: var(--background-color);
+  box-shadow: inset 6px 6px 12px #d9d9d9e1, inset -6px -6px 12px #ffffffdc;
+}
+
+@media (prefers-color-scheme: dark) {
+  .g_neumorphism {
+    background: var(--background-color);
+    box-shadow: 6px 6px 12px #292929, -6px -6px 12px #373737;
+  }
+
+  .g_neumorphism-high {
+    background: var(--background-color);
+    box-shadow: 15px 15px 30px #292929, -15px -15px 30px #373737;
+  }
+
+  .g_neumorphism-inset {
+    background: var(--background-color);
+    box-shadow: inset 6px 6px 12px #292929, inset -6px -6px 12px #373737;
+  }
+
+  .g_neumorphism-inset-translucent {
+    background: var(--background-color);
+    box-shadow: inset 6px 6px 12px #292929da, inset -6px -6px 12px #373737d8;
+  }
+}
+
+.g_neumorphism-button-pressed {
+  @extend .g_neumorphism-inset;
+  border-radius: 30px;
+  color: var(--accent-color);
+}
+
+.g_neumorphism-button {
+  @extend .g_neumorphism;
+  border-radius: 30px;
+  color: var(--font-color);
+}
+
+.g_dynamic-neumorphism {
+  @extend .g_neumorphism;
+
+  &:hover {
+    @extend .g_neumorphism-high;
+    transition: all 0.5s;
+  }
+}
+
+.g_neumorphism-on-hover {
+  &:hover {
+    @extend .g_neumorphism;
+    transition: all 0.5s;
+  }
+}
+
+.g_neumorphism-inset-on-hover {
+  &:hover {
+    @extend .g_neumorphism-inset;
+    transition: all 0.5s;
+  }
+}

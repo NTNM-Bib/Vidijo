@@ -1,0 +1,47 @@
+<div class="g_content">
+  <section>
+    <div class="g_section-header">
+      <!-- Category -->
+      <h1 matRipple class="g_button" [matMenuTriggerFor]="categoryMenu">
+        {{ currentCategory.title }}
+      </h1>
+      <mat-menu #categoryMenu="matMenu">
+        <button mat-menu-item *ngFor="let cat of availableCategories" (click)="onCategoryButtonClick(cat)">
+          <mat-icon *ngIf="cat.icon">{{ cat.icon }}</mat-icon>{{ cat.title }}
+        </button>
+      </mat-menu>
+
+      <!-- Sort -->
+      <div class="display-switcher-container">
+        <div class="display-switcher g_neumorphism">
+          <div *ngFor="let sortButton of sortButtons">
+            <button mat-flat-button class="g_main-button display-switcher-button-active"
+              *ngIf="sortButton.sort === sort">
+              {{ sortButton.title }}
+            </button>
+            <button mat-button class="display-switcher-button" *ngIf="sortButton.sort !== sort"
+              (click)="onSortButtonClick(sortButton)">
+              {{ sortButton.title }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Journals -->
+    <div class="g_section-content">
+      <div class="g_grid">
+        <div class="g_grid-item" *ngIf="adminModeActive && currentCategory._id !== 'favorites'">
+          <div class="g_grid-item-content">
+            <app-add-journal-thumbnail></app-add-journal-thumbnail>
+          </div>
+        </div>
+        <div class="g_grid-item" *ngFor="let journal of journals">
+          <div class="g_grid-item-content">
+            <app-journal-thumbnail [journal]="journal"></app-journal-thumbnail>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

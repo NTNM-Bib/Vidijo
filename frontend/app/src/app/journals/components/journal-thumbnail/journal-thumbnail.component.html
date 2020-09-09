@@ -1,0 +1,22 @@
+<div class="container" [id]="journal.title.slice(0, 1).toUpperCase()">
+  <!-- Journal -->
+  <div matRipple class="journal g_neumorphism" (click)="openJournal()"
+    [ngStyle]="isMobile ? { 'height': '75%' } : { 'height': '85%' }">
+    <app-journal-cover [journal]="journal"></app-journal-cover>
+  </div>
+
+  <!-- Info Box -->
+  <div class="info-box" [ngStyle]="isMobile ? { 'height': '25%' } : { 'height': '15%' }">
+    <h3 *ngIf="!isMobile">{{ journal.title }}</h3>
+    <p *ngIf="isMobile">{{ journal.title }}</p>
+  </div>
+
+  <!-- Edit Button -->
+  <button mat-icon-button class="g_dynamic-shadow edit-button" (click)="navigateToEditJournal()"
+    *ngIf="adminModeActive">
+    <mat-icon>
+      edit
+    </mat-icon>
+  </button>
+
+</div>

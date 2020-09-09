@@ -1,0 +1,29 @@
+.title {
+    padding-bottom: 10px;
+    margin-right: 30px;
+    color: var(--accent-color);
+}
+
+.authors,
+.date,
+.doi {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.authors > *,
+.date > *,
+.doi > * {
+    margin-right: 10px;
+}
+
+.abstract-heading {
+    color: var(--accent-color);
+}
+
+.abstract {
+    font-family: "Roboto Slab";
+    font-size: larger;
+}

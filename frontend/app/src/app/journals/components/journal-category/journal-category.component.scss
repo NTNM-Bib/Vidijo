@@ -1,0 +1,36 @@
+.category-card {
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.category-title {
+    margin: 0;
+    color: white;
+    text-align: center;
+    font-weight: normal;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+mat-icon {
+    vertical-align: middle;
+}
+
+.edit-button {
+    position: absolute;
+    right: -15px;
+    top: -15px;
+    color: var(--background-color);
+    background: var(--font-color);
+    z-index: var(--layer-f2);
+}

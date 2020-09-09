@@ -1,0 +1,52 @@
+.container {
+  width: 100%;
+  height: 100%;
+}
+
+.journal {
+  width: 100%;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.journal-background-fill {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: stretch !important;
+  align-items: stretch !important;
+  filter: blur(20px) saturate(180%);
+}
+
+.fill-cover {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: stretch !important;
+  justify-items: stretch !important;
+  align-items: stretch !important;
+  align-content: stretch !important;
+}
+
+.info-box {
+  width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-top: 15px;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.edit-button {
+  position: absolute;
+  right: -15px;
+  top: -15px;
+  color: var(--background-color);
+  background: var(--font-color);
+  z-index: var(--layer-f2);
+}

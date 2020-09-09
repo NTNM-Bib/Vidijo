@@ -1,0 +1,22 @@
+<div class="container">
+  <button mat-icon-button class="close-button g_neumorphism-button" tabindex="-1" (click)="closeDialog()">
+    <mat-icon>
+      close
+    </mat-icon>
+  </button>
+
+  <div class="g_content">
+    <section>
+      <div class="g_section-header">
+        <h1>{{ title }}</h1>
+      </div>
+      <div class="g_section-content">
+        <p>{{ message }}</p>
+      </div>
+      <div class="g_section-action-row">
+        <button mat-raised-button [color]="actionButtonColor"
+          (click)="performActionAndClose()">{{ actionTitle }}</button>
+      </div>
+    </section>
+  </div>
+</div>

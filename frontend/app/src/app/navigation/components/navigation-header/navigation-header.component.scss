@@ -1,0 +1,70 @@
+.floating {
+  position: fixed;
+  top: 0px;
+  transition: top 0.2s ease-in;
+}
+
+.hidden {
+  position: fixed;
+  top: -60px;
+  transition: top 0.2s ease-in;
+}
+
+.title {
+  font-weight: bolder;
+  font-variant: small-caps;
+  color: var(--font-color-ui);
+  font-size: 14pt;
+}
+
+.institution-name {
+  font-weight: normal;
+  color: var(--font-color-ui);
+  font-size: 9pt;
+}
+
+.icon {
+  max-height: 30px;
+}
+
+.vidijo-button {
+  display: grid;
+  grid-template-columns: 30px auto;
+  gap: 10px;
+  padding-left: var(--side-padding);
+  padding-right: var(--side-padding);
+}
+
+.vidijo-button-text-group {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: auto;
+}
+
+.outer-left-group {
+  display: flex;
+  flex: 1;
+  justify-content: flex-start;
+}
+
+.outer-right-group {
+  display: flex;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.display-switcher {
+  display: flex;
+  flex-flow: row nowrap;
+  border-radius: 30px;
+}
+
+.display-switcher-button {
+  border-radius: 30px;
+  color: var(--primary-color);
+}
+
+.display-switcher-button-active {
+  @extend .display-switcher-button;
+  color: var(--background-color);
+}

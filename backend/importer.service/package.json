@@ -1,0 +1,26 @@
+{
+  "name": "vidijo-excel-testing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "npm run dev",
+    "prod": "node index.js",
+    "dev": "nodemon --legacy-watch index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "body-parser": "^1.19.0",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-fileupload": "^1.1.10",
+    "mongoose": "^5.9.28",
+    "xlsx": "^0.16.5"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}

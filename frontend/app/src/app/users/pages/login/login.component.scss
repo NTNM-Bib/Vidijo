@@ -1,0 +1,20 @@
+@import "~@angular/material/theming";
+
+mat-form-field {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.login-error {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  background: var(--warn-color);
+  border-radius: 5px;
+  width: 100%;
+  height: 60px;
+  color: white;
+  text-align: center;
+  box-sizing: border-box;
+}

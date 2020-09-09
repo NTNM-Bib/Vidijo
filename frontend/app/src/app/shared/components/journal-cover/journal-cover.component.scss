@@ -1,0 +1,56 @@
+/*
+.cover-title {
+  position: absolute;
+  color: white;
+  margin: 0;
+  text-align: left;
+  top: 25%;
+  left: 25%;
+  transform: translate(-25%, -25%);
+  font-size: 150%;
+}
+*/
+
+.cover {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.background-fill {
+  position: absolute;
+  top: 0px;
+  width: 100%;
+  height: 100%;
+  filter: blur(20px) saturate(180%);
+  background: #ffffff;
+}
+
+.cover-image {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  display: block;
+  width: 100%;
+}
+
+.generated-cover-image {
+  // TODO: CHANGE TO ASPECT RATIO
+  height: 90%;
+}
+
+.cover-title-generated {
+  position: relative;
+  color: #ffffff;
+  text-align: left;
+}
+
+.generated-title-container {
+  position: absolute;
+  top: 10%;
+  left: 5%;
+  transform: translateY(-10%, -5%);
+  width: 90%;
+  height: 90%;
+}

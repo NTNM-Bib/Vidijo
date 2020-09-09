@@ -1,0 +1,27 @@
+<div class="category-card g_neumorphism" matRipple [ngStyle]="{ 'background': colors[0] }" routerLink="/journals"
+  [queryParams]="{ category: category._id }">
+  <!-- Title -->
+  <h2 class="category-title" [ngClass]="isMobile ? 'mat-h2' : 'mat-h1'"
+    [ngStyle]="(specialIcon) ? { 'color': 'black' } : { 'color': 'white' }">
+    <mat-icon *ngIf="specialIcon">
+      {{ specialIcon }}
+    </mat-icon>
+    <span *ngIf="specialIcon">&nbsp;</span>
+    {{ category.title }}
+  </h2>
+
+  <!-- Background -->
+  <svg height="100%" width="100%">
+    <circle cx="100" cy="20" r="40" [attr.fill]="colors[1]" />
+    <circle cx="100" cy="100" r="80" [attr.fill]="colors[2]" />
+    <circle cx="200" cy="270" r="180" [attr.fill]="colors[3]" />
+  </svg>
+</div>
+
+<!-- Edit Button -->
+<button mat-icon-button class="g_dynamic-shadow edit-button" (click)="navigateToEditCategory()"
+  *ngIf="adminModeActive && !isSpecialCategory">
+  <mat-icon>
+    edit
+  </mat-icon>
+</button>

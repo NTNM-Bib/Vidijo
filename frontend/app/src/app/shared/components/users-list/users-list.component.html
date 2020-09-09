@@ -1,0 +1,18 @@
+<div class="list">
+    <div class="article-and-button" *ngFor="let user of users">
+        <div matRipple class="list-item g_neumorphism-on-hover" (click)="navigateToEditUser(user)">
+            <div class="icon">
+                <mat-icon *ngIf="user.accessLevel !== 'admin'">
+                    account_circle
+                </mat-icon>
+                <mat-icon *ngIf="user.accessLevel === 'admin'">
+                    supervised_user_circle
+                </mat-icon>
+            </div>
+            <div class="list-item-text">
+                <p>{{ user.firstName }} {{ user.secondName }}</p>
+                <p class="lighter">{{ user.username }}</p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,73 @@
+<div class="g_content">
+  <section>
+    <div class="g_section-header">
+      <h1>Search</h1>
+      <p>Search for journals, articles and categories</p>
+    </div>
+    <div class="g_section-content">
+      <div>
+        <input class="g_dynamic-shadow search-input" placeholder="Search in Vidijo" autofocus
+          [formControl]="searchFormControl">
+      </div>
+    </div>
+  </section>
+
+  <section *ngIf="searchTerm.length < 1">
+
+  </section>
+
+  <!-- No Results -->
+  <section *ngIf="noSearchResults">
+    <div class="g_section-header">
+      <h2>No Results for "{{ searchTerm }}"</h2>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section *ngIf="categorySearchResults.length > 0">
+    <div class="g_section-header">
+      <div class="g_section-header-row">
+        <h2>Categories</h2>
+      </div>
+    </div>
+    <div class="g_section-content">
+      <div [ngClass]="isMobile ? 'g_grid-with-horizontal-scrolling-2' : 'g_grid'">
+        <div class="g_grid-item-3-2" *ngFor="let category of categorySearchResults">
+          <div class="g_grid-item-content">
+            <app-journal-category [category]="category"></app-journal-category>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Journals -->
+  <section *ngIf="journalSearchResults.length > 0">
+    <div class="g_section-header">
+      <div class="g_section-header-row">
+        <h2>Journals</h2>
+      </div>
+    </div>
+    <div class="g_section-content">
+      <div [ngClass]="isMobile ? 'g_grid-with-horizontal-scrolling-2' : 'g_grid'">
+        <div class="g_grid-item" *ngFor="let journal of journalSearchResults">
+          <div class="g_grid-item-content">
+            <app-journal-thumbnail [journal]="journal"></app-journal-thumbnail>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Articles -->
+  <section *ngIf="articleSearchResults.length > 0">
+    <div class="g_section-header">
+      <div class="g_section-header-row">
+        <h2>Articles</h2>
+      </div>
+    </div>
+    <div class="g_section-content">
+      <app-article-list [articles]="articleSearchResults"></app-article-list>
+    </div>
+  </section>
+</div>

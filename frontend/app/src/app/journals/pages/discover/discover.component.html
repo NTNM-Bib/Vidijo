@@ -1,0 +1,158 @@
+<div class="g_content">
+  <!-- Header -->
+  <section>
+    <div class="g_section-header">
+      <h1>Discover</h1>
+      <p>Browse recently published articles, most popular journals and more</p>
+    </div>
+  </section>
+
+  <!-- Recently updated journals -->
+  <section *ngIf="recentlyUpdatedJournals.length > 0">
+    <div class="g_section-header">
+      <div class="g_section-header-row">
+        <h2>Newest Articles</h2>
+        <button
+          mat-button
+          color="accent"
+          class="g_neumorphism-on-hover"
+          routerLink="/journals"
+          [queryParams]="{ sort: '-latestPubdate' }"
+        >
+          MORE
+          <mat-icon> keyboard_arrow_right </mat-icon>
+        </button>
+      </div>
+    </div>
+    <div class="g_section-content">
+      <div
+        [ngClass]="isMobile ? 'g_grid-with-horizontal-scrolling-1' : 'g_grid'"
+      >
+        <div
+          [ngClass]="isMobile ? 'g_grid-item-1-1' : 'g_grid-item'"
+          *ngFor="
+            let journal of recentlyUpdatedJournals.slice(
+              0,
+              numJournalsToDisplay
+            )
+          "
+        >
+          <div class="g_grid-item-content">
+            <app-journal-newest-articles
+              [journal]="journal"
+            ></app-journal-newest-articles>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Top categories -->
+  <section *ngIf="categories.length > 0">
+    <div class="g_section-header">
+      <div class="g_section-header-row">
+        <h2>Top Categories</h2>
+        <button
+          mat-button
+          color="accent"
+          class="g_neumorphism-on-hover"
+          routerLink="/categories"
+        >
+          MORE
+          <mat-icon> keyboard_arrow_right </mat-icon>
+        </button>
+      </div>
+    </div>
+    <div class="g_section-content">
+      <div
+        [ngClass]="isMobile ? 'g_grid-with-horizontal-scrolling-2' : 'g_grid'"
+      >
+        <div class="g_grid-item-3-2" *ngFor="let category of categories">
+          <div class="g_grid-item-content">
+            <app-journal-category [category]="category"></app-journal-category>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Recently added journals -->
+  <section *ngIf="recentlyAddedJournals.length > 0">
+    <div class="g_section-header">
+      <div class="g_section-header-row">
+        <h2>Recently Added</h2>
+        <button
+          mat-button
+          color="accent"
+          class="g_neumorphism-on-hover"
+          routerLink="/journals"
+          [queryParams]="{ sort: '-added' }"
+        >
+          MORE
+          <mat-icon> keyboard_arrow_right </mat-icon>
+        </button>
+      </div>
+    </div>
+    <div class="g_section-content">
+      <div
+        [ngClass]="isMobile ? 'g_grid-with-horizontal-scrolling-2' : 'g_grid'"
+      >
+        <div
+          class="g_grid-item"
+          *ngFor="
+            let journalRecentlyAdded of recentlyAddedJournals.slice(
+              0,
+              numJournalsToDisplay
+            )
+          "
+        >
+          <div class="g_grid-item-content">
+            <app-journal-thumbnail
+              [journal]="journalRecentlyAdded"
+            ></app-journal-thumbnail>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Most viewed journals -->
+  <section *ngIf="mostViewedJournals.length > 0">
+    <div class="g_section-header">
+      <div class="g_section-header-row">
+        <h2>Most Viewed</h2>
+        <button
+          mat-button
+          color="accent"
+          class="g_neumorphism-on-hover"
+          routerLink="/journals"
+          [queryParams]="{ sort: '-views' }"
+        >
+          MORE
+          <mat-icon> keyboard_arrow_right </mat-icon>
+        </button>
+      </div>
+    </div>
+    <div class="g_section-content">
+      <div
+        [ngClass]="isMobile ? 'g_grid-with-horizontal-scrolling-2' : 'g_grid'"
+      >
+        <div
+          class="g_grid-item"
+          *ngFor="
+            let journalMostViewed of mostViewedJournals.slice(
+              0,
+              numJournalsToDisplay
+            )
+          "
+        >
+          <div class="g_grid-item-content">
+            <app-journal-thumbnail
+              [journal]="journalMostViewed"
+            ></app-journal-thumbnail>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

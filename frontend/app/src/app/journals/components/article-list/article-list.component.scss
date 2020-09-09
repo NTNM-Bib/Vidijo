@@ -1,0 +1,35 @@
+.article-and-button {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+}
+
+.button {
+  margin-left: var(--side-padding);
+  border-radius: 30px;
+}
+
+.list {
+  display: grid;
+  gap: var(--grid-gap);
+  width: 100%;
+}
+
+.list-item {
+  display: grid;
+  gap: var(--grid-gap);
+  //grid-template-columns: 50px auto 60px;
+  width: 100%;
+  cursor: pointer;
+  border-radius: 10px;
+}
+
+.list-item-text {
+  display: flex;
+  flex-flow: column nowrap;
+  padding: 5px 0;
+}
+
+.lighter {
+  color: var(--font-color-lighter);
+}

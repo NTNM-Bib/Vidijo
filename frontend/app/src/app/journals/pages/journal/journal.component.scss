@@ -1,0 +1,166 @@
+// #region Journal Details
+
+.mobile-date {
+  text-align: center !important;
+}
+
+.mobile-details-container {
+  position: relative;
+  height: 200px;
+  vertical-align: middle;
+  display: flex;
+  flex-flow: column nowrap;
+  align-items: center;
+  padding-bottom: 10px;
+}
+
+.mobile-journal-cover {
+  filter: blur(20px);
+  -webkit-filter: blur(20px);
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  align-content: center;
+}
+
+.mobile-details-title-container {
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100% - 20px);
+}
+
+.mobile-details-identifiers-container {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  width: 80%;
+  margin: 20px 0;
+}
+
+.mobile-details-identifier {
+  margin: 0 10px;
+}
+
+.mobile-details-text {
+  font-weight: normal;
+  color: white;
+  text-shadow: 2px 2px 4px black;
+}
+
+.mobile-date {
+  padding-top: 50px;
+}
+
+.journal-details {
+  align-items: center;
+
+  h3 {
+    text-align: center;
+    font-size: 150%;
+    max-width: 230px;
+    margin: 0 10px;
+    font-weight: lighter;
+  }
+
+  h4 {
+    font-weight: lighter;
+    text-align: center;
+  }
+}
+// #endregion Journal Details
+
+.section-articles {
+  margin: 10px;
+  padding-bottom: 40vh;
+  width: calc(100% - 20px);
+}
+
+.article-title {
+  align-self: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-lines: 2 !important;
+}
+
+.search-icon {
+  font-size: 100%;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.author-preview {
+  text-align: right;
+  align-self: center;
+  min-width: 200px;
+  margin-right: 20px;
+  padding-right: 5px;
+}
+
+.cover {
+  position: relative;
+  border-radius: 3px;
+  margin: 25px;
+  width: 200px;
+  overflow: hidden;
+  background: white;
+}
+
+.main-container {
+  margin: auto;
+  max-width: 1500px;
+}
+
+.date-group-header {
+  margin-left: 10px;
+  font-size: 150%;
+}
+
+.no-articles-hint {
+  display: flex;
+  justify-content: center;
+  margin-top: 60px;
+}
+
+mat-sidenav {
+  border: none !important;
+  background: none !important;
+}
+
+mat-sidenav-container {
+  background: none !important;
+  width: 100%;
+  overflow: visible;
+}
+
+.action-row {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+}
+
+.button-group {
+  flex: 1;
+}
+
+.journal-actions-container {
+  width: 100%;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
+}
+
+.articles-container {
+  width: 100%;
+  height: 100%;
+  padding-left: 15px;
+  box-sizing: border-box;
+  overflow: visible;
+}

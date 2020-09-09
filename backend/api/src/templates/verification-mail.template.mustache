@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style type="text/css">
+        body {
+            display: block;
+            width: 100%;
+            margin: 0 auto;
+            max-width: 450px;
+            margin: 10px auto;
+            font-family: "Arial";
+            font-weight: lighter;
+        }
+
+        .hello {
+            display: block;
+            font-weight: lighter;
+            margin-bottom: 10px;
+        }
+
+        .text {
+            display: block;
+            margin-bottom: 0;
+        }
+
+        .verify-button-container {
+            display: block;
+            width: 100%;
+            padding: 20px 0;
+        }
+
+        .verify-button {
+            display: block;
+            background: #263c48;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+            width: 120px;
+        }
+
+        .footnote {
+            display: block;
+            font-size: smaller;
+            color: black;
+            padding: 10px 0;
+        }
+
+        .icon-and-title {
+            display: block;
+            text-decoration: none;
+            color: black;
+            height: 40px;
+            margin: 10px 0;
+        }
+
+        tr {
+            width: 100%;
+        }
+
+        td {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <table align="center" width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tbody>
+            <!-- Header -->
+            <tr>
+                <td align="center">
+                    <a href="https://www.vidijo.org/" target="_blank">
+                        <img class="icon-and-title" src="https://public.vidijo.org/vidijo-logo.png" />
+                    </a>
+                </td>
+            </tr>
+            <!-- Hello -->
+            <tr>
+                <td>
+                    <h1 class="hello">Hello, {{ firstName }}</h1>
+                </td>
+            </tr>
+            <!-- Thank You Text -->
+            <tr>
+                <td>
+                    <p class="text">
+                        Thank you for creating a new account at www.vidijo.org!<br />
+                        Please verify your email address by clicking the button below.
+                    </p>
+                </td>
+            </tr>
+            <!-- Button -->
+            <tr>
+                <td align="center" valign="middle" class="verify-button-container">
+                    <a href="{{& verificationLink }}" class="verify-button">
+                        Verify Account
+                    </a>
+                </td>
+            </tr>
+            <!-- Horizontal Line -->
+            <tr>
+                <td>
+                    <hr />
+                </td>
+            </tr>
+            <!-- Footer -->
+            <tr>
+                <td class="footnote">
+                    <p>
+                        You can safely ignore this message if you did not create
+                        an
+                        account.
+                    </p>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+
+</html>

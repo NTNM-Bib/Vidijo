@@ -1,0 +1,22 @@
+<div class="list">
+  <div class="article-and-button" *ngFor="let article of articles">
+    <div matRipple class="list-item g_neumorphism-on-hover" (click)="openArticle(article)"
+      [ngStyle]="showCover && showOpenButton ? { 'grid-template-columns': '50px auto 60px' } : { 'grid-template-columns': 'auto' }">
+      <app-journal-cover [journal]="article.publishedIn" *ngIf="showCover"></app-journal-cover>
+      <div class="list-item-text">
+        <p>{{ article.title }}</p>
+        <p class="lighter">{{ (article.authors.length > 0) ? article.authors[0] : '' }}<em
+            *ngIf="article.authors.length > 1">+{{ article.authors.length - 1 }}</em>
+        </p>
+        <p class="lighter">{{ article.pubdate | date }}</p>
+      </div>
+    </div>
+    <a mat-button class="button g_neumorphism-button" [href]="article.source" target="__blank"
+      *ngIf="!isMobile && showOpenButton">
+      <mat-icon>
+        open_in_new
+      </mat-icon>
+      <span>&nbsp; Open</span>
+    </a>
+  </div>
+</div>

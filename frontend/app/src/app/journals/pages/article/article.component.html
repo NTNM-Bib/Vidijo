@@ -1,0 +1,68 @@
+<div class="g_content" *ngIf="article">
+  <section>
+    <div class="g_section-header">
+      <h2 class="title">
+        {{ article.title }}
+      </h2>
+      <h3 class="authors">
+        <mat-icon>people_alt</mat-icon>
+        {{ article.authors.join(", ") }}
+      </h3>
+      <h3 class="date">
+        <mat-icon>date_range</mat-icon>
+        {{ article.pubdate | date }}
+      </h3>
+    </div>
+
+    <div class="g_section-content">
+      <h2 class="abstract-heading">Abstract</h2>
+      <p class="abstract">
+        {{ (article.abstract && article.abstract.length > 0) ? article.abstract : 'No abstract available' }}</p>
+    </div>
+
+    <div class="g_section-header" *ngIf="false">
+      <p class="doi">
+        <mat-icon>info</mat-icon>
+        DOI: {{ article.doi }}
+      </p>
+    </div>
+
+    <div [ngClass]="isMobile ? 'g_section-action-row-fixed' : 'g_section-action-row'">
+      <!-- Add to reading list button -->
+      <button mat-icon-button class="g_side-button-left"
+        [ngClass]="isInReadingList ? 'g_raised-icon-button-accent' : 'g_raised-icon-button'"
+        (click)="(isInReadingList) ? removeArticleFromReadingList() : addArticleToReadingList()"
+        *ngIf="isLoggedIn && isMobile">
+        <mat-icon>
+          {{ isInReadingList ? 'playlist_add_check' : 'playlist_add' }}
+        </mat-icon>
+      </button>
+      <button mat-button class="g_side-button-left"
+        [ngClass]="isInReadingList ? 'g_neumorphism-button-pressed' : 'g_neumorphism-button'"
+        (click)="(isInReadingList) ? removeArticleFromReadingList() : addArticleToReadingList()"
+        *ngIf="isLoggedIn && !isMobile">
+        <mat-icon>
+          {{ isInReadingList ? 'playlist_add_check' : 'playlist_add' }}
+        </mat-icon>
+        <span>
+          {{ isInReadingList ? 'Saved' : 'Save' }}
+        </span>
+      </button>
+
+      <!-- Open article button -->
+      <a mat-button color="primary" class="g_rounded-button" [href]="article.source" target="__blank"
+        [disabled]="!article.source">
+        <mat-icon>
+          open_in_new
+        </mat-icon>
+        &nbsp; Open Article
+      </a>
+
+      <!-- Invisible dummy button on the right-->
+      <button mat-icon-button class="g_side-button-right" [hidden]="true" *ngIf="isLoggedIn"></button>
+    </div>
+  </section>
+</div>
+
+<!-- Empty space for floating action row -->
+<div [ngStyle]="{ 'height': '60px' }" *ngIf="isMobile"></div>

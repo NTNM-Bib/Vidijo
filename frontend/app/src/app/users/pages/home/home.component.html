@@ -1,0 +1,115 @@
+<!-- Show page description if not logged in -->
+<div class="g_content-centered" *ngIf="!isLoggedIn && finishedLoading">
+  <section>
+    <div class="g_section-header">
+      <h1>Home</h1>
+      <p>
+        Your favorite journals and saved articles will be shown here.
+        Please create an account or log in with an existing one to use this functionality.
+      </p>
+    </div>
+    <div class="g_section-action-row">
+      <button mat-button class="g_rounded-button" (click)="openRegister()">
+        <mat-icon>
+          account_circle
+        </mat-icon>
+        <span>&nbsp; Account</span>
+      </button>
+    </div>
+  </section>
+</div>
+
+<!-- Show page functionality if user is new -->
+<div class="g_content-centered" *ngIf="isLoggedIn && finishedLoading && showOnboarding">
+  <section>
+    <div class="g_section-header">
+      <h1>{{ greetingDependingOnTime }}, {{ user.firstName }}</h1>
+      <p>
+        You have not yet saved any journals or articles.
+        After you have done so, they will be displayed here.
+      </p>
+    </div>
+    <div class="g_section-action-row">
+      <button mat-button class="g_rounded-button" (click)="openOnboarding()">
+        Show me how
+      </button>
+    </div>
+  </section>
+</div>
+
+<div class="g_content" *ngIf="isLoggedIn && finishedLoading && !showOnboarding">
+  <!-- Hello & Info -->
+  <section>
+    <div class="g_section-header">
+      <h1>{{ greetingDependingOnTime }}, {{ user.firstName | titlecase }}</h1>
+      <p>{{ titleInfoText }}</p>
+    </div>
+  </section>
+
+  <!-- Newest Articles -->
+  <section *ngIf="favoriteJournalsNewestArticles.length > 0">
+    <div class="g_section-header">
+      <div class="g_section-header-row">
+        <h2>Newest Articles</h2>
+        <button mat-button color="accent" class="g_neumorphism-on-hover" (click)="showAllFavoritesNewestArticles()">
+          MORE
+          <mat-icon>
+            keyboard_arrow_right
+          </mat-icon>
+        </button>
+      </div>
+    </div>
+    <div class="g_section-content">
+      <div [ngClass]="isMobile ? 'g_grid-with-horizontal-scrolling-1' : 'g_grid'">
+        <div [ngClass]="isMobile ? 'g_grid-item-1-1' : 'g_grid-item'"
+          *ngFor="let journal of favoriteJournalsNewestArticles.slice(0, numJournalsToDisplay)">
+          <div class="g_grid-item-content">
+            <app-journal-newest-articles [journal]="journal"></app-journal-newest-articles>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reading List -->
+  <section *ngIf="readingListArticles.length > 0">
+    <div class="g_section-header">
+      <div class="g_section-header-row">
+        <h2>Reading List</h2>
+        <button mat-button color="accent" class="g_neumorphism-on-hover" (click)="openReadingList()">
+          MORE
+          <mat-icon>
+            keyboard_arrow_right
+          </mat-icon>
+        </button>
+      </div>
+    </div>
+    <div class="g_section-content">
+      <app-article-list [articles]="readingListArticles.slice(0, numDisplayedReadingListArticles)"></app-article-list>
+    </div>
+  </section>
+
+  <!-- Favorite Journals -->
+  <section *ngIf="favoriteJournals.length > 0">
+    <div class="g_section-header">
+      <div class="g_section-header-row">
+        <h2>Favorite Journals</h2>
+        <button mat-button color="accent" class="g_neumorphism-on-hover" (click)="showAllFavorites()">
+          MORE
+          <mat-icon>
+            keyboard_arrow_right
+          </mat-icon>
+        </button>
+      </div>
+    </div>
+    <div class="g_section-content">
+      <div [ngClass]="isMobile ? 'g_grid-with-horizontal-scrolling-2' : 'g_grid'">
+        <div class="g_grid-item" *ngFor="let favJournal of favoriteJournals.slice(0, numJournalsToDisplay)">
+          <div class="g_grid-item-content">
+            <app-journal-thumbnail [journal]="favJournal"></app-journal-thumbnail>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

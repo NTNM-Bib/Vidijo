@@ -1,0 +1,32 @@
+@import "~@angular/material/theming";
+
+.mobile-toolbar-icon {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  outline: none;
+  border: 0;
+  border-radius: 3px;
+  cursor: pointer;
+  color: var(--font-color);
+}
+
+.highlighted > * {
+  color: var(--accent-color);
+}
+
+.no-shadow {
+  @include mat-elevation(0);
+  @include mat-elevation-transition;
+}
+
+.shadow {
+  @include mat-elevation(1);
+  @include mat-elevation-transition;
+}
+
+p {
+  font-size: smaller;
+}

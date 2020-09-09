@@ -1,0 +1,34 @@
+<div class="g_content">
+    <section>
+        <div class="g_section-header">
+            <h1>Add Category</h1>
+        </div>
+        <form [formGroup]="form">
+            <div class="g_section-content">
+                <mat-form-field>
+                    <input matInput placeholder="Enter a name..." formControlName="title">
+                </mat-form-field>
+
+                <div>
+                    <button type="button" mat-button [(colorPicker)]="color"
+                        [ngStyle]="{ 'background': color, 'color': 'white' }">Select
+                        Color</button>
+                </div>
+
+                <div>
+                    <mat-checkbox formControlName="display">Show this category on the Discover Page (Top Categories)</mat-checkbox>
+                </div>
+            </div>
+
+
+            <div [ngClass]="isMobile ? 'g_section-action-row-fixed' : 'g_section-action-row'">
+                <button mat-raised-button class="g_rounded-button" type="button" (click)="addCategory()">
+                    <mat-icon>
+                        done
+                    </mat-icon>
+                    &nbsp; Save
+                </button>
+            </div>
+        </form>
+    </section>
+</div>

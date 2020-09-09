@@ -1,0 +1,33 @@
+<div class="g_content">
+    <section>
+        <div class="g_section-header">
+            <h1>Edit User</h1>
+            <p>Edit {{ user.firstName }} {{ user.secondName }} ({{ user.username }})</p>
+        </div>
+
+        <form [formGroup]="form">
+            <div class="g_section-content">
+
+            </div>
+
+            <div [ngClass]="isMobile ? 'g_section-action-row-fixed' : 'g_section-action-row'">
+                <button mat-button color="warn" class="g_neumorphism-button" type="button"
+                    (click)="confirmRemovingAdminStatus()" *ngIf="isAdmin">
+                    <mat-icon>
+                        warning
+                    </mat-icon>
+                    &nbsp; Remove Admin Status
+                </button>
+
+                <button mat-button color="accent" class="g_neumorphism-button" type="button"
+                    (click)="confirmPromotingToAdmin()" *ngIf="!isAdmin">
+                    <mat-icon>
+                        warning
+                    </mat-icon>
+                    &nbsp; Promote to Admin
+                </button>
+
+            </div>
+        </form>
+    </section>
+</div>

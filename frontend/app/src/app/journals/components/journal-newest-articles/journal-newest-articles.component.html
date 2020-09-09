@@ -1,0 +1,30 @@
+<div class="container">
+  <!-- Journal -->
+  <div class="card g_neumorphism">
+    <app-journal-cover
+      class="journal-cover"
+      [journal]="journal"
+      (click)="openJournal()"
+    ></app-journal-cover>
+    <div class="article-list-container">
+      <app-article-list
+        [articles]="journal.newestArticles"
+        [showCover]="false"
+        [showOpenButton]="false"
+      ></app-article-list>
+      <!--
+        <div class="view-all-button-container">    
+          <button mat-button class="g_rounded-button" (click)="openJournal()">
+            View all
+          </button>
+        </div>
+      -->
+    </div>
+  </div>
+
+  <!-- Info Box -->
+  <div class="info-box">
+    <h3 *ngIf="!isMobile">{{ journal.title }}</h3>
+    <p *ngIf="isMobile">{{ journal.title }}</p>
+  </div>
+</div>

@@ -1,0 +1,15 @@
+<!-- Loading Indicator -->
+<div class="loading-bar" *ngIf="isLoading | async">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</div>
+
+<!-- Navigation Header -->
+<app-navigation-header></app-navigation-header>
+
+<!-- Toolbar (responsive) -->
+<app-toolbar *ngIf="showMobileToolbar"></app-toolbar>
+
+<!-- Router Outlet -->
+<div class="g_router-outlet" [@routeAnimations]="prepareRoute(outlet)">
+  <router-outlet #outlet="outlet"></router-outlet>
+</div>

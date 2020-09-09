@@ -1,0 +1,117 @@
+.whitespace {
+  height: 40px;
+  width: 100%;
+}
+
+.main-container {
+  width: 100%;
+  max-width: 2000px;
+  margin: 0 auto;
+}
+
+.scrollbar-container {
+  position: fixed;
+  top: 0px;
+  z-index: 5;
+  right: 0px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 60px;
+  overflow: hidden;
+  height: calc(100% - 60px);
+}
+
+.header-container {
+  position: relative;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+  height: 120px;
+  max-width: 2000px;
+  margin: 0 auto;
+}
+
+.category-title-and-filter-container {
+  display: flex;
+  flex-flow: row wrap;
+  margin: 0 15px;
+  margin-bottom: 15px;
+  align-items: flex-end;
+}
+
+.sort-by-title {
+  font-weight: normal;
+  margin-bottom: 0px;
+}
+
+.category-header-title {
+  font-weight: lighter;
+  margin-bottom: 0;
+}
+
+mat-chip {
+  cursor: pointer;
+}
+
+mat-chip-list {
+  border-radius: 30px;
+  width: fit-content;
+  padding: 0 !important;
+}
+
+// Make chip-list horizontally scrollable
+/*
+::ng-deep div.mat-chip-list-wrapper {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+
+  .mat-chip {
+    flex: 0 0 auto;
+  }
+}
+*/
+.display-switcher-container {
+  width: 100%;
+  padding: 0px !important;
+}
+
+// ! Use this as a new base for horizontal scrolling !
+.display-switcher {
+  display: flex;
+  flex-flow: row nowrap;
+  overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 30px;
+  width: fit-content;
+  height: fit-content;
+  max-width: calc(100% - 2 * var(--side-padding));
+  margin: 0px var(--side-padding);
+  scrollbar-width: none;
+}
+
+.display-switcher::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+.display-switcher::before,
+.display-switcher::after {
+  content: "\200B";
+  width: var(--side-padding);
+}
+*/
+
+.display-switcher-button {
+  border-radius: 30px;
+  color: var(--primary-color);
+}
+
+.display-switcher-button-active {
+  @extend .display-switcher-button;
+  color: var(--background-color);
+}

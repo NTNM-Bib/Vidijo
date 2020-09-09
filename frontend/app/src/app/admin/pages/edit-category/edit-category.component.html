@@ -1,0 +1,47 @@
+<div class="g_content">
+    <section>
+        <div class="g_section-header">
+            <h1>Edit Category</h1>
+            <p>Edit {{ category.title }}</p>
+        </div>
+        <form [formGroup]="form">
+            <div class="g_section-content">
+                <mat-form-field>
+                    <input matInput placeholder="Title" formControlName="title">
+                </mat-form-field>
+
+                <div>
+                    <button type="button" mat-button [(colorPicker)]="color"
+                        [ngStyle]="{ 'background': color, 'color': 'white' }">
+                        Color
+                    </button>
+                </div>
+
+                <div>
+                    <mat-checkbox formControlName="display">Show this category on the Discover Page (Top Categories)
+                    </mat-checkbox>
+                </div>
+            </div>
+
+            <div [ngClass]="isMobile ? 'g_section-action-row-fixed' : 'g_section-action-row'">
+                <button mat-button color="warn" class="g_neumorphism-button g_side-button-left" type="button"
+                    (click)="confirmDeletingCategory()">
+                    <mat-icon>
+                        delete
+                    </mat-icon>
+                    &nbsp; Delete Category
+                </button>
+
+                <button mat-raised-button class="g_rounded-button" type="button" (click)="updateCategory()">
+                    <mat-icon>
+                        done
+                    </mat-icon>
+                    &nbsp; Save
+                </button>
+
+                <!-- Invisible dummy button on the right-->
+                <button mat-icon-button class="g_side-button-right" [hidden]="true"></button>
+            </div>
+        </form>
+    </section>
+</div>

@@ -1,0 +1,115 @@
+<!-- #region Mobile -->
+<div *ngIf="journal && isMobile">
+  <div class="mobile-details-container">
+    <div class="mobile-journal-cover">
+      <app-journal-cover [journal]="journal"></app-journal-cover>
+    </div>
+    <div class="mobile-details-title-container">
+      <h1 class="mat-h1 mobile-details-text">{{ journal.title }}</h1>
+    </div>
+    <div class="mobile-details-identifiers-container">
+      <p *ngIf="journal.issn" class="mobile-details-text mobile-details-identifier">{{ journal.issn }}</p>
+      <p *ngIf="journal.eissn" class="mobile-details-text mobile-details-identifier">{{ journal.eissn }}</p>
+    </div>
+  </div>
+  <div class="journal-actions-container" *ngIf="isLoggedIn">
+    <button mat-button class="g_neumorphism-button" color="none" *ngIf="!isFavorite" (click)="addToFavorites()">
+      <mat-icon>favorite</mat-icon>
+      <span>&nbsp; Follow</span>
+    </button>
+    <button mat-button class="g_neumorphism-button-pressed" color="warn" *ngIf="isFavorite"
+      (click)="removeFromFavorites()">
+      <mat-icon>favorite</mat-icon>
+      <span>&nbsp; Following</span>
+    </button>
+  </div>
+  <!-- Articles -->
+  <div *ngFor="let date of articleByMonthKeys">
+    <mat-list>
+      <h3 class="mobile-date">{{ date }}</h3>
+      <mat-list-item *ngFor="let article of articlesByMonth.get(date)" routerLink="/a/{{ article._id }}" matRipple>
+        <!-- Article Title -->
+        <h3 mat-line>{{ article.title }}</h3>
+        <!-- Authors -->
+        <p mat-line *ngIf="article.authors && article.authors.length > 0">
+          {{ article.authors[0] }}
+          <i *ngIf="article.authors.length > 1">
+            +{{ article.authors.length - 1 }}
+          </i>
+        </p>
+      </mat-list-item>
+    </mat-list>
+  </div>
+</div>
+<!-- #endregion -->
+
+<!-- Desktop -->
+<div class="g_content" *ngIf="journal && !isMobile">
+  <mat-sidenav-container *ngIf="journal">
+    <!-- #region Journal Details -->
+    <mat-sidenav mode="side" [opened]="!isMobile" [fixedInViewport]="true" [fixedTopGap]="60">
+      <div class="cover mat-elevation-z5" [ngStyle]="{ 'height': '260px' }">
+        <app-journal-cover [journal]="journal"></app-journal-cover>
+      </div>
+
+      <!-- Journal Title, ISSN, ... -->
+      <div class="journal-details">
+        <h3>{{ journal.title }}</h3>
+        <div>
+          <h4 *ngIf="journal.issn">ISSN: {{ journal.issn }}</h4>
+          <h4 *ngIf="journal.eissn">eISSN: {{ journal.eissn }}</h4>
+        </div>
+      </div>
+
+      <!-- Journal Actions (Only when logged in) -->
+      <div class="journal-actions-container" *ngIf="isLoggedIn">
+        <button mat-button class="g_neumorphism-button" color="none" *ngIf="!isFavorite" (click)="addToFavorites()">
+          <mat-icon>favorite</mat-icon>
+          <span>&nbsp; Follow</span>
+        </button>
+        <button mat-button class="g_neumorphism-button-pressed" color="warn" *ngIf="isFavorite"
+          (click)="removeFromFavorites()">
+          <mat-icon>favorite</mat-icon>
+          <span>&nbsp; Following</span>
+        </button>
+      </div>
+    </mat-sidenav>
+    <!-- endregion-->
+
+    <!-- #region Articles -->
+    <div class="g_content" *ngIf="journal.articles && journal.articles.length > 0">
+      <section *ngFor="let date of articleByMonthKeys">
+        <div class="g_section-header">
+          <h2>{{ date }}</h2>
+        </div>
+
+        <div class="g_section-content">
+          <mat-accordion [multi]="true">
+            <mat-expansion-panel class="mat-elevation-z0 g_neumorphism"
+              *ngFor="let article of articlesByMonth.get(date)">
+              <mat-expansion-panel-header collapsedHeight="60px">
+                <mat-panel-title>
+                  <p class="article-title">{{ article.title }}</p>
+                </mat-panel-title>
+
+                <div class="spacer"></div>
+
+                <p *ngIf="article.authors" class="author-preview">
+                  {{ article.authors[0] }}
+                  <i *ngIf="article.authors.length > 1">
+                    +{{ article.authors.length - 1 }}
+                  </i>
+                </p>
+              </mat-expansion-panel-header>
+
+              <ng-template matExpansionPanelContent>
+                <app-article [article]="article"></app-article>
+              </ng-template>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+      </section>
+    </div>
+    <!-- #endregion Articles -->
+  </mat-sidenav-container>
+</div>

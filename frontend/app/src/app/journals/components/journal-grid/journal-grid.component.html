@@ -1,0 +1,28 @@
+<mat-grid-list [cols]="cols" rowHeight="2:3">
+  <mat-grid-tile *ngFor="let journal of journals" class="grid-tile">
+    <div class="journal-and-indicator-container">
+      <!-- Special Indicator -->
+      <div class="special-indicator-container" *ngIf="showSpecialIndicator(journal)">
+        <mat-chip-list>
+          <mat-chip disableRipple class="special-indicator mat-elevation-z2" color="none">
+            {{ specialIndicatorText }}
+          </mat-chip>
+        </mat-chip-list>
+      </div>
+
+      <!-- Journal -->
+      <div class="journal" [ngClass]="false ? 'mat-elevation-z5' : 'mat-elevation-z10'" matRipple
+        routerLink="/j/{{ journal._id }}" [id]="journal.title.slice(0, 1).toUpperCase()">
+        <!-- Cover -->
+        <div class="journal-cover">
+          <app-journal-cover [journal]="journal"></app-journal-cover>
+        </div>
+
+        <!-- Title -->
+        <div class="journal-title">
+          {{ journal.title }}
+        </div>
+      </div>
+    </div>
+  </mat-grid-tile>
+</mat-grid-list>

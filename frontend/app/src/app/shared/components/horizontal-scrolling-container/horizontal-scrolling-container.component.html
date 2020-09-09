@@ -1,0 +1,21 @@
+<div class="hsc-main-container" [ngStyle]="{ 'height': containerHeight }" *ngIf="isMobile">
+    <div class="hsc-content">
+        <div class="hsc-content-padding"></div>
+        <ng-content></ng-content>
+        <div class="hsc-content-padding"></div>
+    </div>
+</div>
+
+<div *ngIf="!isMobile">
+    <button mat-icon-button class="hsc-page-switcher-button">
+        <mat-icon>
+            keyboard_arrow_left
+        </mat-icon>
+    </button>
+    <ng-content></ng-content>
+    <button mat-icon-button class="hsc-page-switcher-button">
+        <mat-icon>
+            keyboard_arrow_right
+        </mat-icon>
+    </button>
+</div>

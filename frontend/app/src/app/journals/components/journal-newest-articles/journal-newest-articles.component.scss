@@ -1,0 +1,74 @@
+.container {
+  width: 100%;
+  height: 100%;
+}
+
+.card {
+  width: 100%;
+  height: 85%;
+  border-radius: 5px;
+  display: grid;
+  grid-template-columns: 30% auto;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.journal-background-fill {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: stretch !important;
+  align-items: stretch !important;
+  filter: blur(20px) saturate(180%);
+}
+
+.fill-cover {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  justify-content: stretch !important;
+  justify-items: stretch !important;
+  align-items: stretch !important;
+  align-content: stretch !important;
+}
+
+.info-box {
+  width: 100%;
+  height: 15%;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px;
+  text-align: left;
+}
+
+.article-list-container {
+  position: relative;
+  height: 100%;
+  max-height: 100%;
+  padding-top: 10px;
+  overflow: hidden;
+  //box-shadow: inset 30px var(--background-color);
+  //box-shadow: inset 0 -2em gold;
+}
+
+/*
+.view-all-button-container {
+  position: absolute;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  bottom: 0;
+  height: 60px;
+  width: 100%;
+  background: var(--background-color);
+}
+*/
+
+.journal-cover {
+  cursor: pointer;
+}

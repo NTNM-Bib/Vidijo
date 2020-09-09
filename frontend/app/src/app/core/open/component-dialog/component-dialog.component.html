@@ -1,0 +1,13 @@
+<div class="container">
+  <h3 mat-dialog-title *ngIf="title">{{ title }}</h3>
+
+  <button mat-icon-button class="close-button g_neumorphism-button" tabindex="-1" (click)="closeDialog()">
+    <mat-icon>
+      close
+    </mat-icon>
+  </button>
+
+  <div mat-dialog-content>
+    <ng-template cdkPortalOutlet></ng-template>
+  </div>
+</div>

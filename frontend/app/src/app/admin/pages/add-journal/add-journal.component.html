@@ -1,0 +1,36 @@
+<div class="g_content">
+    <section>
+        <div class="g_section-header">
+            <h1>Add Journals</h1>
+            <p>Search Journals to add to <i>{{ category.title }}</i></p>
+        </div>
+        <div class="g_section-content">
+            <div>
+                <input class="g_dynamic-shadow search-input" placeholder="Search journals to add" autofocus
+                    [formControl]="searchFormControl">
+            </div>
+        </div>
+    </section>
+
+    <section *ngIf="noSearchResults"></section>
+
+    <section *ngIf="journalResultsInVidijo.length > 0">
+        <div class="g_section-header">
+            <h2>Installed</h2>
+        </div>
+        <div class="g_section-content">
+            <app-journals-list [journals]="journalResultsInVidijo" [showAddButton]="true">
+            </app-journals-list>
+        </div>
+    </section>
+
+    <section *ngIf="journalResultsInDOAJ.length > 0">
+        <div class="g_section-header">
+            <h2>Not Installed</h2>
+        </div>
+        <div class="g_section-content">
+            <app-journals-list [journals]="journalResultsInDOAJ" [showInstallButton]="true">
+            </app-journals-list>
+        </div>
+    </section>
+</div>

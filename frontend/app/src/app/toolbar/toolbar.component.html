@@ -1,0 +1,9 @@
+<div class="g_toolbar">
+    <div matRipple class="mobile-toolbar-icon" [routerLink]="button.route"
+        (click)="scrollToTopIfNeeded(button)" *ngFor="let button of buttons" [ngClass]="isActive(button) ? 'highlighted' : ''">
+        <mat-icon>
+            {{ button.icon }}
+        </mat-icon>
+        <p>{{ button.name }}</p>
+    </div>
+</div>

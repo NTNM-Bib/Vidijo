@@ -1,0 +1,10 @@
+.container {
+    position: relative;
+}
+
+.close-button {
+    position: absolute;
+    z-index: var(--layer-f4);
+    top: 0px;
+    right: 0px;
+}

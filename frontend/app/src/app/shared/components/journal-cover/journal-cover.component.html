@@ -1,0 +1,25 @@
+<div class="cover" *ngIf="journal">
+  <!-- Image Cover -->
+  <div *ngIf="!triedLoadingCover || coverLoadedSuccessfully">
+    <img class="background-fill" [src]="journal.cover" (load)="handleCoverLoaded()" (error)="handleCoverError()">
+    <img class="cover-image" [src]="journal.cover" alt="{{ journal.title }} Cover">
+  </div>
+
+  <!-- Generated Cover -->
+  <div *ngIf="!triedLoadingCover || (triedLoadingCover && !coverLoadedSuccessfully)">
+    <div class="background-fill" [ngStyle]="{ 'background': colorsOfThisCover[0] }"></div>
+    <div class="cover-image generated-cover-image" [ngStyle]="{ 'background': colorsOfThisCover[0] }">
+      <!--
+      <svg height="100%" width="100%" class="svg">
+          
+          <circle cx="100" cy="20" r="40" [attr.fill]="colorsOfThisCover[1]" />
+          <circle cx="100" cy="100" r="80" [attr.fill]="colorsOfThisCover[2]" />
+          <circle cx="200" cy="270" r="180" [attr.fill]="colorsOfThisCover[3]" />
+        </svg>
+      -->
+      <div class="generated-title-container">
+        <div fittext minFontSize="20" maxFontSize="60" class="cover-title-generated">{{ journal.title }}</div>
+      </div>
+    </div>
+  </div>
+</div>

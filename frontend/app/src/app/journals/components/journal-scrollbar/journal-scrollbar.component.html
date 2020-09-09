@@ -1,0 +1,11 @@
+<div class="journal-scrollbar-vertical" [ngStyle]="{ 'transform': scaleString }">
+  <button
+    mat-button
+    *ngFor="let letter of letters"
+    (click)="scrollToJournal(letter)"
+  >
+    <span class="scrollbar-entry">
+      {{ letter | uppercase }}
+    </span>
+  </button>
+</div>

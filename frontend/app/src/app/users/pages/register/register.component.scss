@@ -1,0 +1,18 @@
+mat-form-field {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.register-error {
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  background: #d62f05; // TODO: Use $warn from current theme
+  border-radius: 5px;
+  width: 100%;
+  height: 60px;
+  color: white;
+  text-align: center;
+  box-sizing: border-box;
+}

@@ -1,0 +1,165 @@
+version: "3"
+
+# =-- NETWORKS --=
+networks:
+  backend:
+    driver: bridge
+
+# =-- VOLUMES --=
+volumes:
+  covers:
+  mongodb-data:
+
+# =-- SERVICES --=
+services:
+  # API Gateway
+  api-gateway:
+    container_name: vidijo_api-gateway.dev
+    build:
+      context: ./backend/api-gateway
+      dockerfile: dev.Dockerfile
+    depends_on:
+      - api
+      - app
+      - external-data.service
+      - user.service
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - covers:/var/www/static/covers
+    ports:
+      - 80:80
+      - 443:443
+
+  # API
+  api:
+    container_name: vidijo_api.dev
+    build:
+      context: ./backend/api
+      dockerfile: dev.Dockerfile
+    depends_on:
+      - database
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - covers:/var/vidijo/covers
+      - ./backend/api:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - ./services.dev.env
+      - ./config.dev/api.dev.env
+    ports:
+      - 3000:3000
+
+  # Database
+  database:
+    container_name: vidijo_database.dev
+    image: mongo
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - mongodb-data:/data/db
+    ports:
+      - 27017:27017
+
+  # External Data Service
+  external-data.service:
+    container_name: vidijo_external-data.service.dev
+    build:
+      context: ./backend/external-data.service
+      dockerfile: dev.Dockerfile
+    depends_on:
+      - database
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - covers:/var/vidijo/covers
+      - ./backend/external-data.service:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - ./services.dev.env
+      - ./config.dev/external-data.service.dev.env
+    environment:
+      - LOCAL_COVER_FOLDER=/var/vidijo/covers
+    ports:
+      - 3001:3000
+
+  # Updater Service
+  updater.service:
+    container_name: vidijo_updater.service.dev
+    build:
+      context: ./backend/updater.service
+      dockerfile: dev.Dockerfile
+    depends_on:
+      - database
+      - external-data.service
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - ./backend/updater.service:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - ./services.dev.env
+    environment:
+      - UPDATE_INTERVAL=5
+
+  # User Service
+  user.service:
+    container_name: vidijo_user.service.dev
+    build:
+      context: ./backend/user.service
+      dockerfile: dev.Dockerfile
+    depends_on:
+      - database
+      - api
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - ./backend/user.service:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - ./services.dev.env
+    ports:
+      - 3002:3000
+
+  # Importer Service
+  importer.service:
+    container_name: vidijo_importer.service.dev
+    build:
+      context: ./backend/importer.service
+      dockerfile: dev.Dockerfile
+    depends_on:
+      - database
+      - api
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - ./backend/importer.service:/usr/src/app
+      - /usr/src/app/node_modules
+    env_file:
+      - ./services.dev.env
+    ports:
+      - 3003:3000
+
+  # App
+  app:
+    container_name: vidijo_app.dev
+    build:
+      context: ./frontend/app
+      dockerfile: dev.Dockerfile
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - ./frontend/app:/usr/src/app
+      - /usr/src/app/node_modules
+    ports:
+      - 4200:4200
+      - 49153:49153

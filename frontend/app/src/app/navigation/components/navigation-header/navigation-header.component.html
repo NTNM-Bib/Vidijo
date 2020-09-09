@@ -1,0 +1,129 @@
+<div
+  class="g_toolbar floating"
+  [ngClass]="showFloatingToolbar ? 'floating' : 'hidden'"
+>
+  <div class="outer-left-group">
+    <!-- Vidijo Button -->
+    <div
+      mat-button
+      class="g_button vidijo-button"
+      [routerLink]="homePage"
+      (click)="scrollToTopIfNeeded(homePage)"
+      *ngIf="!isMobile || !hasPreviousLocation"
+    >
+      <img class="icon" src="../favicon.ico" />
+      <div class="vidijo-button-text-group">
+        <span class="title">Vidijo</span>
+        <span class="institution-name">{{ institutionName }}</span>
+      </div>
+    </div>
+
+    <!-- Previous location (back button & title) -->
+    <button
+      mat-button
+      (click)="backToPreviousLocation()"
+      *ngIf="isMobile && hasPreviousLocation"
+    >
+      <mat-icon> arrow_back_ios </mat-icon>
+      <span>{{ previousLocationTitle }}</span>
+    </button>
+  </div>
+  <!-- End of outer-left-group -->
+
+  <div
+    class="display-switcher g_neumorphism-inset-translucent"
+    *ngIf="showNavigationButtons"
+  >
+    <div *ngFor="let baseRoute of baseRoutes">
+      <button
+        mat-button
+        class="display-switcher-button"
+        *ngIf="router.url.split('?')[0] !== baseRoute.route"
+        [routerLink]="baseRoute.route"
+      >
+        <mat-icon>
+          {{ baseRoute.icon }}
+        </mat-icon>
+        <span>&nbsp; {{ baseRoute.title }}</span>
+      </button>
+      <button
+        mat-flat-button
+        class="g_main-button display-switcher-button-active"
+        *ngIf="router.url.split('?')[0] === baseRoute.route"
+        (click)="scrollToTopIfNeeded(baseRoute.route)"
+      >
+        <mat-icon>
+          {{ baseRoute.icon }}
+        </mat-icon>
+        <span>&nbsp; {{ baseRoute.title }}</span>
+      </button>
+    </div>
+  </div>
+  <!-- End of display-switcher -->
+
+  <div class="outer-right-group">
+    <!-- Account, Admin Mode Switcher & Settings -->
+    <div>
+      <button
+        mat-button
+        class="g_neumorphism-button-pressed"
+        color="warn"
+        (click)="exitAdminMode()"
+        *ngIf="isAdmin && adminModeActive && !isMobile"
+      >
+        Admin Mode
+      </button>
+
+      <button
+        mat-button
+        class="g_button"
+        (click)="enterAdminMode()"
+        *ngIf="isAdmin && !adminModeActive && !isMobile"
+      >
+        Admin Mode
+      </button>
+
+      <button
+        mat-button
+        class="g_button"
+        color="accent"
+        (click)="openRegister()"
+        *ngIf="!isLoggedIn"
+      >
+        <mat-icon> account_circle </mat-icon>
+        &nbsp; Account
+      </button>
+
+      <button mat-icon-button class="g_button" [matMenuTriggerFor]="userMenu">
+        <mat-icon>more_vert</mat-icon>
+      </button>
+
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item (click)="openInfo()">
+          <mat-icon>info</mat-icon>
+          <span>&nbsp; About Vidijo</span>
+        </button>
+
+        <a mat-menu-item [href]="privacyPolicyUrl" target="_blank">
+          <mat-icon>security</mat-icon>
+          <span>&nbsp; Privacy Policy</span>
+        </a>
+
+        <button mat-menu-item (click)="openOnboarding()" *ngIf="isLoggedIn">
+          <mat-icon>help_outline</mat-icon>
+          <span>&nbsp; Help</span>
+        </button>
+
+        <button mat-menu-item (click)="logout()" *ngIf="isLoggedIn">
+          <mat-icon>logout</mat-icon>
+          <span>&nbsp; Logout</span>
+        </button>
+      </mat-menu>
+
+      <button mat-icon-button *ngIf="isOffline">
+        <mat-icon color="warn"> offline_bolt </mat-icon>
+      </button>
+    </div>
+  </div>
+  <!-- End of outer-right-group -->
+</div>

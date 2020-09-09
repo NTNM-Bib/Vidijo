@@ -1,0 +1,119 @@
+version: "3"
+
+# =-- NETWORKS --=
+networks:
+  backend:
+    driver: bridge
+
+# =-- VOLUMES --=
+volumes:
+  covers:
+  mongodb-data:
+
+# =-- SERVICES --=
+services:
+  # API Gateway
+  api-gateway:
+    build: ./backend/api-gateway
+    depends_on:
+      - api
+      - app
+      - external-data.service
+      - user.service
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - covers:/var/www/static/covers
+    ports:
+      - 80:80
+      - 443:443
+
+  # API
+  api:
+    build: ./backend/api
+    depends_on:
+      - database
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - covers:/var/vidijo/covers
+    env_file:
+      - ./services.env
+      - ./config/shared.env
+      - ./config/api.env
+
+  # Database
+  database:
+    image: mongo
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - mongodb-data:/data/db
+
+  # External Data Service
+  external-data.service:
+    build: ./backend/external-data.service
+    depends_on:
+      - database
+    restart: always
+    networks:
+      - backend
+    volumes:
+      - covers:/var/vidijo/covers
+    env_file:
+      - ./services.env
+      - ./config/shared.env
+      - ./config/external-data.service.env
+    environment:
+      - LOCAL_COVER_FOLDER=/var/vidijo/covers
+
+  # Updater Service
+  updater.service:
+    build: ./backend/updater.service
+    depends_on:
+      - database
+      - external-data.service
+    restart: always
+    networks:
+      - backend
+    env_file:
+      - ./services.env
+      - ./config/shared.env
+    environment:
+      - UPDATE_INTERVAL=5
+
+  # User Service
+  user.service:
+    build: ./backend/user.service
+    depends_on:
+      - database
+      - api
+    restart: always
+    networks:
+      - backend
+    env_file:
+      - ./services.env
+      - ./config/shared.env
+
+  # Importer Service
+  importer.service:
+    build: ./backend/importer.service
+    depends_on:
+      - database
+      - api
+    restart: always
+    networks:
+      - backend
+    env_file:
+      - ./services.env
+      - ./config/shared.env
+
+  # App
+  app:
+    build: ./frontend/app
+    restart: always
+    networks:
+      - backend

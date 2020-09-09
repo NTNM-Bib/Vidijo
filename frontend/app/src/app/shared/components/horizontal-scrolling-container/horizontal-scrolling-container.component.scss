@@ -1,0 +1,26 @@
+.hsc-main-container {
+    position: relative;
+    overflow-x: auto;
+    width: 100%;
+}
+
+.hsc-content {
+    position: relative;
+    display: grid;
+    gap: var(--grid-gap);
+    grid-auto-flow: column;
+    height: 100%;
+}
+
+.hsc-content-padding {
+    position: relative;
+    width: 1px !important;
+}
+
+.hsc-content > * {
+    width: 320px;
+}
+
+.hsc-page-switcher-button {
+    background: var(--background-color);
+}

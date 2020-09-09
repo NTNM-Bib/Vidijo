@@ -1,0 +1,48 @@
+.journal {
+  background: white;
+  cursor: pointer;
+  border-radius: 3px;
+
+  width: 100%;
+  height: 100%;
+}
+
+.journal-cover {
+  height: 100%;
+}
+
+.journal-title {
+  position: absolute;
+  bottom: 0px;
+
+  width: calc(100% - 40px);
+  padding: 20px;
+
+  text-align: center;
+  background: white;
+}
+
+.journal-and-indicator-container {
+  position: relative;
+  width: 90%;
+  height: 90%;
+
+  overflow: visible;
+}
+
+.special-indicator-container {
+  position: absolute;
+  top: -15px;
+  width: 100%;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+}
+
+.special-indicator {
+  background: white;
+}
+
+.grid-tile {
+  overflow: visible;
+}
