@@ -17,33 +17,52 @@
     <form [formGroup]="form">
       <div class="g_section-content">
         <mat-form-field>
-          <input matInput placeholder="Email Address" autofocus formControlName="username">
+          <input
+            matInput
+            placeholder="Email Address"
+            autofocus
+            formControlName="username"
+          />
           <mat-label>
             <mat-icon>person</mat-icon>
             <span>&nbsp; Email Address</span>
           </mat-label>
         </mat-form-field>
         <mat-form-field>
-          <input matInput placeholder="Password" [type]="loginPasswordVisible ? 'text' : 'password'"
-            formControlName="password">
+          <input
+            matInput
+            placeholder="Password"
+            [type]="loginPasswordVisible ? 'text' : 'password'"
+            formControlName="password"
+          />
           <mat-label>
             <mat-icon>lock</mat-icon>
             <span>&nbsp; Password</span>
           </mat-label>
-          <button mat-icon-button type="button" matSuffix tabindex="-1"
-            (click)="loginPasswordVisible = !loginPasswordVisible">
-            <mat-icon>{{ loginPasswordVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
+          <button
+            mat-icon-button
+            matSuffix
+            tabindex="-1"
+            (click)="loginPasswordVisible = !loginPasswordVisible"
+          >
+            <mat-icon>{{
+              loginPasswordVisible ? "visibility_off" : "visibility"
+            }}</mat-icon>
           </button>
-          <mat-hint *ngIf="false">
-            <button mat-button type="button">
-              I forgot my Password
-            </button>
-          </mat-hint>
         </mat-form-field>
+        <button mat-button color="accent" (click)="openPasswordResetRequest()">
+          I forgot my password
+        </button>
       </div>
 
       <div class="g_section-action-row">
-        <button mat-raised-button color="accent" class="g_rounded-button" type="submit" (click)="login()">
+        <button
+          mat-raised-button
+          color="accent"
+          class="g_rounded-button"
+          type="submit"
+          (click)="login()"
+        >
           Login
         </button>
       </div>
