@@ -30,6 +30,7 @@ import { EditCategoryComponent } from "src/app/admin/pages/edit-category/edit-ca
 import { EditUserComponent } from "src/app/admin/pages/edit-user/edit-user.component";
 import { IUser } from "src/app/users/shared/user.interface";
 import { RequestPasswordResetComponent } from "src/app/users/pages/request-password-reset/request-password-reset.component";
+import { ResetPasswordComponent } from "src/app/users/pages/reset-password/reset-password.component";
 
 @Injectable({
   providedIn: "root",

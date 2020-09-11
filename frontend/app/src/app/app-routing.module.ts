@@ -19,6 +19,7 @@ import { EditCategoryComponent } from "./admin/pages/edit-category/edit-category
 import { OnboardingComponent } from "./info/pages/onboarding/onboarding.component";
 import { ErrorComponent } from "./info/pages/error/error.component";
 import { RequestPasswordResetComponent } from "./users/pages/request-password-reset/request-password-reset.component";
+import { ResetPasswordComponent } from "./users/pages/reset-password/reset-password.component";
 
 const routes: Routes = [
   { path: "", redirectTo: "journals", pathMatch: "full" },
@@ -101,6 +102,11 @@ const routes: Routes = [
     path: "account/request-password-reset",
     component: RequestPasswordResetComponent,
     data: { title: "I forgot my password - Vidijo" },
+  },
+  {
+    path: "account/reset-password/:token",
+    component: ResetPasswordComponent,
+    data: { title: "Choose a new password - Vidijo" },
   },
   { path: "**", component: ErrorComponent, data: { title: "Oops! - Vidijo" } },
 ];

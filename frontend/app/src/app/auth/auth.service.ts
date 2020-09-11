@@ -49,10 +49,21 @@ export class AuthService {
   }
 
   // Request a mail from the backend with a password reset link
-  public requestPasswordReset(username: string): Observable<any> {
-    return this.http.post<any>(
+  public requestPasswordReset(
+    username: string
+  ): Observable<{ error: string } | { success: string }> {
+    return this.http.post<{ error: string } | { success: string }>(
       `${this.vidijoApiUrl}/auth/local/request-password-reset`,
       { username: username },
+      this.httpOptions
+    );
+  }
+
+  // Change the password of the user with the provided reset token to the given new password
+  public resetPassword(token: string, password: string): Observable<any> {
+    return this.http.post<{ error: string } | { success: string }>(
+      `${this.vidijoApiUrl}/auth/local/reset-password`,
+      { token: token, password: password },
       this.httpOptions
     );
   }

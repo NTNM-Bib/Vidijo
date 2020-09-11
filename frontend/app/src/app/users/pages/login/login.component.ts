@@ -72,12 +72,8 @@ export class LoginComponent implements OnInit {
 
     this.authService.login(userToLogin);
 
-    // TODO: FIND A BETTER SOLUTION FOR THIS !
-    // On mobile, go back to the page where the login has happened from.
-    // Currently goes back twice to skip the register page.
     if (this.isMobile) {
-      this.location.back();
-      this.location.back();
+      this.navigationService.navigateToHome();
     }
 
     // Show onboarding if necessary

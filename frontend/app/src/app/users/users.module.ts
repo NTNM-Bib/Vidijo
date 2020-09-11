@@ -9,6 +9,7 @@ import { UsersRoutingModule } from './users-routing.module';
 import { RegisterComponent } from './pages/register/register.component';
 import { ReadingListComponent } from './pages/reading-list/reading-list.component';
 import { RequestPasswordResetComponent } from './pages/request-password-reset/request-password-reset.component';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 
 
 @NgModule({
@@ -20,6 +21,6 @@ import { RequestPasswordResetComponent } from './pages/request-password-reset/re
     JournalsModule,
     UsersRoutingModule
   ],
-  declarations: [LoginComponent, HomeComponent, RegisterComponent, ReadingListComponent, RequestPasswordResetComponent]
+  declarations: [LoginComponent, HomeComponent, RegisterComponent, ReadingListComponent, RequestPasswordResetComponent, ResetPasswordComponent]
 })
 export class UsersModule { }
