@@ -15,13 +15,13 @@ router.post("/local/logout", AuthController.localLogout)
 // Local Strategy: Verify Account
 router.get("/local/verify/:token", AuthController.localVerify)
 
-// TODO: Local Strategy: Request password reset token
+// Local Strategy: Request password reset token
 router.post(
   "/local/request-password-reset",
   AuthController.requestPasswordReset
 )
 
-// TODO: Local Strategy: Post new password
+// Local Strategy: Post new password
 router.post("/local/reset-password", AuthController.resetPassword)
 
 // Get a preview of the verification mail

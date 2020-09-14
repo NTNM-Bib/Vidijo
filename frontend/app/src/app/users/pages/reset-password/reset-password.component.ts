@@ -38,11 +38,17 @@ export class ResetPasswordComponent implements OnInit {
   ): ValidationErrors | null => {
     const newPassword = control.get("newPassword").value;
     const confirmNewPassword = control.get("confirmNewPassword").value;
-    return newPassword &&
+
+    if (
+      newPassword &&
       confirmNewPassword &&
       newPassword !== confirmNewPassword
-      ? { passwordsNotMatching: true }
-      : null;
+    ) {
+      const error = { passwordsNotMatching: true };
+      control.get("confirmNewPassword").setErrors(error);
+      return error;
+    }
+    return null;
   };
 
   private buildForm() {

@@ -26,6 +26,7 @@ $section-gap: 50px;
   --warn-color: #d62f05;
   --font-color: #37474f;
   --font-color-lighter: #485d68;
+  --button-disabled-color: #a0a0a0;
 
   // Filters
   --backdrop-blur: blur(20px) saturate(180%);
@@ -234,6 +235,10 @@ mat-form-field {
 
   color: var(--background-color) !important;
   background-color: var(--primary-color) !important;
+}
+
+.g_rounded-button:disabled {
+  background-color: var(--button-disabled-color) !important;
 }
 
 .g_side-button-left {

@@ -1,20 +1,24 @@
 <div class="g_content">
   <section>
     <div class="g_section-header">
-      <h1>Create Account</h1>
+      <h1>Account</h1>
       <p>
-        An account at Vidijo makes it possible for you to save your favorite journals and articles.
+        An account at Vidijo makes it possible for you to save your favorite
+        journals and articles.
       </p>
     </div>
   </section>
 
   <section>
     <div class="g_section-content">
-      <p>
-        If you already have an account, you can log in here.
-      </p>
+      <p>If you already have an account, you can log in here.</p>
       <div class="g_section-action-row">
-        <button mat-button color="primary" class="g_rounded-button" (click)="openLogin()">
+        <button
+          mat-button
+          color="primary"
+          class="g_rounded-button"
+          (click)="openLogin()"
+        >
           Login
         </button>
       </div>
@@ -24,71 +28,133 @@
   <section *ngIf="registerError">
     <div class="g_section-content">
       <div class="register-error">
-        <p>{{ registerErrorText }}</p>
+        <span>{{ registerErrorText }}</span>
       </div>
     </div>
   </section>
 
   <section>
-    <form [formGroup]="form">
+    <form [formGroup]="form" (ngSubmit)="register()">
       <div class="g_section-content">
         <mat-form-field>
-          <input matInput placeholder="First Name *" formControlName="firstName">
-          <mat-error>
-            {{ getFirstNameErrorMessage() }}
+          <input
+            matInput
+            placeholder="First name"
+            formControlName="firstName"
+            type="text"
+            autocomplete="given-name"
+          />
+          <mat-error
+            *ngIf="
+              firstName.touched && firstName.invalid && firstName.value.length
+            "
+          >
+            {{ firstNameError }}
           </mat-error>
         </mat-form-field>
 
         <mat-form-field>
-          <input matInput placeholder="Last Name" formControlName="lastName">
-          <mat-error>
-            {{ getLastNameErrorMessage() }}
+          <input
+            matInput
+            placeholder="Last name (optional)"
+            formControlName="lastName"
+            type="text"
+            autocomplete="family-name"
+          />
+          <mat-error
+            *ngIf="
+              lastName.touched && lastName.invalid && lastName.value.length
+            "
+          >
+            {{ lastNameError }}
           </mat-error>
         </mat-form-field>
 
         <mat-form-field>
-          <input matInput placeholder="Email Address *" formControlName="username">
-          <mat-label>
-            <mat-icon>person</mat-icon>
-            <span>&nbsp; Email Address *</span>
-          </mat-label>
-          <mat-error>
-            {{ getUsernameErrorMessage() }}
+          <input
+            matInput
+            placeholder="Email address"
+            formControlName="username"
+            type="email"
+            autocomplete="email"
+          />
+          <mat-error
+            *ngIf="
+              username.touched && username.invalid && username.value.length
+            "
+          >
+            {{ usernameError }}
           </mat-error>
         </mat-form-field>
 
         <mat-form-field>
-          <input matInput placeholder="Password *" [type]="registerPasswordVisible ? 'text' : 'password'"
-            formControlName="password">
-          <mat-label>
-            <mat-icon>lock</mat-icon>
-            <span>&nbsp; Password *</span>
-          </mat-label>
-          <mat-error>
-            {{ getPasswordErrorMessage() }}
+          <input
+            matInput
+            placeholder="Password"
+            [type]="registerPasswordVisible ? 'text' : 'password'"
+            formControlName="password"
+            autocomplete="new-password"
+          />
+          <mat-error
+            *ngIf="
+              password.touched && password.invalid && password.value.length
+            "
+          >
+            {{ passwordError }}
           </mat-error>
-          <button mat-icon-button type="button" matSuffix tabindex="-1"
-            (click)="registerPasswordVisible = !registerPasswordVisible">
-            <mat-icon>{{ registerPasswordVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
+          <button
+            mat-icon-button
+            type="button"
+            matSuffix
+            tabindex="-1"
+            (click)="registerPasswordVisible = !registerPasswordVisible"
+          >
+            <mat-icon>{{
+              registerPasswordVisible ? "visibility_off" : "visibility"
+            }}</mat-icon>
           </button>
         </mat-form-field>
 
         <mat-form-field>
-          <input matInput placeholder="Retype Password *" [type]="registerRetypedPasswordVisible ? 'text' : 'password'"
-            formControlName="retypedPassword" [errorStateMatcher]="retypedPasswordErrorMatcher">
-          <mat-error>
-            Passwords do not match
-          </mat-error>
-          <button mat-icon-button type="button" matSuffix tabindex="-1"
-            (click)="registerRetypedPasswordVisible = !registerRetypedPasswordVisible">
-            <mat-icon>{{ registerRetypedPasswordVisible ? 'visibility_off' : 'visibility' }}</mat-icon>
+          <input
+            matInput
+            placeholder="Confirm password"
+            [type]="registerRetypedPasswordVisible ? 'text' : 'password'"
+            formControlName="retypedPassword"
+            autocomplete="new-password"
+          />
+          <mat-error
+            *ngIf="
+              retypedPassword.touched &&
+              retypedPassword.invalid &&
+              retypedPassword.value.length
+            "
+            >Passwords don't match</mat-error
+          >
+          <button
+            mat-icon-button
+            type="button"
+            matSuffix
+            tabindex="-1"
+            (click)="
+              registerRetypedPasswordVisible = !registerRetypedPasswordVisible
+            "
+          >
+            <mat-icon>{{
+              registerRetypedPasswordVisible ? "visibility_off" : "visibility"
+            }}</mat-icon>
           </button>
         </mat-form-field>
       </div>
 
       <div class="g_section-action-row">
-        <button mat-raised-button color="accent" class="g_rounded-button" type="submit" (click)="register()"
-          [disabled]="false">
+        <button
+          mat-raised-button
+          color="accent"
+          class="g_rounded-button"
+          type="submit"
+          [disabled]="form.invalid"
+        >
           Create Account
         </button>
       </div>
