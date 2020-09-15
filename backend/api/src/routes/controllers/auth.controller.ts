@@ -26,6 +26,7 @@ class AuthController {
         }
 
         if (!user.isVerified) {
+          req.logOut()
           return next(
             Boom.unauthorized("This account has not been verified yet.")
           )
@@ -77,7 +78,7 @@ class AuthController {
             Verification.createVerificationToken(userToCreate)
               .then((verificationToken: IToken) => {
                 // Send verification mail
-                const verificationLink = `${ApiConfig.API_URI_HOSTED}/v1/auth/local/verify/${verificationToken.token}`
+                const verificationLink = `${ApiConfig.VIDIJO_URI}/account/verify/${verificationToken.token}`
                 Verification.sendVerificationMail(createdUser, verificationLink)
                   .then(() => {
                     return res.status(201).json(createdUser)
@@ -105,7 +106,10 @@ class AuthController {
 
   // Local: Verify
   public async localVerify(req: Request, res: Response, next: NextFunction) {
-    const tokenString: string = req.params.token
+    const tokenString: string = req.body.token
+    if (!tokenString) {
+      return next(Boom.badRequest("token missing in request body"))
+    }
 
     const token: IToken | null = await Token.findOne({ token: tokenString })
       .exec()
@@ -119,7 +123,7 @@ class AuthController {
 
     // Account already verified
     if (token.isVerified) {
-      return res.render("verification-already-verified.template.mustache")
+      return res.status(200).json({ alreadyVerified: true })
     }
 
     const user: IUser | null = await User.findByIdAndUpdate(token.user, {
@@ -143,7 +147,7 @@ class AuthController {
       return next(Boom.conflict("Cannot modify authentication token", err))
     })
 
-    return res.render("verification-complete.template.mustache")
+    return res.json({ success: true })
   }
 
   // Request password reset

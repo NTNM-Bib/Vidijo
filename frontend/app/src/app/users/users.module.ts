@@ -10,6 +10,7 @@ import { RegisterComponent } from './pages/register/register.component';
 import { ReadingListComponent } from './pages/reading-list/reading-list.component';
 import { RequestPasswordResetComponent } from './pages/request-password-reset/request-password-reset.component';
 import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
+import { VerifyAccountComponent } from './pages/verify-account/verify-account.component';
 
 
 @NgModule({
@@ -21,6 +22,6 @@ import { ResetPasswordComponent } from './pages/reset-password/reset-password.co
     JournalsModule,
     UsersRoutingModule
   ],
-  declarations: [LoginComponent, HomeComponent, RegisterComponent, ReadingListComponent, RequestPasswordResetComponent, ResetPasswordComponent]
+  declarations: [LoginComponent, HomeComponent, RegisterComponent, ReadingListComponent, RequestPasswordResetComponent, ResetPasswordComponent, VerifyAccountComponent]
 })
 export class UsersModule { }

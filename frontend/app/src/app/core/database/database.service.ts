@@ -1,27 +1,21 @@
-import { Injectable } from '@angular/core';
-import { IHomePage } from 'src/app/journals/shared/home-page.interface';
-import { IDiscoverPage } from 'src/app/journals/shared/discover-page.interface';
-import { IJournalsPage } from 'src/app/journals/shared/journals-page.interface';
-import { ICategoriesPage } from 'src/app/journals/shared/categories-page.interface';
-import { ISearchPage } from 'src/app/journals/shared/search-page.interface';
-
+import { Injectable } from "@angular/core";
+import { IHomePage } from "src/app/journals/shared/home-page.interface";
+import { IDiscoverPage } from "src/app/journals/shared/discover-page.interface";
+import { IJournalsPage } from "src/app/journals/shared/journals-page.interface";
+import { ICategoriesPage } from "src/app/journals/shared/categories-page.interface";
+import { ISearchPage } from "src/app/journals/shared/search-page.interface";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class DatabaseService {
+  private _homePage: IHomePage;
+  private _discoverPage: IDiscoverPage;
+  private _journalsPage: IJournalsPage;
+  private _categoriesPage: ICategoriesPage;
+  private _searchPage: ISearchPage;
 
-  private homePage: IHomePage;
-  private discoverPage: IDiscoverPage;
-  private journalsPage: IJournalsPage;
-  private categoriesPage: ICategoriesPage;
-  private searchPage: ISearchPage;
-
-
-  constructor() {
-
-  }
-
+  constructor() {}
 
   public flushCache() {
     this.flushHomePage();
@@ -29,49 +23,41 @@ export class DatabaseService {
     this.flushCategoriesPage();
   }
 
-
   public cacheHomePage(homePage: IHomePage) {
-    this.homePage = homePage;
+    this._homePage = homePage;
   }
 
-
-  public getHomePage(): IHomePage {
-    return this.homePage;
+  get homePage(): IHomePage {
+    return this._homePage;
   }
 
+  public getHomePage() {}
 
   public flushHomePage() {
-    this.homePage = null;
+    this._homePage = null;
   }
-
 
   public cacheDiscoverPage(discoverPage: IDiscoverPage) {
-    this.discoverPage = discoverPage;
+    this._discoverPage = discoverPage;
   }
-
 
   public getDiscoverPage(): IDiscoverPage {
-    return this.discoverPage;
+    return this._discoverPage;
   }
-
 
   public flushDiscoverPage() {
-    this.discoverPage = null;
+    this._discoverPage = null;
   }
-  
 
   public cacheCategoriesPage(categoriesPage: ICategoriesPage) {
-    this.categoriesPage = categoriesPage;
+    this._categoriesPage = categoriesPage;
   }
-
 
   public getCategoriesPage(): ICategoriesPage {
-    return this.categoriesPage;
+    return this._categoriesPage;
   }
-
 
   public flushCategoriesPage() {
-    this.categoriesPage = null;
+    this._categoriesPage = null;
   }
-
 }

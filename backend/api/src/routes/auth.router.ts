@@ -13,7 +13,7 @@ router.post("/local/register", AuthController.localRegister)
 router.post("/local/logout", AuthController.localLogout)
 
 // Local Strategy: Verify Account
-router.get("/local/verify/:token", AuthController.localVerify)
+router.post("/local/verify", AuthController.localVerify)
 
 // Local Strategy: Request password reset token
 router.post(

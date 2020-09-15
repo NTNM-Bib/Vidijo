@@ -96,21 +96,13 @@ export class RegisterComponent implements OnInit {
   }
 
   public register() {
-    /*
-    if (this.form.invalid) {
-      this.showRegisterError("Please check the data you entered");
-    }
-    */
-
-    const password: string = this.form.controls["password"].value;
-    //const retypedPassword: string = this.form.controls["retypedPassword"].value;
-
-    const firstName: string = this.form.controls["firstName"].value;
-    let secondName: string | undefined = this.form.controls["lastName"].value;
-    if (secondName.length < 1) {
+    const password: string = this.password.value;
+    const firstName: string = this.firstName.value;
+    let secondName: string | undefined = this.lastName.value;
+    if (!secondName.length) {
       secondName = undefined;
     }
-    const username: string = this.form.controls["username"].value;
+    const username: string = this.username.value;
 
     const newUser: IUser = {
       username: username,
@@ -125,7 +117,9 @@ export class RegisterComponent implements OnInit {
         this.showRegistrationCompleteMessage();
       },
       (err: any) => {
-        this.showRegisterError(err.message);
+        this.showRegisterError(
+          "This user cannot be created. If you already registered with this email, log in above."
+        );
       }
     );
   }
@@ -171,46 +165,50 @@ export class RegisterComponent implements OnInit {
   }
 
   get firstNameError() {
-    if (!this.firstName.value.length) return "";
-
     return this.firstName.hasError("required")
       ? "Please enter your first name"
       : this.firstName.hasError("minlength")
       ? "Your first name is too short"
       : this.firstName.hasError("maxlength")
       ? "Your first name is too long"
-      : "";
+      : "Unknown error";
   }
 
   get lastNameError() {
-    if (!this.lastName.value.length) return "";
-
     return this.lastName.hasError("minlength")
       ? "Your last name is too short"
       : this.lastName.hasError("maxlength")
       ? "Your last name is too long"
-      : "";
+      : "Unknown error";
   }
 
   get usernameError() {
-    if (!this.username.value.length) return "";
-
     return this.username.hasError("required")
       ? "Please enter your email address"
       : this.username.hasError("email")
       ? "Please enter a valid email address"
-      : "";
+      : "Unknown error";
   }
 
   get passwordError() {
-    if (!this.password.value.length) return "";
-
     return this.password.hasError("required")
       ? "Please enter a password"
       : this.password.hasError("minlength")
       ? "Your password is too short"
       : this.password.hasError("maxlength")
       ? "Your password is too long"
-      : "";
+      : "Unknown error";
+  }
+
+  get retypedPasswordError() {
+    return this.retypedPassword.hasError("required")
+      ? "Please confirm your password"
+      : this.retypedPassword.hasError("minlength")
+      ? "Your password is too short"
+      : this.retypedPassword.hasError("maxlength")
+      ? "Your password is too long"
+      : this.retypedPassword.hasError("passwordsNotMatching")
+      ? "Passwords don't match"
+      : "Unknown error";
   }
 }

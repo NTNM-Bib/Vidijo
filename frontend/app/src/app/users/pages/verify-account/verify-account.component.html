@@ -1,0 +1,33 @@
+<div class="g_content-centered">
+  <section *ngIf="!loading">
+    <div class="g_section-header">
+      <h1 *ngIf="success">Account verified</h1>
+      <h1 *ngIf="alreadyVerified">Account already verified</h1>
+      <h1 *ngIf="error">Cannot verify account</h1>
+    </div>
+    <div class="g_section-content">
+      <p *ngIf="success">
+        Your account was successfully activated. You can now log in and start
+        using Vidijo.
+      </p>
+      <p *ngIf="alreadyVerified">
+        Your account is already verified. Log in below to start using Vidijo.
+      </p>
+      <p *ngIf="error">
+        It looks like your verification token is invalid. Please make sure to
+        enter the correct verification link.
+      </p>
+    </div>
+    <div class="g_section-action-row">
+      <button
+        mat-raised-button
+        color="primary"
+        class="g_rounded-button"
+        (click)="openLogin()"
+        *ngIf="success || alreadyVerified"
+      >
+        Login
+      </button>
+    </div>
+  </section>
+</div>

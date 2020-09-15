@@ -20,6 +20,7 @@ import { OnboardingComponent } from "./info/pages/onboarding/onboarding.componen
 import { ErrorComponent } from "./info/pages/error/error.component";
 import { RequestPasswordResetComponent } from "./users/pages/request-password-reset/request-password-reset.component";
 import { ResetPasswordComponent } from "./users/pages/reset-password/reset-password.component";
+import { VerifyAccountComponent } from "./users/pages/verify-account/verify-account.component";
 
 const routes: Routes = [
   { path: "", redirectTo: "journals", pathMatch: "full" },
@@ -107,6 +108,11 @@ const routes: Routes = [
     path: "account/reset-password/:token",
     component: ResetPasswordComponent,
     data: { title: "Choose a new password - Vidijo" },
+  },
+  {
+    path: "account/verify/:token",
+    component: VerifyAccountComponent,
+    data: { title: "Verify your account - Vidijo" },
   },
   { path: "**", component: ErrorComponent, data: { title: "Oops! - Vidijo" } },
 ];

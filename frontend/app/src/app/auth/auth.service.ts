@@ -69,18 +69,18 @@ export class AuthService {
   }
 
   public login(user: IUser) {
-    // Flush Cache
-    this.databaseService.flushCache();
-
-    this.http
-      .post<IUser>(
+    return this.http
+      .post<IUser | HttpErrorResponse>(
         `${this.vidijoApiUrl}/auth/local/login`,
         user,
         this.httpOptions
       )
-      .subscribe((user) => {
-        this.currentUser.next(user);
-      });
+      .pipe(
+        tap((user: IUser) => {
+          this.databaseService.flushCache();
+          this.currentUser.next(user);
+        })
+      );
   }
 
   public logout() {
@@ -108,9 +108,10 @@ export class AuthService {
       .pipe(catchError(this.handleError));
   }
 
-  public verify(token: string): Observable<IUser> {
-    return this.http.get<IUser>(
-      `${this.vidijoApiUrl}/auth/local/verify/${token}`,
+  public verify(token: string): Observable<any> {
+    return this.http.post<any>(
+      `${this.vidijoApiUrl}/auth/local/verify`,
+      { token: token },
       this.httpOptions
     );
   }

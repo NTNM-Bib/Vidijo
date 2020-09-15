@@ -44,11 +44,7 @@
             type="text"
             autocomplete="given-name"
           />
-          <mat-error
-            *ngIf="
-              firstName.touched && firstName.invalid && firstName.value.length
-            "
-          >
+          <mat-error *ngIf="firstName.touched && firstName.invalid">
             {{ firstNameError }}
           </mat-error>
         </mat-form-field>
@@ -61,11 +57,7 @@
             type="text"
             autocomplete="family-name"
           />
-          <mat-error
-            *ngIf="
-              lastName.touched && lastName.invalid && lastName.value.length
-            "
-          >
+          <mat-error *ngIf="lastName.touched && lastName.invalid">
             {{ lastNameError }}
           </mat-error>
         </mat-form-field>
@@ -78,11 +70,7 @@
             type="email"
             autocomplete="email"
           />
-          <mat-error
-            *ngIf="
-              username.touched && username.invalid && username.value.length
-            "
-          >
+          <mat-error *ngIf="username.touched && username.invalid">
             {{ usernameError }}
           </mat-error>
         </mat-form-field>
@@ -95,11 +83,7 @@
             formControlName="password"
             autocomplete="new-password"
           />
-          <mat-error
-            *ngIf="
-              password.touched && password.invalid && password.value.length
-            "
-          >
+          <mat-error *ngIf="password.touched && password.invalid">
             {{ passwordError }}
           </mat-error>
           <button
@@ -124,12 +108,8 @@
             autocomplete="new-password"
           />
           <mat-error
-            *ngIf="
-              retypedPassword.touched &&
-              retypedPassword.invalid &&
-              retypedPassword.value.length
-            "
-            >Passwords don't match</mat-error
+            *ngIf="retypedPassword.touched && retypedPassword.invalid"
+            >{{ retypedPasswordError }}</mat-error
           >
           <button
             mat-icon-button
