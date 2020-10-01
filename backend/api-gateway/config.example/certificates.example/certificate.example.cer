@@ -1,0 +1,6 @@
+-----BEGIN CERTIFICATE-----
+<the certificate of your website>
+-----END CERTIFICATE-----
+-----BEGIN CERTIFICATE-----
+<the intermediate certificate of your CA>
+-----END CERTIFICATE-----
