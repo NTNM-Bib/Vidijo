@@ -128,6 +128,7 @@ Afterwards the 3 contained files must be adjusted as follows:
   - `MAIL_USERNAME`: login username of the Vidijo mail account
   - `MAIL_PASSWORD`: login password of the Vidijo mail account
   - `INSTITUTION_NAME`: the name of your institution (will be displayed on the website besides the upper left logo)
+  - `INSTITUTION_LOGO_URI`: the URI of your institution logo (e.g. https://vidijo.org/static/logos/vidijo.png)
   - `API_URI_HOSTED`: the URI of the API (in our case https://vidijo.org/api; replace vidijo.org with your domain)
 
 - `/config/external-data.service.env`
