@@ -1,16 +1,8 @@
 <!-- @ https://github.com/othneildrew/Best-README-Template -->
 
 <!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
 
 [![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![GPL-3.0 License][license-shield]][license-url]
@@ -49,6 +41,7 @@
   - [Configuration](#configuration)
 - [Usage](#usage)
   - [Administration](#administration)
+  - [Install as an App](#install-as-an-app)
 - [License](#license)
 - [Contact](#contact)
 
@@ -124,7 +117,7 @@ Locate the `config.example` folder at the **project root**. Make a copy of it an
 
 The result should look like this:
 
-![Config Folder](images/config-folder.png)
+![Config Folder][config-folder]
 
 Afterwards the 3 contained files must be adjusted as follows:
 
@@ -155,7 +148,7 @@ Locate the `config.example` folder at `/backend/api-gateway` and make a copy of 
 
 The final config folder should look like this:
 
-![API Gateway Config Folder](images/api-gateway-config-folder.png)
+![API Gateway Config Folder][api-gateway-config-folder]
 
 3. `/frontend/app/config` folder
 
@@ -166,7 +159,7 @@ Locate the `config.example` folder at `/frontend/app/config.example` and rename 
 
 The final folder should look like this:
 
-![App Config Folder](images/app-config-folder.png)
+![App Config Folder][app-config-folder]
 
 This concludes the configuration of the application. Please make sure that all files are named correctly; otherwise, the app won't run correctly. Check out step 3 of the [Installation](#installation) section to run your Vidijo installation.
 
@@ -174,11 +167,44 @@ This concludes the configuration of the application. Please make sure that all f
 
 ## Usage
 
-TODO: Usage
+![All Journals][product-screenshot]
+
+This is the start screen on which all available journals are presented. Journals can be sorted by different criteria and filtered by categories. By clicking on a journal you can access its details view.
+
+![Journal Detail View][journal-details-view]
+
+In this view we find all articles published in this journal, sorted by publication date in descending order. By clicking on an article title, it expands and shows further details about the article, such as authors or the abstract. Clicking on the button "Open Article" takes us to the full text on the publisher's page.
+
+The journal can be favored with the "Follow" button and articles can be added to the personal reading list with the "Save" button. These two functions are only available if you are logged in with your account.
+
+![Home Page][home-page]
+
+The "Home" page is our personal page. Favored journals and the reading list are stored there. In addition, the latest articles in our favorite journals are displayed at the top.
+
+![Discover Page][discover-page]
+
+On the "Discover" page we can see the latest articles of all available journals and browse suggested categories and journals.
 
 ### Administration
 
-TODO: Admin Usage
+The first user who registers receives admin rights and can thus add, edit and delete journals and categories as well as grant admin rights to other users. To use the admin functions, the admin mode must be activated with the button in the upper right corner.
+
+![Admin: Add Journal][admin-add-journal]
+
+In admin mode, new journals can be added on the "All Journals" page. By clicking on "Add Journals" we can search for journals to be added.
+By clicking on the pen icon next to each journal, its details can be edited (the title, identifier, cover and categories) or the journal can be deleted.
+
+![Admin: Add Category][admin-add-category]
+
+Creating and editing categories works similarly to managing journals - we just have to visit the categories page in admin mode and use the "Add Category" button or pen icons next to the available categories. When adding a category, we can choose to display it on the discover page. This also makes the category available in the dropdown menu on the "All Journals" page (opens when clicking on "All Journals").
+
+### Install as an App
+
+Vidijo can not only be used as a web site in the browser, but can also be installed on your device as a [progressive web app (PWA)](https://en.wikipedia.org/wiki/Progressive_web_application). To install the application as a PWA, you can click the "+" icon in the address bar in your browser (not all browsers might support this feature).
+
+![Install PWA Desktop][install-pwa-desktop]
+
+On mobile devices, you can use "Add To Home Screen" in your browser (Safari on iOS, Chrome on Android). Instead of opening the browser when clicking the added app icon, the application will be launched similarly to a native app.
 
 <!-- LICENSE -->
 
@@ -208,5 +234,26 @@ Source code available at: [https://github.com/NTNM-Bib/Vidijo](https://github.co
 [issues-url]: https://github.com/NTNM-Bib/Vidijo/issues
 [license-shield]: https://img.shields.io/github/license/NTNM-Bib/Vidijo.svg?style=flat
 [license-url]: https://github.com/NTNM-Bib/Vidijo/blob/master/LICENSE.md
-[product-screenshot]: images/screenshot.png
+[product-screenshot]: images/screenshot.jpg
 [vidijo-url]: https://www.vidijo.org
+
+<!-- Installation -->
+
+[api-gateway-config-folder]: images/installation/api-gateway-config-folder.png
+[app-config-folder]: images/installation/app-config-folder.png
+[config-folder]: images/installation/config-folder.png
+
+<!-- Usage -->
+
+[journal-details-view]: images/usage/journal-details.png
+[home-page]: images/usage/home-page.png
+[discover-page]: images/usage/discover-page.png
+
+<!-- Usage: Admin -->
+
+[admin-add-journal]: images/usage/admin-add-journal.png
+[admin-add-category]: images/usage/admin-add-category.png
+
+<!-- Usage: Install as PWA -->
+
+[install-pwa-desktop]: images/usage/install-pwa-desktop.png
