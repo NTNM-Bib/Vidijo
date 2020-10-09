@@ -1,13 +1,11 @@
 <!-- @ https://github.com/othneildrew/Best-README-Template -->
 
-<!-- PROJECT SHIELDS -->
-
-[![Contributors][contributors-shield]][contributors-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
+[![Release][github-release-shield]][github-release-url]
 [![GPL-3.0 License][license-shield]][license-url]
+[![Repo Size][repo-size-shield]][vidijo-github-url]
+[![Contributors][contributors-shield]][contributors-url]
+[![Issues][issues-shield]][issues-url]
 
-<!-- PROJECT LOGO -->
 <br />
 <p align="center">
   <a href="https://github.com/NTNM-Bib/Vidijo">
@@ -28,8 +26,6 @@
   </p>
 </p>
 
-<!-- TABLE OF CONTENTS -->
-
 ## Table Of Contents
 
 - [Table Of Contents](#table-of-contents)
@@ -39,13 +35,13 @@
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Configuration](#configuration)
+  - [Running In Production](#running-in-production)
+  - [Running For Development](#running-for-development)
 - [Usage](#usage)
   - [Administration](#administration)
   - [Install as an App](#install-as-an-app)
 - [License](#license)
 - [Contact](#contact)
-
-<!-- ABOUT THE PROJECT -->
 
 ## About The Project
 
@@ -62,8 +58,6 @@ By creating a personal user account, journals can be favored and articles can be
 - [Express](https://expressjs.com/)
 - [Docker](https://www.docker.com/)
 
-<!-- GETTING STARTED -->
-
 ## Getting Started
 
 You can try out the version of the NTNM library at [vidijo.org][vidijo-url]. More information on how to use the app can be found under [Usage](#usage). If you want to set up Vidijo with your own selection of open-access journals, you can learn more about configuring and deploying your own installation in the following sections.
@@ -76,36 +70,17 @@ You can try out the version of the NTNM library at [vidijo.org][vidijo-url]. Mor
 
 ### Installation
 
-1. Clone the repo
+You can download the app from the [GitHub website][vidijo-github-url] or clone it using `git`:
 
 ```sh
 git clone https://github.com/NTNM-Bib/Vidijo.git
 ```
 
-2. Configure the application
-
-Check out the section [Configuration](#configuration) on how to configure the application. This may take a while but must be done only once.
-
-3. Run the application
-
-```sh
-./run.sh
-```
-
-You may have to elevate the permissions of `run.sh` first to execute the script (using `chmod`).
-The first startup takes a while because dependencies have to be downloaded and installed. Subsequent starts will be much faster.
-
-4. Stop the application
-
-```sh
-./stop.sh
-```
-
-As before, you may need to elevate the permissions of `stop.sh` as well.
+After downloading the source code, continue with the section [Configuration](#configuration).
 
 ### Configuration
 
-To configure the app, a few folders and files have to be created and adjusted. The project already contains example files and folders that can be used as templates.
+To configure the app, a few folders and files have to be created and adjusted. The project already contains example files and folders that can be used as templates. This may take a while but must only be done once.
 
 1. `/config` folder
 
@@ -153,7 +128,7 @@ The final config folder should look like this:
 
 3. `/frontend/app/config` folder
 
-Locate the `config.example` folder at `/frontend/app/config.example` and rename the folder and the contained files like before.
+Locate the `config.example` folder at `/frontend/app/config.example`, make a copy of it and rename the copied folder and the contained files like before.
 
 - `environment.prod.ts`: you only have to change the value of `institutionName` to the name of your institution. In our case, we use "NTNM Library". This string will be displayed besides the main logo in the upper left corner on the website
 - `icon.png`: you can reuse the icon you set in step 2 (`/backend/api-gateway/config/icon.png`). This icon is displayed as the main icon on the website and is used to generate an icon for Android and iOS
@@ -162,9 +137,50 @@ The final folder should look like this:
 
 ![App Config Folder][app-config-folder]
 
-This concludes the configuration of the application. Please make sure that all files are named correctly; otherwise, the app won't run correctly. Check out step 3 of the [Installation](#installation) section to run your Vidijo installation.
+This concludes the configuration of the application. Please make sure that all files are named correctly; otherwise, the app won't run correctly. Check out the section [Running In Production](#running-in-production) to deploy your Vidijo installation. If you want to run the application in development mode instead, check out the section [Running For Development](#running-for-development).
 
-<!-- USAGE EXAMPLES -->
+### Running In Production
+
+You can use the `run.sh` script to build and run the app in production.
+You may have to elevate the permissions of `run.sh` first to execute the script (using `chmod`).
+The first startup takes a while because dependencies have to be downloaded and installed. Subsequent starts will be much faster.
+
+```sh
+./run.sh
+```
+
+If you want to stop the application, you can use the `stop.sh` script. As before, you may need to elevate the permissions of `stop.sh` as well.
+
+```sh
+./stop.sh
+```
+
+### Running For Development
+
+Running the application in development mode enables live code reloading for the backend services and the Vidijo frontend. Two files must be added to our configuration to make this mode work:
+
+1. `/config.dev` folder
+
+Locate the `config.dev.example` folder in the project root and make a copy of it; rename this copy to `config.dev`. The contained files must be renamed as well by removing ".example" from their names.
+
+- `api.dev.env`: you can enter the values from `api.env` in the main `config` folder and change the domain of `INSTITUTION_LOGO_URI` and `API_URI_HOSTED` to `localhost` (e.g. https://localhost/static/logos/vidijo.png and https://localhost/api)
+- `external-data.service.dev.env`: you can set the value of `PUBLIC_COVER_URL` to `https://localhost/static/covers`
+
+The final folder should look like this:
+
+![Config Dev Folder][config-dev-folder]
+
+To start the app, use the script `run_dev.sh`.
+
+```sh
+./run_dev.sh
+```
+
+Stopping works with the `stop.sh` script as well.
+
+```sh
+./stop.sh
+```
 
 ## Usage
 
@@ -207,23 +223,16 @@ Vidijo can not only be used as a web site in the browser, but can also be instal
 
 On mobile devices, you can use "Add To Home Screen" in your browser (Safari on iOS, Chrome on Android). Instead of opening the browser when clicking the added app icon, the application will be launched similarly to a native app.
 
-<!-- LICENSE -->
-
 ## License
 
 Distributed under the GPL-3.0 License. See `LICENSE.md` for more information.
-
-<!-- CONTACT -->
 
 ## Contact
 
 Uwe Geith _(Project Manager)_ - uwe.geith@leibniz-inm.de  
 Thomas Kraß _(Developer)_ - krass@ntnm-bib.de
 
-Source code available at: [https://github.com/NTNM-Bib/Vidijo](https://github.com/NTNM-Bib/Vidijo)
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
+Source code available at: [https://github.com/NTNM-Bib/Vidijo][vidijo-github-url]
 
 [contributors-shield]: https://img.shields.io/github/contributors/NTNM-Bib/Vidijo.svg?style=flat
 [contributors-url]: https://github.com/NTNM-Bib/Vidijo/graphs/contributors
@@ -235,26 +244,19 @@ Source code available at: [https://github.com/NTNM-Bib/Vidijo](https://github.co
 [issues-url]: https://github.com/NTNM-Bib/Vidijo/issues
 [license-shield]: https://img.shields.io/github/license/NTNM-Bib/Vidijo.svg?style=flat
 [license-url]: https://github.com/NTNM-Bib/Vidijo/blob/master/LICENSE.md
+[repo-size-shield]: https://img.shields.io/github/repo-size/NTNM-Bib/Vidijo
+[github-release-shield]: https://img.shields.io/github/v/release/NTNM-Bib/Vidijo?label=version
+[github-release-url]: https://github.com/NTNM-Bib/Vidijo/releases
 [product-screenshot]: images/screenshot.jpg
 [vidijo-url]: https://www.vidijo.org
-
-<!-- Installation -->
-
+[vidijo-github-url]: https://github.com/NTNM-Bib/Vidijo
 [api-gateway-config-folder]: images/installation/api-gateway-config-folder.png
 [app-config-folder]: images/installation/app-config-folder.png
 [config-folder]: images/installation/config-folder.png
-
-<!-- Usage -->
-
+[config-dev-folder]: images/installation/config-dev-folder.png
 [journal-details-view]: images/usage/journal-details.png
 [home-page]: images/usage/home-page.png
 [discover-page]: images/usage/discover-page.png
-
-<!-- Usage: Admin -->
-
 [admin-add-journal]: images/usage/admin-add-journal.png
 [admin-add-category]: images/usage/admin-add-category.png
-
-<!-- Usage: Install as PWA -->
-
 [install-pwa-desktop]: images/usage/install-pwa-desktop.png
