@@ -6,6 +6,7 @@ import CategoryController from "./category.controller";
 import UserController from "./user.controller";
 import AuthController from "./auth.controller";
 import PageController from "./page.controller";
+import ImporterController from "./importer.controller";
 
 export {
   V1Controller,
@@ -15,5 +16,6 @@ export {
   CategoryController,
   UserController,
   AuthController,
-  PageController
+  PageController,
+  ImporterController,
 };

@@ -6,6 +6,7 @@ import CategoryRouter from "./category.router";
 import ArticleRouter from "./article.router";
 import AuthRouter from "./auth.router";
 import PageRouter from "./page.router";
+import ImporterRouter from "./importer.router";
 
 export {
   V1Router,
@@ -15,5 +16,6 @@ export {
   CategoryRouter,
   UserRouter,
   AuthRouter,
-  PageRouter
+  PageRouter,
+  ImporterRouter,
 };

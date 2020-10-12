@@ -5,27 +5,27 @@ read version
 
 # Set the version in all services and in the client (in package.json)
 (
-    cd frontend/app
+    cd ../frontend/app
     npm version ${version}
 )
 (
-    cd backend/api
+    cd ../backend/api
     npm version ${version}
 )
 (
-    cd backend/external-data.service
+    cd ../backend/external-data.service
     npm version ${version}
 )
 (
-    cd backend/importer.service
+    cd ../backend/importer.service
     npm version ${version}
 )
 (
-    cd backend/updater.service
+    cd ../backend/updater.service
     npm version ${version}
 )
 (
-    cd backend/user.service
+    cd ../backend/user.service
     npm version ${version}
 )
 

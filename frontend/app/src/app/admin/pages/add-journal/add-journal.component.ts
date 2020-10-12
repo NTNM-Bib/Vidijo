@@ -30,15 +30,6 @@ export class AddJournalComponent implements OnInit {
     private alertService: AlertService
   ) {}
 
-  // Dropzone
-  onSelect(event) {
-    this.journalsListFile = event.addedFiles[0];
-  }
-
-  onRemove() {
-    this.journalsListFile = null;
-  }
-
   ngOnInit() {
     this.getCategory();
 
@@ -114,5 +105,37 @@ export class AddJournalComponent implements OnInit {
     });
 
     return promise;
+  }
+
+  // Journal importer
+  onSelect(event) {
+    this.journalsListFile = event.addedFiles[0];
+  }
+
+  onRemove() {
+    this.journalsListFile = null;
+  }
+
+  importJournalsList() {
+    if (!this.journalsListFile) return;
+
+    this.adminService.importJournalsList(this.journalsListFile).subscribe(
+      (success) => {
+        this.alertService.showSnackbarAlert(
+          "Successfully imported journals",
+          "Okay",
+          () => {}
+        );
+      },
+      (error) => {
+        this.alertService.showSnackbarAlert(
+          "Cannot import journals",
+          "Okay",
+          () => {},
+          5000,
+          true
+        );
+      }
+    );
   }
 }
