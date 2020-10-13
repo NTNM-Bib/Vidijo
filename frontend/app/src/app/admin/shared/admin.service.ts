@@ -258,11 +258,41 @@ export class AdminService {
     return promise;
   }
 
-  importJournalsList(journalsList: File) {
-    return this.http.post(
-      `${this.vidijoApiUrl}/importer/xlsx`,
-      journalsList,
-      this.httpOptions
-    );
+  // Import data from an .xlsx file
+  importXlsx(xlsxFile: File): Promise<any> {
+    const jsonData = this.xlsxToJson(xlsxFile);
+    return this.importData(jsonData);
   }
+
+  // Send data to the API to import journals and categories
+  private async importData(data: VidijoData) {
+    // FIXME: Fails if journal or category already exists -> Ignore already existing journals & categories instead and succeed
+    const categoryPromises: Promise<
+      ICategory
+    >[] = data.categories.map((category) => this.addCategory(category));
+    await Promise.all(categoryPromises).catch();
+
+    const journalPromises: Promise<IJournal>[] = data.journals.map((journal) =>
+      this.addJournal(journal)
+    );
+    await Promise.all(journalPromises).catch();
+  }
+
+  // TODO: Convert XLSX to JSON (VidijoData)
+  private xlsxToJson(dataFile: File): VidijoData {
+    const dummyData: VidijoData = {
+      journals: [
+        { title: "TestJournal1", issn: "1234-5678" } as IJournal,
+        { title: "TestJournal2", eissn: "2345-678X" } as IJournal,
+      ],
+      categories: [{ title: "TestCategory1", color: "#aa27c4" } as ICategory],
+    };
+
+    return dummyData;
+  }
+}
+
+interface VidijoData {
+  journals: IJournal[];
+  categories: ICategory[];
 }

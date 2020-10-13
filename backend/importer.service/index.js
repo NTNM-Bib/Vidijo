@@ -1,3 +1,6 @@
+// TODO: remove this service (reuse xlsx -> json code in client)
+// TODO: also remove service in docker-compose and scripts
+
 require("dotenv").config()
 const Express = require("express")
 const XLSX = require("xlsx")
@@ -7,11 +10,10 @@ const Path = require("path")
 const Mongoose = require("mongoose")
 const { Journal } = require("./db/journal.schema")
 const { Category } = require("./db/category.schema")
-const Axios = require("axios")
 const FS = require("fs")
 
-//Mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/excel-test", {
-Mongoose.connect("mongodb://database:27017/excel-test", {
+//Mongoose.connect("mongodb://database:27017/vidijo", {
+Mongoose.connect(process.env.MONGODB_URI || "mongodb://database:27017/vidijo", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
@@ -51,7 +53,9 @@ app.post("/", async (req, res, next) => {
 
   try {
     if (!req.files) {
-      res.json({
+      console.error("No files")
+
+      res.status(400).json({
         error: {
           message: "No file uploaded",
         },
@@ -103,6 +107,9 @@ app.post("/", async (req, res, next) => {
 
         journal.added = new Date()
         journal.updated = new Date(0) // 1970/1/1
+
+        console.log(`Added ${journal.title}`)
+
         await Journal.findOneAndUpdate({ title: journal.title }, journal, {
           upsert: true,
           new: true,

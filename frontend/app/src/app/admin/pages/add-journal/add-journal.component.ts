@@ -119,7 +119,7 @@ export class AddJournalComponent implements OnInit {
   importJournalsList() {
     if (!this.journalsListFile) return;
 
-    this.adminService.importJournalsList(this.journalsListFile).subscribe(
+    this.adminService.importXlsx(this.journalsListFile).then(
       (success) => {
         this.alertService.showSnackbarAlert(
           "Successfully imported journals",
