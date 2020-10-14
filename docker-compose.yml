@@ -98,19 +98,6 @@ services:
       - ./services.env
       - ./config/shared.env
 
-  # Importer Service
-  importer.service:
-    build: ./backend/importer.service
-    depends_on:
-      - database
-      - api
-    restart: always
-    networks:
-      - backend
-    env_file:
-      - ./services.env
-      - ./config/shared.env
-
   # App
   app:
     build: ./frontend/app

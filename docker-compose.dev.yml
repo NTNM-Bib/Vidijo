@@ -128,26 +128,6 @@ services:
     ports:
       - 3002:3000
 
-  # Importer Service
-  importer.service:
-    container_name: vidijo_importer.service.dev
-    build:
-      context: ./backend/importer.service
-      dockerfile: dev.Dockerfile
-    depends_on:
-      - database
-      - api
-    restart: always
-    networks:
-      - backend
-    volumes:
-      - ./backend/importer.service:/usr/src/app
-      - /usr/src/app/node_modules
-    env_file:
-      - ./services.dev.env
-    ports:
-      - 3003:3000
-
   # App
   app:
     container_name: vidijo_app.dev

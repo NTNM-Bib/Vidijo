@@ -17,10 +17,6 @@ read
     npm install
 )
 (
-    cd ../backend/importer.service
-    npm install
-)
-(
     cd ../backend/updater.service
     npm install
 )

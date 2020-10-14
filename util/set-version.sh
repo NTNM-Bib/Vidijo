@@ -17,10 +17,6 @@ read version
     npm version ${version}
 )
 (
-    cd ../backend/importer.service
-    npm version ${version}
-)
-(
     cd ../backend/updater.service
     npm version ${version}
 )

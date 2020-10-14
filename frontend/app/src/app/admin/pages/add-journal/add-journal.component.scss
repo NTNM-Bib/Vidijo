@@ -1,13 +1,29 @@
 .search-input {
-    align-self: center;
-    padding: 10px;
-    width: 100%;
-    border-radius: 5px;
-    outline: none;
-    border: none;
-    font-size: 120%;
-    box-sizing: border-box;
-    -webkit-appearance: none;
-    background: rgb(250, 250, 250);
-    color: #37474f;
+  align-self: center;
+  padding: 10px;
+  width: 100%;
+  border-radius: 5px;
+  outline: none;
+  border: none;
+  font-size: 120%;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  background: rgb(250, 250, 250);
+  color: #37474f;
+}
+
+span {
+  font-weight: bolder;
+  color: var(--accent-color);
+}
+
+ngx-dropzone {
+  background: var(--background-color);
+  border-color: var(--font-color);
+  color: var(--font-color);
+}
+
+ngx-dropzone-preview {
+  background: var(--background-color);
+  filter: brightness(0.9);
 }

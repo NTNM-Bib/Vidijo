@@ -10,6 +10,8 @@ COPY ./app.dev.conf /etc/nginx/conf.d/sites-available/app.dev.conf
 
 COPY ./config/privacy-policy.html /var/www/static/privacy-policy/privacy-policy.html
 
+COPY ./examples/ /var/www/static/examples
+
 # Symbolic link from sites-available to sites-enabled
 RUN ln -s /etc/nginx/conf.d/sites-available /etc/nginx/conf.d/sites-enabled
 

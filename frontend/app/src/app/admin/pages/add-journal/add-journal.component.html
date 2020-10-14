@@ -67,6 +67,22 @@
           <ngx-dropzone-label>{{ journalsListFile.name }}</ngx-dropzone-label>
         </ngx-dropzone-preview>
       </ngx-dropzone>
+      <!-- Example file-->
+      <div>
+        <p>
+          <a mat-button color="accent" href="static/examples/vidijo.xlsx">
+            <mat-icon>get_app</mat-icon>&nbsp;Download
+          </a>
+          an example file to get started
+        </p>
+      </div>
+      <!-- File info -->
+      <div *ngIf="data">
+        <p>
+          This file contains <span>{{ data.journals.length }}</span> journals
+          and <span>{{ data.categories.length }}</span> categories
+        </p>
+      </div>
     </div>
     <div class="g_section-action-row">
       <button

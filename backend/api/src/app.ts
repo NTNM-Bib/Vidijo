@@ -26,7 +26,6 @@ import {
   V1Router,
   AuthRouter,
   PageRouter,
-  ImporterRouter,
 } from "./routes";
 
 class App {
@@ -172,7 +171,6 @@ class App {
     this.app.use("/v1/categories", CategoryRouter);
     this.app.use("/v1/users", UserRouter);
     this.app.use("/v1/auth", AuthRouter);
-    this.app.use("/v1/importer", ImporterRouter);
   }
 
   private configureMorgan() {

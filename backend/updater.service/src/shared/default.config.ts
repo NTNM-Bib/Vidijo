@@ -12,7 +12,6 @@ export class DefaultConfigClass {
   public API_URI: string = this.getApiUri();
   public USER_SERVICE_URI: string = this.getUserServiceUri();
   public EXTERNAL_DATA_SERVICE_URI: string = this.getExternalDataServiceUri();
-  public IMPORTER_SERVICE_URI: string = this.getImporterServiceUri();
   public MAIL_SERVICE_URI: string = this.getMailServiceUri();
   public VIDIJO_URI: string = this.getVidijoUri();
 
@@ -82,18 +81,6 @@ export class DefaultConfigClass {
     return process.env.EXTERNAL_DATA_SERVICE_URI
       ? process.env.EXTERNAL_DATA_SERVICE_URI
       : "http://localhost:3002";
-  }
-
-  private getImporterServiceUri(): string {
-    if (!process.env.IMPORTER_SERVICE_URI) {
-      console.warn(
-        "IMPORTER_SERVICE_URI not set in .env file. Using 'IMPORTER_SERVICE_URI=http://localhost:3003' instead"
-      );
-    }
-
-    return process.env.IMPORTER_SERVICE_URI
-      ? process.env.IMPORTER_SERVICE_URI
-      : "http://localhost:3003";
   }
 
   private getMailServiceUri(): string {

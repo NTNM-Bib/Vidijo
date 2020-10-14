@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from "@angular/core";
 import { FormControl } from "@angular/forms";
 import { IJournal } from "src/app/journals/shared/journal.interface";
 import { JournalService } from "src/app/journals/shared/journal.service";
-import { AdminService } from "../../shared/admin.service";
+import { AdminService, VidijoData } from "../../shared/admin.service";
 import { debounceTime } from "rxjs/operators";
 import { ICategory } from "src/app/journals/shared/category.interface";
 import { AlertService } from "src/app/core/alert/alert.service";
@@ -23,6 +23,7 @@ export class AddJournalComponent implements OnInit {
   noSearchResults: boolean = true;
 
   journalsListFile: File;
+  data: VidijoData;
 
   constructor(
     private journalService: JournalService,
@@ -110,10 +111,17 @@ export class AddJournalComponent implements OnInit {
   // Journal importer
   onSelect(event) {
     this.journalsListFile = event.addedFiles[0];
+
+    this.adminService
+      .xlsxToJson(this.journalsListFile)
+      .then((data: VidijoData) => {
+        this.data = data;
+      });
   }
 
   onRemove() {
     this.journalsListFile = null;
+    this.data = null;
   }
 
   importJournalsList() {

@@ -7,6 +7,7 @@ import { ICategory } from "src/app/journals/shared/category.interface";
 import { IUser } from "src/app/users/shared/user.interface";
 import { DatabaseService } from "src/app/core/database/database.service";
 import { IsLoadingService } from "@service-work/is-loading";
+import * as XLSX from "xlsx";
 
 @Injectable({
   providedIn: "root",
@@ -259,9 +260,9 @@ export class AdminService {
   }
 
   // Import data from an .xlsx file
-  importXlsx(xlsxFile: File): Promise<any> {
-    const jsonData = this.xlsxToJson(xlsxFile);
-    return this.importData(jsonData);
+  async importXlsx(xlsxFile: File): Promise<any> {
+    const data: VidijoData = await this.xlsxToJson(xlsxFile);
+    return this.importData(data);
   }
 
   // Send data to the API to import journals and categories
@@ -278,21 +279,34 @@ export class AdminService {
     await Promise.all(journalPromises).catch();
   }
 
-  // TODO: Convert XLSX to JSON (VidijoData)
-  private xlsxToJson(dataFile: File): VidijoData {
-    const dummyData: VidijoData = {
-      journals: [
-        { title: "TestJournal1", issn: "1234-5678" } as IJournal,
-        { title: "TestJournal2", eissn: "2345-678X" } as IJournal,
-      ],
-      categories: [{ title: "TestCategory1", color: "#aa27c4" } as ICategory],
-    };
+  // Convert XLSX to JSON (VidijoData)
+  async xlsxToJson(dataFile: File): Promise<VidijoData> {
+    const promise: Promise<VidijoData> = new Promise((resolve, reject) => {
+      const data = { journals: [], categories: [] } as VidijoData;
 
-    return dummyData;
+      const reader: FileReader = new FileReader();
+      reader.onload = (e: any) => {
+        const binaryString: string = e.target.result;
+        const workbook: XLSX.WorkBook = XLSX.read(binaryString, {
+          type: "binary",
+        });
+        const journals = <any[]>(
+          XLSX.utils.sheet_to_json(workbook.Sheets["journals"])
+        );
+        for (let journal of journals) {
+          data.journals.push(journal as IJournal);
+        }
+        return resolve(data);
+      };
+
+      reader.readAsBinaryString(dataFile);
+    });
+
+    return promise;
   }
 }
 
-interface VidijoData {
+export interface VidijoData {
   journals: IJournal[];
   categories: ICategory[];
 }
