@@ -49,7 +49,7 @@
     </div>
   </section>
 
-  <section>
+  <section *ngIf="!searchValue.length">
     <div class="g_section-content">
       <ngx-dropzone
         [multiple]="false"

@@ -16,6 +16,7 @@ export class AddJournalComponent implements OnInit {
   @Input() category: ICategory;
 
   searchFormControl = new FormControl();
+  searchValue: string = "";
 
   journalResultsInVidijo: IJournal[] = [];
   journalResultsInDOAJ: IJournal[] = [];
@@ -38,6 +39,8 @@ export class AddJournalComponent implements OnInit {
     this.searchFormControl.valueChanges
       .pipe(debounceTime(300))
       .subscribe(async (value) => {
+        this.searchValue = value;
+
         if (value === "") {
           this.journalResultsInVidijo = [];
           this.journalResultsInDOAJ = [];
@@ -129,7 +132,8 @@ export class AddJournalComponent implements OnInit {
 
     this.adminService.importXlsx(this.journalsListFile).then(
       (success) => {
-        this.alertService.showSnackbarAlert(
+        this.alertService.showDialogAlert(
+          "Imported Journals",
           "Successfully imported journals",
           "Okay",
           () => {}
