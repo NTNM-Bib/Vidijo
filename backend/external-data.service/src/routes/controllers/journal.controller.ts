@@ -6,7 +6,7 @@ import {
   ArticleCollector,
   JournalCollector,
 } from "../../collectors";
-import Boom from "@hapi/boom";
+import EscapeStringRegexp from "escape-string-regexp";
 
 class JournalController {
   // Create a new journal (with cover and articles)
@@ -15,7 +15,7 @@ class JournalController {
       const savedJournal: IJournal = await addJournalIfNotExists(req.body);
       return res.status(202).json(savedJournal);
     } catch (err) {
-      return next(Boom.notFound("Hello darkness my old friend"));
+      return next(err);
     }
   }
 
@@ -67,16 +67,21 @@ const addJournalIfNotExists = (
   autocomplete: boolean = true
 ): Promise<IJournal> => {
   const promise: Promise<IJournal> = new Promise(async (resolve, reject) => {
+    // Need at least one identifier (issn or eissn)
+    if (!journalData.issn || !journalData.eissn) {
+      return reject(
+        new Error("Must specify at least one identifier (issn or eissn)")
+      );
+    }
+
     // Complete unspecified data (title, issn, eissn)
     if (
       autocomplete &&
       (!journalData.title || !journalData.issn || !journalData.eissn)
     ) {
-      const searchTerm: string = journalData.issn
-        ? journalData.issn
-        : journalData.eissn
+      const searchTerm: string = journalData.eissn
         ? journalData.eissn
-        : journalData.title;
+        : journalData.issn;
 
       if (!searchTerm.length) {
         return reject(
@@ -133,6 +138,30 @@ const addJournalIfNotExists = (
   });
 
   return promise;
+};
+
+const verifyIssn = (issn: string): boolean => {
+  issn = EscapeStringRegexp(issn);
+  const issnRegex: RegExp = /^[0-9]{4}-[0-9]{3}[0-9xX]$/;
+  if (!issnRegex.test(issn)) return false;
+
+  // Compute check digit
+  // @ https://en.wikipedia.org/wiki/International_Standard_Serial_Number
+  let sum: number = 0;
+  let digitPosition: number = 8;
+  for (const c of issn.split("").slice(0, 8)) {
+    if (c === "-") continue;
+    const digit: number = +c;
+    sum += digit * digitPosition;
+    --digitPosition;
+  }
+  const checkDigit: number = 11 - (sum % 11);
+  let checkDigitString: string = checkDigit.toString();
+  if (checkDigit === 10) {
+    checkDigitString = "X";
+  }
+
+  return issn[8].toLowerCase() === checkDigitString.toLowerCase();
 };
 
 export default new JournalController();
