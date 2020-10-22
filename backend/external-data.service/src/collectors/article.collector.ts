@@ -4,7 +4,6 @@ import { Article, Journal } from "../shared/models";
 import { Logger } from "../shared";
 import { sanitizeArticle } from "../sanitizer";
 
-
 class ArticleCollector {
   // Search articles (using pagination) and save to the database.
   // Returns the total length of search results.
@@ -17,7 +16,7 @@ class ArticleCollector {
     let promise: Promise<number> = new Promise(async (resolve, reject) => {
       // Get data from DOAJ
       const query: string = `https://doaj.org/api/v1/search/articles/issn:${journalIdentifier}?sort=created_date:desc&page=${page}&pageSize=${pageSize}`;
-      const response: AxiosResponse = await Axios.get(query).catch(err => {
+      const response: AxiosResponse = await Axios.get(query).catch((err) => {
         return reject(err);
       });
 
@@ -62,9 +61,7 @@ class ArticleCollector {
           }
 
           // Sanitize article
-          article = await sanitizeArticle(article).catch(err => {
-            throw err;
-          });
+          article = sanitizeArticle(article);
 
           // Push article to result array
           article = new Article(article);
@@ -88,7 +85,7 @@ class ArticleCollector {
     let promise: Promise<void> = new Promise(async (resolve, reject) => {
       let journal: IJournal | null = await Journal.findById(journalId)
         .exec()
-        .catch(err => {
+        .catch((err) => {
           return reject(err);
         });
 
@@ -109,7 +106,7 @@ class ArticleCollector {
         identifier,
         pageSize,
         currentPage
-      ).catch(err => {
+      ).catch((err) => {
         return reject(err);
       });
 
@@ -122,7 +119,7 @@ class ArticleCollector {
           identifier,
           pageSize,
           currentPage
-        ).catch(err => {
+        ).catch((err) => {
           return reject(err);
         });
         receivedArticles += pageSize;

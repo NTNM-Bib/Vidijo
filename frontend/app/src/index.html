@@ -57,6 +57,10 @@
     />
     <link rel="manifest" href="manifest.webmanifest" />
     <meta name="theme-color" content="#1976d2" />
+    <meta
+      name="description"
+      content="Vidijo is an open source web application for presenting a curated selection of open-access journals."
+    />
   </head>
 
   <body>
@@ -66,7 +70,15 @@
 
       <!-- Show Warning if JavaScript is disabled -->
       <noscript>
-        <i>&nbsp; JavaScript needs to be enabled in your browser.</i>
+        <div style="display: grid; place-items: center; gap: 10px">
+          <img
+            src="favicon.ico"
+            style="aspect-ratio: 1/1; width: min(60px, 50vw)"
+          />
+          <i style="font-weight: bolder"
+            >&nbsp; This web application requires JavaScript</i
+          >
+        </div>
       </noscript>
     </app-root>
   </body>
