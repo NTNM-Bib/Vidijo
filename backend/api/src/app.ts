@@ -11,7 +11,6 @@ import Passport from "passport";
 import PassportLocal from "passport-local";
 import Morgan from "morgan";
 import Colors from "colors";
-import Boom from "@hapi/boom";
 import Helmet from "helmet";
 import MustacheExpress from "mustache-express";
 
@@ -196,9 +195,8 @@ class App {
   private configureErrorHandling() {
     // Boom Errors
     this.app.use(
-      (err: Boom<any>, req: Request, res: Response, next: NextFunction) => {
+      (err: any, req: Request, res: Response, next: NextFunction) => {
         if (err.isServer) {
-          // TODO: Don't show specific internal errors to user
           return next();
         }
 

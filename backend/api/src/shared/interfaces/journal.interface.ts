@@ -1,6 +1,5 @@
 import { Document, Model, PaginateModel } from "mongoose";
 
-
 interface IJournalDocument extends Document {
   active: boolean;
   title: string;
@@ -16,12 +15,10 @@ interface IJournalDocument extends Document {
   identifier: string; // Virtual: returns issn or eissn
 }
 
-
 export interface IJournal extends IJournalDocument {
   incViews(): void;
 }
 
-
 export interface IJournalModel
-  extends Model<IJournal>, PaginateModel<IJournal> {
-}
+  extends Model<IJournal>,
+    PaginateModel<IJournal> {}

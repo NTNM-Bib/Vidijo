@@ -1,12 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import Boom from "@hapi/boom";
-import { IUser } from "./shared/interfaces";
-
 
 // Check if the current user has access level "admin" (highest level)
 export function isAdminUser(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) {
-    const user: IUser = req.user;
+    const user: any = req.user;
 
     if (!user) {
       return next(Boom.unauthorized());
@@ -40,7 +38,7 @@ export function isAdminUser(req: Request, res: Response, next: NextFunction) {
 // Check if the current user has access level "default" or higher
 export function isDefaultUser(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) {
-    const user: IUser = req.user;
+    const user: any = req.user;
 
     if (!user) {
       return next(Boom.unauthorized());

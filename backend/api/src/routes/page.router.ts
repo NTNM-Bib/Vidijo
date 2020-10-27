@@ -1,7 +1,6 @@
 import { Router } from "express";
 import { PageController } from "./controllers";
 
-
 const router: Router = Router();
 
 // Get aggregated home page data
