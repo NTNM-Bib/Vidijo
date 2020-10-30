@@ -7,22 +7,10 @@ import { IUser, IJournal, IArticle } from "../../shared/interfaces";
 import { User, Journal, Article } from "../../shared/models";
 import Logger from "../../shared/logger";
 
-
 const MongoQueryString = require("mongo-querystring");
-/* TODO: Date comparison via last action (last api access)
-const MongoQS = new MongoQueryString({
-  custom: {
-    after: "lastAction",
-    before: "lastAction",
-    between: "lastAction"
-  }
-});
-*/
 const MongoQS = new MongoQueryString();
 
-
 class UserController {
-
   // Get all Users
   public getUsers(req: Request, res: Response, next: NextFunction) {
     let reqQuery: any = req.query;
@@ -33,7 +21,7 @@ class UserController {
 
     const DEFAULT_LIMIT: number = 50;
     let limit: number = reqQuery.limit ? +reqQuery.limit : DEFAULT_LIMIT;
-    limit = (limit > DEFAULT_LIMIT) ? DEFAULT_LIMIT : limit;
+    limit = limit > DEFAULT_LIMIT ? DEFAULT_LIMIT : limit;
     reqQuery.limit = undefined;
 
     let select: string = reqQuery.select ? reqQuery.select : "";
@@ -42,7 +30,9 @@ class UserController {
     let populate: string = reqQuery.populate ? reqQuery.populate : "";
     reqQuery.populate = undefined;
 
-    let populateSelect: string = reqQuery.populateSelect ? reqQuery.populateSelect : "";
+    let populateSelect: string = reqQuery.populateSelect
+      ? reqQuery.populateSelect
+      : "";
     reqQuery.populateSelect = undefined;
 
     let page: number = reqQuery.page ? reqQuery.page : 1;
@@ -58,8 +48,8 @@ class UserController {
     // Build search query for multiple search terms
     let searchTerms: string[] = search.split(" ");
     let searchQuery = {
-      $and: [] as any[]
-    }
+      $and: [] as any[],
+    };
 
     for (let searchTerm of searchTerms) {
       searchTerm = EscapeStringRegexp(searchTerm);
@@ -68,33 +58,30 @@ class UserController {
           {
             username: {
               $regex: `\\b${searchTerm}`,
-              $options: "i"
-            }
+              $options: "i",
+            },
           },
           {
             firstName: {
               $regex: `\\b${searchTerm}`,
-              $options: "i"
-            }
+              $options: "i",
+            },
           },
           {
             secondName: {
               $regex: `\\b${searchTerm}`,
-              $options: "i"
-            }
-          }
-        ]
+              $options: "i",
+            },
+          },
+        ],
       } as any);
     }
 
     // Change findQuery if query contains "search"
     if (search && search !== "") {
       findQuery = {
-        $and: [
-          findQuery,
-          searchQuery
-        ]
-      }
+        $and: [findQuery, searchQuery],
+      };
     }
 
     // Execute
@@ -104,18 +91,19 @@ class UserController {
       sort: sort,
       collation: { locale: "en" },
       limit: limit,
-      page: page
+      page: page,
     };
 
-    User.paginate(findQuery, paginationOptions).then((usersPage) => {
-      return res.status(200).json(usersPage)
-    }).catch((err: Error) => {
-      return next(err);
-    });
+    User.paginate(findQuery, paginationOptions)
+      .then((usersPage) => {
+        return res.status(200).json(usersPage);
+      })
+      .catch((err: Error) => {
+        return next(err);
+      });
   }
 
-
-  // Get user with given ID 
+  // Get user with given ID
   public getUser(req: Request, res: Response, next: NextFunction) {
     const id: string = req.params.id;
 
@@ -128,55 +116,67 @@ class UserController {
 
         return res.status(200).json(user);
       })
-      .catch(err => {
+      .catch((err) => {
         return next(err);
       });
   }
 
-
   // Get the users (:id) favorite Journals
-  public async getFavoriteJournals(req: Request, res: Response, next: NextFunction) {
+  public async getFavoriteJournals(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     const id: string = req.params.id;
-    const user: IUser | null = await User.findById(id).exec().catch((err: Error) => {
-      return next(Boom.notFound(`User with ID ${id} does not exist`));
-    });
+    const user: IUser | null | void = await User.findById(id)
+      .exec()
+      .catch((err: Error) => {
+        return next(Boom.notFound(`User with ID ${id} does not exist`));
+      });
     if (!user) {
       return next(Boom.notFound(`User with ID ${id} does not exist`));
     }
 
     // Convert parsed query back to string
-    let query: string = ""
+    let query: string = "";
     for (let key in req.query) {
-      query += `${key}=${req.query[key]}&`
+      query += `${key}=${req.query[key]}&`;
     }
     Logger.debug(query);
 
     // Build query for favorite journals
     let idsString: string = "";
     for (let favoriteJournalId of user.favoriteJournals) {
-      idsString += `_id[]=${favoriteJournalId}&`
+      idsString += `_id[]=${favoriteJournalId}&`;
     }
 
     // Prevent wrong results if there are no favorite journals
-    idsString = (idsString === "") ? "_id=!" : idsString;
+    idsString = idsString === "" ? "_id=!" : idsString;
 
-    const favoriteJournalsPage: any = await Axios.get(`${UserConfig.API_URI}/v1/journals?${query}${idsString}`).catch((err: Error) => {
+    const favoriteJournalsPage: any = await Axios.get(
+      `${UserConfig.API_URI}/v1/journals?${query}${idsString}`
+    ).catch((err: Error) => {
       return next(Boom.notFound(`Cannot get favorite journals of user ${id}`));
     });
 
     return res.status(200).json(favoriteJournalsPage.data);
   }
 
-
   // Add a journal with given ID (:journalId) to the users (:id) favorites
-  public async addFavoriteJournal(req: Request, res: Response, next: NextFunction) {
+  public async addFavoriteJournal(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     const userId: string = req.params.id;
     const journalId: string = req.params.journalId;
 
     // Find journal in database
-    const journalToAdd: IJournal | null = await Journal.findById(journalId)
+    const journalToAdd: IJournal | null | void = await Journal.findById(
+      journalId
+    )
       .exec()
-      .catch(err => {
+      .catch((err) => {
         return next(err);
       });
 
@@ -195,19 +195,22 @@ class UserController {
 
         return res.status(200).json(user);
       })
-      .catch(err => {
+      .catch((err) => {
         Logger.error(err);
         return next(err);
       });
   }
 
-
   // Remove the journal with given ID (:journalId) from the Users (:id) favorites
-  public removeFavoriteJournal(req: Request, res: Response, next: NextFunction) {
+  public removeFavoriteJournal(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     const userId: string = req.params.id;
     const journalId: string = req.params.journalId;
 
-    const update = { $pull: { favoriteJournals: journalId } };
+    const update = { $pull: { favoriteJournals: journalId } } as any;
 
     User.findByIdAndUpdate(userId, update)
       .exec()
@@ -218,56 +221,64 @@ class UserController {
 
         return res.status(200).json(user);
       })
-      .catch(err => {
+      .catch((err) => {
         Logger.error(err);
         return next(err);
       });
   }
 
-
   // Get the users (:id) reading list
   public async getReadingList(req: Request, res: Response, next: NextFunction) {
     const id: string = req.params.id;
-    const user: IUser | null = await User.findById(id).exec().catch((err: Error) => {
-      return next(Boom.notFound(`User with ID ${id} does not exist`));
-    });
+    const user: IUser | null | void = await User.findById(id)
+      .exec()
+      .catch((err: Error) => {
+        return next(Boom.notFound(`User with ID ${id} does not exist`));
+      });
     if (!user) {
       return next(Boom.notFound(`User with ID ${id} does not exist`));
     }
 
     // Convert parsed query back to string
-    let query: string = ""
+    let query: string = "";
     for (let key in req.query) {
-      query += `${key}=${req.query[key]}&`
+      query += `${key}=${req.query[key]}&`;
     }
     Logger.debug(query);
 
     // Build query for reading list articles
     let idsString: string = "";
     for (let readingListArticleId of user.readingList) {
-      idsString += `_id[]=${readingListArticleId}&`
+      idsString += `_id[]=${readingListArticleId}&`;
     }
 
     // Prevent wrong results if there are no reading list articles
-    idsString = (idsString === "") ? "_id=!" : idsString;
+    idsString = idsString === "" ? "_id=!" : idsString;
 
-    const readingListPage: any = await Axios.get(`${UserConfig.API_URI}/v1/articles?${query}${idsString}`).catch((err: Error) => {
+    const readingListPage: any = await Axios.get(
+      `${UserConfig.API_URI}/v1/articles?${query}${idsString}`
+    ).catch((err: Error) => {
       return next(Boom.notFound(`Cannot get reading list of user ${id}`));
     });
 
     return res.status(200).json(readingListPage.data);
   }
 
-
   // Add an article by id (:articleId) to the users (:id) reading list
-  public async addArticleToReadingList(req: Request, res: Response, next: NextFunction) {
+  public async addArticleToReadingList(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     const userId: string = req.params.id;
     const articleId: string = req.params.articleId;
 
     // Find article in database
-    const articleToAdd: IArticle | null = await Article.findById(articleId)
+    const articleToAdd: IArticle | null | void = await Article.findById(
+      articleId
+    )
       .exec()
-      .catch(err => {
+      .catch((err) => {
         return next(err);
       });
 
@@ -286,19 +297,22 @@ class UserController {
 
         return res.status(200).json(user);
       })
-      .catch(err => {
+      .catch((err) => {
         Logger.error(err);
         return next(err);
       });
   }
 
-
   // Remove an article with given ID (:articleId) from the users (:id) reading list
-  public removeArticleFromReadingList(req: Request, res: Response, next: NextFunction) {
+  public removeArticleFromReadingList(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     const userId: string = req.params.id;
     const articleId: string = req.params.articleId;
 
-    const update = { $pull: { readingList: articleId } };
+    const update = { $pull: { readingList: articleId } } as any;
 
     User.findByIdAndUpdate(userId, update)
       .exec()
@@ -309,12 +323,11 @@ class UserController {
 
         return res.status(200).json(user);
       })
-      .catch(err => {
+      .catch((err) => {
         Logger.error(err);
         return next(err);
       });
   }
-
 
   // Update the user with given ID
   public async patchUser(req: Request, res: Response, next: NextFunction) {
@@ -322,12 +335,18 @@ class UserController {
     const update = req.body;
 
     if (update.accessLevel && update.accessLevel !== "admin") {
-      const numberOfAdminUsers: number = await User.find({ accessLevel: "admin" })
+      const numberOfAdminUsers: number = await User.find({
+        accessLevel: "admin",
+      })
         .count()
         .exec();
 
       if (numberOfAdminUsers < 2) {
-        return next(Boom.illegal("Cannot remove admin privileges from the only admin user"));
+        return next(
+          Boom.illegal(
+            "Cannot remove admin privileges from the only admin user"
+          )
+        );
       }
     }
 
@@ -340,13 +359,11 @@ class UserController {
 
         return res.status(200).json(user);
       })
-      .catch(err => {
+      .catch((err) => {
         Logger.error(err);
         return next(err);
       });
   }
-
 }
-
 
 export default new UserController();

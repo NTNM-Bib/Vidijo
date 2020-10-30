@@ -7,17 +7,13 @@ import CookieParser from "cookie-parser";
 import Cors from "cors";
 import Morgan from "morgan";
 import Colors from "colors";
-import Boom from "@hapi/boom";
 import Helmet from "helmet";
 import MustacheExpress from "mustache-express";
 
-import {
-  UserRouter
-} from "./routes";
+import { UserRouter } from "./routes";
 
 class App {
   public app: Express.Application;
-
 
   constructor() {
     this.app = Express();
@@ -30,7 +26,6 @@ class App {
     this.configureBodyParser();
     this.configureCors();
 
-
     this.configureMorgan();
 
     // Router after logger!
@@ -38,7 +33,6 @@ class App {
 
     this.configureErrorHandling();
   }
-
 
   private configureMustache() {
     this.app.engine("mustache", MustacheExpress());
@@ -49,40 +43,33 @@ class App {
     this.app.disable("view cache");
   }
 
-
   private configureHelmet() {
     this.app.use(Helmet());
   }
-
 
   private configureBodyParser() {
     this.app.use(BodyParser.json());
     this.app.use(BodyParser.urlencoded({ extended: false }));
   }
 
-
   private configureCookieParser() {
     this.app.use(CookieParser());
   }
 
-
-  // ! CORS CURRENTLY ACCEPTS ALL ORIGINS
   private configureCors() {
     const corsOptions = {
       credentials: true,
       origin: (origin: any, callback: any) => {
         callback(null, true);
-      }
+      },
     };
 
     this.app.use(Cors(corsOptions));
   }
 
-
   private configureRoutes() {
     this.app.use("/v1/users", UserRouter);
   }
-
 
   private configureMorgan() {
     // Only use Morgan in development mode
@@ -104,11 +91,10 @@ class App {
     );
   }
 
-
   private configureErrorHandling() {
     // Boom Errors
     this.app.use(
-      (err: Boom<any>, req: Request, res: Response, next: NextFunction) => {
+      (err: any, req: Request, res: Response, next: NextFunction) => {
         if (err.isServer) {
           // TODO: Don't show specific internal errors to user
           return next();
@@ -124,12 +110,11 @@ class App {
         return res.status(500).json({
           statusCode: 500,
           error: err,
-          message: "Internal Server Error"
+          message: "Internal Server Error",
         });
       }
     );
   }
 }
-
 
 export default new App().app;
