@@ -8,7 +8,7 @@ import { Logger } from "./shared";
 // Update the journal with oldest data
 export async function updateOldestJournal(): Promise<number> {
   const promise: Promise<number> = new Promise(async (resolve, reject) => {
-    const oldestJournal: IJournal | null = await Journal.findOne()
+    const oldestJournal: IJournal | null | void = await Journal.findOne()
       .sort({ updated: 1 })
       .exec()
       .catch((err) => {
