@@ -16,9 +16,11 @@ class ArticleCollector {
     let promise: Promise<number> = new Promise(async (resolve, reject) => {
       // Get data from DOAJ
       const query: string = `https://doaj.org/api/v1/search/articles/issn:${journalIdentifier}?sort=created_date:desc&page=${page}&pageSize=${pageSize}`;
-      const response: AxiosResponse = await Axios.get(query).catch((err) => {
-        return reject(err);
-      });
+      const response: AxiosResponse | void = await Axios.get(query).catch(
+        (err) => {
+          return reject(err);
+        }
+      );
 
       if (!response) {
         return reject(new Error(`searchAndAddArticlesPaginated: no response`));
@@ -83,7 +85,7 @@ class ArticleCollector {
   // Keep searching and adding articles with "searchAndAddArticlesPaginated()" until there are no more results
   public async searchAndAddArticles(journalId: string): Promise<void> {
     let promise: Promise<void> = new Promise(async (resolve, reject) => {
-      let journal: IJournal | null = await Journal.findById(journalId)
+      let journal: IJournal | null | void = await Journal.findById(journalId)
         .exec()
         .catch((err) => {
           return reject(err);
@@ -101,7 +103,7 @@ class ArticleCollector {
       let currentPage: number = 1;
       let receivedArticles: number = pageSize * currentPage;
 
-      const totalSize: number = await this.searchAndAddArticlesPaginated(
+      const totalSize: number | void = await this.searchAndAddArticlesPaginated(
         journalId,
         identifier,
         pageSize,
@@ -109,8 +111,6 @@ class ArticleCollector {
       ).catch((err) => {
         return reject(err);
       });
-
-      Logger.debug(totalSize);
 
       while (receivedArticles < totalSize) {
         currentPage++;
