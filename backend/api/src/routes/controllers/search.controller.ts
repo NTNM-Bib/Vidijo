@@ -10,13 +10,15 @@ class SearchController {
     console.log(searchTerm);
     console.log(ApiConfig.EXTERNAL_DATA_SERVICE_URI);
 
-    const response = await Axios.get(
+    Axios.get(
       `${ApiConfig.EXTERNAL_DATA_SERVICE_URI}/v1/search/journals?term=${searchTerm}`
-    ).catch((err: Error) => {
-      return next(err);
-    });
-
-    return res.status(200).json(response.data);
+    )
+      .then((response) => {
+        return res.status(200).json(response.data);
+      })
+      .catch((err: Error) => {
+        return next(err);
+      });
   }
 }
 

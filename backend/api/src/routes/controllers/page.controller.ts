@@ -49,11 +49,15 @@ class PageController {
       newestArticlesPromises.push(promise);
     }
 
-    const newestArticlesResponses: any[] = await Promise.all(
+    const newestArticlesResponses: any[] | void = await Promise.all(
       newestArticlesPromises
     ).catch((err) => {
       return next(err);
     });
+
+    if (!newestArticlesResponses) {
+      return next(new Error("newestArticlesResponses is void"));
+    }
 
     let i = 0;
     for (let recentlyUpdatedFavoriteJournal of recentlyUpdatedFavoriteJournalsResponse
@@ -115,11 +119,15 @@ class PageController {
       newestArticlesPromises.push(promise);
     }
 
-    const newestArticlesResponses: any[] = await Promise.all(
+    const newestArticlesResponses: any[] | void = await Promise.all(
       newestArticlesPromises
     ).catch((err) => {
       return next(err);
     });
+
+    if (!newestArticlesResponses) {
+      return next(new Error("newestArticlesResponses is void"));
+    }
 
     let i = 0;
     for (let recentlyUpdatedJournal of recentlyUpdatedJournalsResponse.data
@@ -249,11 +257,9 @@ class PageController {
     }
 
     // Get all journals
-    const [
-      availableCategories,
-      categoryResponse,
-      journalsResponse,
-    ]: any[] = await Promise.all(requests).catch((err) => {
+    const [availableCategories, categoryResponse, journalsResponse]:
+      | any[]
+      | void = await Promise.all(requests).catch((err) => {
       return next(err);
     });
 

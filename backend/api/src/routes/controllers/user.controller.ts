@@ -19,13 +19,13 @@ class UserController {
       query += `${key}=${req.query[key]}&`;
     }
 
-    const usersResponse = await Axios.get(
-      `${ApiConfig.USER_SERVICE_URI}/v1/users${query}`
-    ).catch((err) => {
-      return next(err);
-    });
-
-    return res.status(200).json(usersResponse.data);
+    Axios.get(`${ApiConfig.USER_SERVICE_URI}/v1/users${query}`)
+      .then((usersResponse) => {
+        return res.status(200).json(usersResponse.data);
+      })
+      .catch((err) => {
+        return next(err);
+      });
   }
 
   // Get User with given ID (if ID is "me", return the currently logged in User)
@@ -46,13 +46,13 @@ class UserController {
       targetUserId = currentlyLoggedInUser._id;
     }
 
-    const userResponse = await Axios.get(
-      `${ApiConfig.USER_SERVICE_URI}/v1/users/${targetUserId}`
-    ).catch((err) => {
-      return next(err);
-    });
-
-    return res.status(200).json(userResponse.data);
+    Axios.get(`${ApiConfig.USER_SERVICE_URI}/v1/users/${targetUserId}`)
+      .then((userResponse) => {
+        return res.status(200).json(userResponse.data);
+      })
+      .catch((err) => {
+        return next(err);
+      });
   }
 
   // Get the users (:id) favorite Journals
@@ -83,13 +83,15 @@ class UserController {
       query += `${key}=${req.query[key]}&`;
     }
 
-    const response = await Axios.get(
+    Axios.get(
       `${ApiConfig.USER_SERVICE_URI}/v1/users/${targetUserId}/favoriteJournals${query}`
-    ).catch((err) => {
-      return next(err);
-    });
-
-    return res.status(200).json(response.data);
+    )
+      .then((response) => {
+        return res.status(200).json(response.data);
+      })
+      .catch((err) => {
+        return next(err);
+      });
   }
 
   // Add a journal to the users (:id) favorites
@@ -115,13 +117,15 @@ class UserController {
       targetUserId = currentlyLoggedInUser._id;
     }
 
-    const response = await Axios.post(
+    Axios.post(
       `${ApiConfig.USER_SERVICE_URI}/v1/users/${targetUserId}/favoriteJournals/${journalId}`
-    ).catch((err) => {
-      return next(err);
-    });
-
-    return res.status(200).json(response.data);
+    )
+      .then((response) => {
+        return res.status(200).json(response.data);
+      })
+      .catch((err) => {
+        return next(err);
+      });
   }
 
   // Remove a journal from the users (:id) favorites
@@ -147,13 +151,15 @@ class UserController {
       targetUserId = currentlyLoggedInUser._id;
     }
 
-    const response = await Axios.delete(
+    Axios.delete(
       `${ApiConfig.USER_SERVICE_URI}/v1/users/${targetUserId}/favoriteJournals/${journalId}`
-    ).catch((err) => {
-      return next(err);
-    });
-
-    return res.status(200).json(response.data);
+    )
+      .then((response) => {
+        return res.status(200).json(response.data);
+      })
+      .catch((err) => {
+        return next(err);
+      });
   }
 
   // Get the users (:id) reading list
@@ -180,13 +186,15 @@ class UserController {
       query += `${key}=${req.query[key]}&`;
     }
 
-    const readingListPageResponse = await Axios.get(
+    Axios.get(
       `${ApiConfig.USER_SERVICE_URI}/v1/users/${targetUserId}/readingList${query}`
-    ).catch((err) => {
-      return next(err);
-    });
-
-    return res.status(200).json(readingListPageResponse.data);
+    )
+      .then((readingListPageResponse) => {
+        return res.status(200).json(readingListPageResponse.data);
+      })
+      .catch((err) => {
+        return next(err);
+      });
   }
 
   // Add an article to the users (:id) reading list
@@ -212,13 +220,15 @@ class UserController {
       targetUserId = currentlyLoggedInUser._id;
     }
 
-    const response = await Axios.post(
+    Axios.post(
       `${ApiConfig.USER_SERVICE_URI}/v1/users/${targetUserId}/readingList/${articleId}`
-    ).catch((err) => {
-      return next(err);
-    });
-
-    return res.status(200).json(response.data);
+    )
+      .then((response) => {
+        return res.status(200).json(response.data);
+      })
+      .catch((err) => {
+        return next(err);
+      });
   }
 
   // Remove an article from the users (:id) reading list
@@ -244,13 +254,15 @@ class UserController {
       targetUserId = currentlyLoggedInUser._id;
     }
 
-    const response = await Axios.delete(
+    Axios.delete(
       `${ApiConfig.USER_SERVICE_URI}/v1/users/${targetUserId}/readingList/${articleId}`
-    ).catch((err) => {
-      return next(err);
-    });
-
-    return res.status(200).json(response.data);
+    )
+      .then((response) => {
+        return res.status(200).json(response.data);
+      })
+      .catch((err) => {
+        return next(err);
+      });
   }
 
   // Update user data
@@ -271,14 +283,16 @@ class UserController {
       targetUserId = currentlyLoggedInUser._id;
     }
 
-    const response = await Axios.patch(
+    Axios.patch(
       `${ApiConfig.USER_SERVICE_URI}/v1/users/${targetUserId}`,
       req.body
-    ).catch((err) => {
-      return next(err);
-    });
-
-    return res.status(200).json(response.data);
+    )
+      .then((response) => {
+        return res.status(200).json(response.data);
+      })
+      .catch((err) => {
+        return next(err);
+      });
   }
 }
 
