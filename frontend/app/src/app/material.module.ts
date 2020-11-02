@@ -25,14 +25,9 @@ import { MatRadioModule } from "@angular/material/radio";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { MatStepperModule } from "@angular/material/stepper";
 import { MatMenuModule } from "@angular/material/menu";
-import { MatTabsModule } from '@angular/material/tabs';
-import { MatSlideToggleModule } from '@angular/material/slide-toggle';
-import { MatCheckboxModule } from '@angular/material/checkbox';
-
-
-
-// Angular Material CDK.
-import { ScrollDispatchModule } from "@angular/cdk/scrolling";
+import { MatTabsModule } from "@angular/material/tabs";
+import { MatSlideToggleModule } from "@angular/material/slide-toggle";
+import { MatCheckboxModule } from "@angular/material/checkbox";
 
 @NgModule({
   imports: [
@@ -64,9 +59,6 @@ import { ScrollDispatchModule } from "@angular/cdk/scrolling";
     MatTabsModule,
     MatSlideToggleModule,
     MatCheckboxModule,
-
-    // CDK.
-    ScrollDispatchModule
   ],
   exports: [
     // Material.
@@ -97,9 +89,6 @@ import { ScrollDispatchModule } from "@angular/cdk/scrolling";
     MatTabsModule,
     MatSlideToggleModule,
     MatCheckboxModule,
-
-    // CDK.
-    ScrollDispatchModule
-  ]
+  ],
 })
-export class MaterialModule { }
+export class MaterialModule {}
