@@ -10,30 +10,22 @@ import { ArticleComponent } from "./pages/article/article.component";
 import { JournalScrollbarComponent } from "./components/journal-scrollbar/journal-scrollbar.component";
 import { JournalNewestArticlesComponent } from "./components/journal-newest-articles/journal-newest-articles.component";
 
-import { JournalCategoryComponent } from './components/journal-category/journal-category.component';
-import { CategoriesComponent } from './pages/categories/categories.component';
-import { JournalThumbnailComponent } from './components/journal-thumbnail/journal-thumbnail.component';
-import { SearchComponent } from './pages/search/search.component';
-import { ArticleListComponent } from './components/article-list/article-list.component';
+import { JournalCategoryComponent } from "./components/journal-category/journal-category.component";
+import { CategoriesComponent } from "./pages/categories/categories.component";
+import { JournalThumbnailComponent } from "./components/journal-thumbnail/journal-thumbnail.component";
+import { SearchComponent } from "./pages/search/search.component";
+import { ArticleListComponent } from "./components/article-list/article-list.component";
 
-import { AngularFittextModule } from "angular-fittext";
-import { AdminModule } from '../admin/admin.module';
-import { SharedModule } from '../shared/shared.module';
-
-
+import { AdminModule } from "../admin/admin.module";
+import { SharedModule } from "../shared/shared.module";
 
 @NgModule({
-  imports: [
-    SharedModule,
-    AngularFittextModule,
-    JournalsRoutingModule,
-    AdminModule
-  ],
+  imports: [SharedModule, JournalsRoutingModule, AdminModule],
   exports: [
     JournalGridComponent,
     JournalThumbnailComponent,
     ArticleListComponent,
-    JournalNewestArticlesComponent
+    JournalNewestArticlesComponent,
   ],
   declarations: [
     DiscoverComponent,
@@ -47,10 +39,8 @@ import { SharedModule } from '../shared/shared.module';
     CategoriesComponent,
     JournalThumbnailComponent,
     SearchComponent,
-    ArticleListComponent
+    ArticleListComponent,
   ],
-  providers: [
-    DatePipe
-  ]
+  providers: [DatePipe],
 })
-export class JournalsModule { }
+export class JournalsModule {}
