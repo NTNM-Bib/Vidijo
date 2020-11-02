@@ -4,7 +4,7 @@ FROM node:12 AS build
 WORKDIR /usr/src/app
 
 # Development version: 8.3.23
-RUN npm install -g @angular/cli@9
+RUN npm install -g @angular/cli@10
 
 COPY package*.json ./
 RUN npm install
