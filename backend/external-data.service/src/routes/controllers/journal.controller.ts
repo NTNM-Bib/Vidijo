@@ -20,18 +20,14 @@ class JournalController {
   }
 
   // Fetch newest articles of the journal with given ID
-  public async fetchNewestArticles(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    const id = req.params.id;
+  public fetchNewestArticles(req: Request, res: Response, next: NextFunction) {
+    const id: string = req.params.id;
 
-    await ArticleCollector.searchAndAddArticles(id).catch((err: Error) => {
-      return next(err);
-    });
-
-    return res.status(200).json({ journalId: id });
+    ArticleCollector.searchAndAddArticles(id)
+      .then(() => {
+        return res.status(200).json({ journalId: id });
+      })
+      .catch(next);
   }
 }
 
@@ -103,8 +99,8 @@ const addJournalIfNotExists = (
       // Save journal
       const journal: IJournal = new Journal(journalData);
       journal.save().then(async (savedJournal: IJournal) => {
-        // TODO: Async cover search. If nothing is found, ignore
-        //CoverCollector.searchAndAddCover(journal._id).then().catch();
+        // Async cover search. If nothing is found, ignore
+        CoverCollector.searchAndAddCover(journal._id).then().catch();
         // TODO: Queue article collection after adding journal
         //await ArticleCollector.searchAndAddArticles(journal._id).catch();
         return resolve(savedJournal);

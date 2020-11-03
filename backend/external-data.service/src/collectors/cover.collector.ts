@@ -3,60 +3,57 @@ import Axios, { AxiosResponse } from "axios";
 import FS from "fs";
 import Path from "path";
 import { Journal } from "../shared/models";
-import { Logger } from "../shared";
 import { IJournal } from "../shared/interfaces";
+import { Logger } from "../shared";
 
 const DomParser = require("dom-parser");
 const ImageDownloader = require("image-downloader");
 
-class CoverCollector {
-  public async searchCoverUrl(journalIdentifier: string): Promise<string> {
-    let promise: Promise<string> = new Promise(async (resolve, reject) => {
+/**
+ * Try to find a URL to a cover of the given journal
+ * Currently the image is retrieved from journaltocs.ac.uk
+ *
+ * @param journalIdentifier pISSN or eISSN of the journal
+ */
+export const searchCoverUrl = (journalIdentifier: string): Promise<string> => {
+  return new Promise(async (resolve, reject) => {
+    try {
       const query: string = `http://www.journaltocs.ac.uk/index.php?action=tocs&issn=${journalIdentifier}`;
-      const response: AxiosResponse | void = await Axios.get(query).catch(
-        (err) => {
-          return reject(err);
-        }
-      );
-
-      if (!response) {
-        return reject(new Error(`searchAndAddArticlesPaginated: no response`));
-      }
+      const response: AxiosResponse = await Axios.get(query);
 
       const data = response.data;
       if (!data) {
-        return reject(new Error(`searchAndAddArticlesPaginated: no data`));
+        throw new Error(`Response does not contain a data attribute`);
       }
 
       // Get cover url from received html
-      try {
-        const html = new DomParser().parseFromString(data.toString());
+      const html = new DomParser().parseFromString(data.toString());
 
-        const coverUrl = html
-          .getElementById("column2Large")
-          .getElementsByTagName("img")[0]
-          .getAttribute("src");
+      const coverUrl = html
+        .getElementById("column2Large")
+        .getElementsByTagName("img")[0]
+        .getAttribute("src");
 
-        // Remove "No Journal Cover Available" Image
-        if (coverUrl === "http://www.journaltocs.ac.uk/images/no_cover.jpg") {
-          return reject(new Error(`No Cover found`));
-        }
-
-        Logger.debug(coverUrl);
-        return resolve(coverUrl);
-      } catch (err) {
-        return reject(err);
+      // Remove "No Journal Cover Available" Image
+      if (coverUrl === "http://www.journaltocs.ac.uk/images/no_cover.jpg") {
+        throw new Error(
+          `Cover for journal with identifier ${journalIdentifier} cannot be found`
+        );
       }
-    });
 
-    return promise;
-  }
+      return resolve(coverUrl);
+    } catch (err) {
+      return reject(err);
+    }
+  });
+};
 
-  public async saveCoverToFileSystem(
-    url: string,
-    journalId: string
-  ): Promise<string> {
-    const promise: Promise<string> = new Promise((resolve, reject) => {
+export const saveCoverToFileSystem = (
+  url: string,
+  journalId: string
+): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    try {
       // Cover folder (create if it doesn't exist)
       let destination = ExternalDataConfig.LOCAL_COVER_FOLDER;
       const publicCoverUrl = ExternalDataConfig.PUBLIC_COVER_URL;
@@ -75,67 +72,55 @@ class CoverCollector {
         extractFilename: false,
       };
 
-      ImageDownloader.image(options)
-        .then(({ filename, image }: any) => {
-          const coverName: string = Path.basename(filename);
-          return resolve(`${publicCoverUrl}/${coverName}`);
-        })
-        .catch((err: any) => {
-          return reject(err);
-        });
-    });
-
-    return promise;
-  }
-
-  public async searchAndAddCover(journalId: string): Promise<IJournal> {
-    let promise: Promise<IJournal> = new Promise(async (resolve, reject) => {
-      // Get journal identifier
-      const journal: IJournal | null | void = await Journal.findById(journalId)
-        .exec()
-        .catch((err) => {
-          return reject(err);
-        });
-      if (!journal) {
-        return reject(new Error(`searchCoverUrl: journal is null`));
-      }
-      let journalIdentifier: string;
-      try {
-        journalIdentifier = journal.identifier;
-      } catch (err) {
-        return reject(
-          new Error(`searchCoverUrl: journal doesn't have an identifier`)
-        );
-      }
-
-      // Search Cover URL
-      const coverUrl: string | void = await this.searchCoverUrl(
-        journalIdentifier
-      ).catch((err) => {
-        return reject(err);
+      ImageDownloader.image(options).then(({ filename, image }: any) => {
+        const coverName: string = Path.basename(filename);
+        return resolve(`${publicCoverUrl}/${coverName}`);
       });
+    } catch (err) {
+      return reject(err);
+    }
+  });
+};
+
+/**
+ * Try to find a cover for the given journal.
+ * Save it to the file system.
+ * Assign the cover to the journal.
+ */
+export const searchAndAddCover = (journalId: string): Promise<IJournal> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Get journal identifier
+      const journal: IJournal | null = await Journal.findById(journalId).exec();
+      if (!journal)
+        throw new Error(
+          `Cannot find the journal with ID ${journalId} and thus not update its cover`
+        );
+
+      // Search cover URL
+      const coverUrl: string = await searchCoverUrl(journal.identifier);
 
       // Download cover
-      const publicCoverUrl: string | void = await this.saveCoverToFileSystem(
+      const publicCoverUrl: string = await saveCoverToFileSystem(
         "" + coverUrl,
         journalId
-      ).catch((err) => {
-        return reject(err);
-      });
+      );
 
-      journal
-        .update({ cover: publicCoverUrl })
-        .exec()
-        .then((updatedJournal: IJournal) => {
-          return resolve(updatedJournal);
-        })
-        .catch((err) => {
-          return reject(err);
-        });
-    });
+      const updatedJournal: IJournal | null = await Journal.updateOne(
+        { id: journalId },
+        {
+          cover: publicCoverUrl,
+        }
+      ).exec();
 
-    return promise;
-  }
-}
+      if (!updatedJournal)
+        throw new Error(
+          `Cannot find the journal with ID ${journalId} and thus not update its cover`
+        );
 
-export default new CoverCollector();
+      return resolve(updatedJournal);
+    } catch (err) {
+      return reject(err);
+    }
+  });
+};
