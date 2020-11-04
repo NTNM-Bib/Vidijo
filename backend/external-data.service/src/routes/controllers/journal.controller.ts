@@ -99,10 +99,10 @@ const addJournalIfNotExists = (
       // Save journal
       const journal: IJournal = new Journal(journalData);
       journal.save().then(async (savedJournal: IJournal) => {
-        // Async cover search. If nothing is found, ignore
-        CoverCollector.searchAndAddCover(journal._id).then().catch();
-        // TODO: Queue article collection after adding journal
-        //await ArticleCollector.searchAndAddArticles(journal._id).catch();
+        // TODO: Async cover search. If nothing is found, ignore
+        //CoverCollector.searchAndAddCover(journal._id).then().catch();
+        // Queue article collection after adding journal
+        ArticleCollector.searchAndAddArticles(journal._id).then().catch();
         return resolve(savedJournal);
       });
     } catch (err) {

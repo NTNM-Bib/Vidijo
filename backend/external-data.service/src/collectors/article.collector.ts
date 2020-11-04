@@ -1,135 +1,123 @@
 import Axios, { AxiosResponse } from "axios";
 import { IArticle, IJournal } from "../shared/interfaces";
 import { Article, Journal } from "../shared/models";
-import { Logger } from "../shared";
 import { sanitizeArticle } from "../sanitizer";
+import { Logger } from "../shared";
+import { DOAJArticle, DOAJResponse } from "./doaj.interface";
 
-class ArticleCollector {
-  // Search articles (using pagination) and save to the database.
-  // Returns the total length of search results.
-  private async searchAndAddArticlesPaginated(
-    journalId: string,
-    journalIdentifier: string,
-    pageSize: number,
-    page: number
-  ): Promise<number> {
-    let promise: Promise<number> = new Promise(async (resolve, reject) => {
-      // Get data from DOAJ
-      const query: string = `https://doaj.org/api/v1/search/articles/issn:${journalIdentifier}?sort=created_date:desc&page=${page}&pageSize=${pageSize}`;
-      const response: AxiosResponse | void = await Axios.get(query).catch(
-        (err) => {
-          return reject(err);
-        }
+/**
+ * Retrieve articles from the DOAJ API and add them to the given journal
+ * Concurrently calls searchAndAddArticlesPaginated() for each API result page
+ *
+ * @param journalId The journal to search and add articles for
+ */
+// FIXME: DOAJ returns 429 (too many requests)
+export const searchAndAddArticles = (journalId: string) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      // Get journal identifier
+      const journal: IJournal | null = await Journal.findById(journalId).exec();
+      if (!journal)
+        throw new Error(`Cannot find the journal with ID ${journalId}`);
+
+      // Set new updated date
+      journal.updated = new Date();
+      await journal.save();
+
+      // Query the first page to get total number of articles
+      const pageSize = 100; // 100 is the max number of DOAJ
+      const firstPageAddedResult = await searchAndAddArticlesPaginated(
+        journalId,
+        journal.identifier,
+        pageSize,
+        1
       );
 
-      if (!response) {
-        return reject(new Error(`searchAndAddArticlesPaginated: no response`));
+      // Create a promise for each page
+      let promises: Promise<{ total: number; added: number }>[] = [];
+      for (let i = 2; i * pageSize < firstPageAddedResult.total; ++i) {
+        const promise = searchAndAddArticlesPaginated(
+          journalId,
+          journal.identifier,
+          pageSize,
+          i
+        );
+
+        promises = [...promises, promise];
       }
 
-      const data: any = response.data;
-      if (!data) {
-        return reject(new Error(`searchAndAddArticlesPaginated: no data`));
-      }
+      // Promise.all() for all possible pages (excluding the first one)
+      Promise.allSettled(promises)
+        .then((results) => {
+          const numberOfAddedArticles = results.reduce(
+            (acc, settledPromise) => {
+              return acc + (settledPromise.status === "fulfilled" ? 1 : 0);
+            },
+            0
+          );
+          Logger.log(
+            `Added ${numberOfAddedArticles} articles to ${journal.title}`
+          );
+          return resolve({ added: numberOfAddedArticles });
+        })
+        .catch();
+    } catch (err) {
+      return reject(err);
+    }
+  });
+};
 
-      const results: any = data.results;
-      if (!results) {
-        return reject(new Error(`searchAndAddArticlesPaginated: no results`));
-      }
+/**
+ * Search and add articles of the given journal.
+ * Only add articles of the specified results page of the DOAJ API.
+ * @param journalId
+ * @param journalIdentifier
+ * @param pageSize
+ * @param page
+ */
+const searchAndAddArticlesPaginated = (
+  journalId: string,
+  journalIdentifier: string,
+  pageSize: number = 100,
+  page: number = 1
+): Promise<{ total: number; added: number }> => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const query: string = `https://doaj.org/api/v1/search/articles/issn:${journalIdentifier}?sort=created_date:desc&page=${page}&pageSize=${pageSize}`;
+      const response: AxiosResponse<DOAJResponse> = await Axios.get(query);
+      const doajJournals: DOAJArticle[] = response.data.results;
 
-      // Convert results to our format
-      for (let result of results) {
-        let bibjson;
-        try {
-          bibjson = result.bibjson;
+      const articles: IArticle[] = doajJournals.map((doajArticle) => {
+        const article = {
+          doi:
+            doajArticle.bibjson.identifier.find((value) => value.type === "doi")
+              ?.id || "",
+          publishedIn: journalId,
+          title: doajArticle.bibjson.title,
+          authors: doajArticle.bibjson.author.map((v) => v.name),
+          abstract: doajArticle.bibjson.abstract,
+          pubdate: new Date(doajArticle.created_date),
+        } as IArticle;
 
-          // Build resulting journal.
-          let article: IArticle = {} as IArticle;
-          article.title = bibjson.title;
-          article.abstract = bibjson.abstract;
-          article.pubdate = result.created_date;
-          article.publishedIn = journalId;
-
-          // Authors.
-          article.authors = [];
-          for (let resultAuthor of bibjson.author) {
-            article.authors.push(resultAuthor.name);
-          }
-
-          // DOI
-          for (let resultIdentifier of bibjson.identifier) {
-            if (resultIdentifier.type === "doi") {
-              article.doi = resultIdentifier.id;
-            }
-          }
-
-          // Sanitize article
-          article = sanitizeArticle(article);
-
-          // Push article to result array
-          article = new Article(article);
-          await article.save();
-        } catch (err) {
-          // Continue with next result
-        }
-      }
-
-      const totalSize: number = response.data.total;
-      if (isNaN(totalSize)) {
-        return reject(new Error(`totalSize does not exist`));
-      }
-      return resolve(totalSize);
-    });
-    return promise;
-  }
-
-  // Keep searching and adding articles with "searchAndAddArticlesPaginated()" until there are no more results
-  public async searchAndAddArticles(journalId: string): Promise<void> {
-    let promise: Promise<void> = new Promise(async (resolve, reject) => {
-      let journal: IJournal | null | void = await Journal.findById(journalId)
-        .exec()
-        .catch((err) => {
-          return reject(err);
-        });
-
-      if (!journal) {
-        return reject(new Error(`Journal with ID ${journalId} doesn't exist`));
-      }
-
-      await journal.update({ updated: new Date() });
-
-      const identifier: string = journal.identifier;
-
-      const pageSize: number = 10;
-      let currentPage: number = 1;
-      let receivedArticles: number = pageSize * currentPage;
-
-      const totalSize: number | void = await this.searchAndAddArticlesPaginated(
-        journalId,
-        identifier,
-        pageSize,
-        currentPage
-      ).catch((err) => {
-        return reject(err);
+        return sanitizeArticle(article);
       });
 
-      while (receivedArticles < totalSize) {
-        currentPage++;
-        await this.searchAndAddArticlesPaginated(
-          journalId,
-          identifier,
-          pageSize,
-          currentPage
-        ).catch((err) => {
-          return reject(err);
+      const promises = articles.map((article) => {
+        return new Article(article).save();
+      });
+
+      Promise.allSettled(promises).then((results) => {
+        const numAddedArticles = results.reduce(
+          (acc, v) => acc + (v.status === "fulfilled" ? 1 : 0),
+          0
+        );
+        return resolve({
+          total: response.data.total as number,
+          added: numAddedArticles,
         });
-        receivedArticles += pageSize;
-      }
-
-      return resolve();
-    });
-
-    return promise;
-  }
-}
-
-export default new ArticleCollector();
+      });
+    } catch (err) {
+      return reject(err);
+    }
+  });
+};

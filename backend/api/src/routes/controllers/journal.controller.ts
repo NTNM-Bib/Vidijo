@@ -21,12 +21,11 @@ class JournalController {
   // When created, search its cover
   // Also search and add articles
   public async createJournal(req: Request, res: Response, next: NextFunction) {
-    await Axios.post(
-      `${ApiConfig.EXTERNAL_DATA_SERVICE_URI}/v1/journals`,
-      req.body
-    ).catch(next);
-
-    return res.status(200).json({});
+    Axios.post(`${ApiConfig.EXTERNAL_DATA_SERVICE_URI}/v1/journals`, req.body)
+      .then(() => {
+        return res.status(200).json({ created: true });
+      })
+      .catch(next);
   }
 
   // Get journals using a query string

@@ -13,4 +13,4 @@ EXPOSE 4200
 EXPOSE 49153
 
 # --poll is needed on Windows to check for changes in a given interval
-CMD ng serve --host 0.0.0.0 --poll 10 --disableHostCheck=true
+CMD ng serve --host 0.0.0.0 --poll 1000 --disableHostCheck=true
