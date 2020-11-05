@@ -20,10 +20,6 @@ export const searchAndAddArticles = (journalId: string) => {
       if (!journal)
         throw new Error(`Cannot find the journal with ID ${journalId}`);
 
-      // Set new updated date
-      journal.updated = new Date();
-      await journal.save();
-
       // Query the first page to get total number of articles
       const pageSize = 100; // 100 is the max number of DOAJ
       const firstPageAddedResult = await searchAndAddArticlesPaginated(
@@ -46,6 +42,11 @@ export const searchAndAddArticles = (journalId: string) => {
         promises = [...promises, promise];
       }
 
+      // Set new updated date and latestPubdate
+      journal.updated = new Date();
+      journal.latestPubdate = firstPageAddedResult.latestPubdate || undefined;
+      await journal.save();
+
       // Promise.all() for all possible pages (excluding the first one)
       Promise.allSettled(promises)
         .then((results) => {
@@ -56,7 +57,7 @@ export const searchAndAddArticles = (journalId: string) => {
             0
           );
           Logger.log(
-            `Added ${numberOfAddedArticles} articles to ${journal.title}`
+            `Added ${numberOfAddedArticles} pages of articles to ${journal.title}`
           );
           return resolve({ added: numberOfAddedArticles });
         })
@@ -80,7 +81,7 @@ const searchAndAddArticlesPaginated = (
   journalIdentifier: string,
   pageSize: number = 100,
   page: number = 1
-): Promise<{ total: number; added: number }> => {
+): Promise<{ total: number; added: number; latestPubdate: Date }> => {
   return new Promise(async (resolve, reject) => {
     try {
       const query: string = `https://doaj.org/api/v1/search/articles/issn:${journalIdentifier}?sort=created_date:desc&page=${page}&pageSize=${pageSize}`;
@@ -114,6 +115,7 @@ const searchAndAddArticlesPaginated = (
         return resolve({
           total: response.data.total as number,
           added: numAddedArticles,
+          latestPubdate: new Date(response.data.results[0].created_date),
         });
       });
     } catch (err) {

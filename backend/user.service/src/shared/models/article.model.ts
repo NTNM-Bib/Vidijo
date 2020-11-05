@@ -1,13 +1,8 @@
-import Mongoose from "mongoose";
-import { Schema } from "mongoose";
-
+import Mongoose, { Schema } from "mongoose";
 import MongoosePaginate from "mongoose-paginate-v2";
-
 import { IArticle, IArticleModel } from "../interfaces/article.interface";
-import { IJournal } from "../interfaces";
-import { Journal } from "./journal.model";
 
-export var articleSchema: Schema = new Schema(
+export const articleSchema: Schema = new Schema(
   {
     publishedIn: {
       type: Schema.Types.ObjectId,
@@ -68,39 +63,6 @@ articleSchema.pre<IArticle>("validate", async function (next) {
   }
 
   return next();
-});
-
-// Set "latestPubdate" in the article's journal
-articleSchema.pre<IArticle>("save", async function () {
-  // Check if journal exists where the article was published in
-  const pubdate: Date = this.pubdate;
-
-  const journal: IJournal | null = await Journal.findOne({
-    _id: this.publishedIn,
-  })
-    .exec()
-    .catch((err) => {
-      throw err;
-    });
-
-  if (!journal) {
-    throw new Error(
-      `ArticleSchema pre save: Journal with ID ${this.publishedIn} doesn't exist`
-    );
-  }
-
-  // Update "latestPubdate" in journal
-  if (
-    !journal.latestPubdate ||
-    journal.latestPubdate.getTime() < pubdate.getTime()
-  ) {
-    journal
-      .update({ latestPubdate: pubdate })
-      .exec()
-      .catch((err) => {
-        throw err;
-      });
-  }
 });
 
 // Pagination Plugin

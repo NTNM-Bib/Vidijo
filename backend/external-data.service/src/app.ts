@@ -76,6 +76,7 @@ class App {
   }
 
   private configureErrorHandling() {
+    /*
     // Boom Errors
     this.app.use(
       (err: any, req: Request, res: Response, next: NextFunction) => {
@@ -98,6 +99,20 @@ class App {
         });
       }
     );
+    */
+    function errorHandler(
+      err: any,
+      req: Request,
+      res: Response,
+      next: NextFunction
+    ) {
+      if (res.headersSent) {
+        return next(err);
+      }
+      res.status(500);
+      res.render("error", { error: err });
+    }
+    this.app.use(errorHandler);
   }
 }
 

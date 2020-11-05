@@ -1,12 +1,8 @@
-import Mongoose, { HookNextFunction } from "mongoose";
-import { Schema } from "mongoose";
-
+import Mongoose, { HookNextFunction, Schema } from "mongoose";
 import * as BCrypt from "bcrypt";
-//import { isEmail, isURL, isAlpha } from "validator";
 import Validator from "validator";
 import MongooseHidden from "mongoose-hidden";
 import MongoosePaginate from "mongoose-paginate-v2";
-
 import { IUser, IUserModel } from "../interfaces/user.interface";
 import { MongoError } from "mongodb";
 
@@ -157,13 +153,12 @@ userSchema.methods.verifyPassword = function (
 };
 
 // Check if the user has the given access rights or higher (return true or false)
-// TODO: Replace with simple string comparison
 userSchema.methods.checkAccessLevel = function (
   this: IUser,
   accessLevelToCheck: "default" | "admin",
   callback: any
 ) {
-  let user: IUser = this as IUser;
+  const user: IUser = this as IUser;
   const accessLevel = user.accessLevel;
 
   switch (accessLevelToCheck) {

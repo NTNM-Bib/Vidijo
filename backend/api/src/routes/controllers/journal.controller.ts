@@ -21,11 +21,12 @@ class JournalController {
   // When created, search its cover
   // Also search and add articles
   public async createJournal(req: Request, res: Response, next: NextFunction) {
-    Axios.post(`${ApiConfig.EXTERNAL_DATA_SERVICE_URI}/v1/journals`, req.body)
-      .then(() => {
-        return res.status(200).json({ created: true });
-      })
-      .catch(next);
+    await Axios.post(
+      `${ApiConfig.EXTERNAL_DATA_SERVICE_URI}/v1/journals`,
+      req.body
+    );
+
+    return res.status(200).json({ created: true });
   }
 
   // Get journals using a query string
@@ -157,26 +158,17 @@ class JournalController {
       });
   }
 
-  // DELETE a journal by its id
-  public deleteJournal(req: Request, res: Response, next: NextFunction) {
-    const id: string = req.params.id;
+  // DELETE a journal by its ID
+  // Also remove all articles from this journal
+  public async deleteJournal(req: Request, res: Response, next: NextFunction) {
+    const journalId: string = req.params.id;
 
-    Journal.deleteOne({ _id: id })
-      .exec()
-      .then((result) => {
-        return res.status(200).json(result);
-      })
-      /*
-      .then((deletedJournal: IJournal | null) => {
-        if (!deletedJournal) {
-          return next(Boom.notFound(`Journal ${id} does not exist`));
-        }
-        return res.status(200).json(deletedJournal);
-      })
-      */
-      .catch((err) => {
-        return next(err);
-      });
+    await Promise.all([
+      Journal.findByIdAndDelete(journalId).exec(),
+      Article.deleteMany({ publishedIn: journalId }).exec(),
+    ]);
+
+    return res.status(200).json({ deleted: journalId });
   }
 
   // Get articles of a journal by its id

@@ -1,7 +1,5 @@
-import Mongoose, { Schema, HookNextFunction } from "mongoose";
+import Mongoose, { Schema } from "mongoose";
 import { IJournal, IJournalModel } from "../interfaces/journal.interface";
-import { Article } from "./article.model";
-
 import MongoosePaginate from "mongoose-paginate-v2";
 
 export const journalSchema: Schema = new Schema(
@@ -78,21 +76,7 @@ journalSchema.virtual("identifier").get(function (this: IJournal) {
 // Set Date when the journal was added
 journalSchema.pre<IJournal>("save", function (next) {
   this.added = new Date();
-  this.updated = new Date();
   return next();
-});
-
-// Delete all articles of the removed journal aswell
-// FIXME: This hook doesn't work properly (this._id is undefined)
-journalSchema.pre<IJournal>("deleteOne", function (next: HookNextFunction) {
-  Article.deleteMany({ publishedIn: this._id })
-    .exec()
-    .then((result) => {
-      return next();
-    })
-    .catch((err) => {
-      return next(err);
-    });
 });
 
 // Increment view counter

@@ -11,23 +11,22 @@ import EscapeStringRegexp from "escape-string-regexp";
 class JournalController {
   // Create a new journal (with cover and articles)
   public async addNewJournal(req: Request, res: Response, next: NextFunction) {
-    try {
-      const savedJournal: IJournal = await addJournalIfNotExists(req.body);
-      return res.status(202).json(savedJournal);
-    } catch (err) {
-      return next(err);
-    }
+    const savedJournal: IJournal = await addJournalIfNotExists(req.body);
+
+    return res.status(202).json(savedJournal);
   }
 
   // Fetch newest articles of the journal with given ID
-  public fetchNewestArticles(req: Request, res: Response, next: NextFunction) {
+  public async fetchNewestArticles(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
     const id: string = req.params.id;
 
-    ArticleCollector.searchAndAddArticles(id)
-      .then(() => {
-        return res.status(200).json({ journalId: id });
-      })
-      .catch(next);
+    await ArticleCollector.searchAndAddArticles(id);
+
+    return res.status(200).json({ journalId: id });
   }
 }
 
@@ -98,13 +97,12 @@ const addJournalIfNotExists = (
 
       // Save journal
       const journal: IJournal = new Journal(journalData);
-      journal.save().then(async (savedJournal: IJournal) => {
-        // TODO: Async cover search. If nothing is found, ignore
-        //CoverCollector.searchAndAddCover(journal._id).then().catch();
-        // Queue article collection after adding journal
-        ArticleCollector.searchAndAddArticles(journal._id).then().catch();
-        return resolve(savedJournal);
-      });
+      await journal.save();
+
+      ArticleCollector.searchAndAddArticles(journal._id).catch();
+      CoverCollector.searchAndAddCover(journal._id).catch();
+
+      return resolve(journal);
     } catch (err) {
       return reject(err);
     }
