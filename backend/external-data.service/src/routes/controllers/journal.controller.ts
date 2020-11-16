@@ -6,27 +6,29 @@ import {
   ArticleCollector,
   JournalCollector,
 } from "../../collectors";
-import EscapeStringRegexp from "escape-string-regexp";
+import CreateError from "http-errors";
 
 class JournalController {
   // Create a new journal (with cover and articles)
-  public async addNewJournal(req: Request, res: Response, next: NextFunction) {
-    const savedJournal: IJournal = await addJournalIfNotExists(req.body);
+  public addNewJournal(req: Request, res: Response, next: NextFunction) {
+    const journal = req.body;
 
-    return res.status(202).json(savedJournal);
+    addJournalIfNotExists(journal)
+      .then((savedJournal) => {
+        return res.status(202).json(savedJournal);
+      })
+      .catch(next);
   }
 
   // Fetch newest articles of the journal with given ID
-  public async fetchNewestArticles(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
+  public fetchNewestArticles(req: Request, res: Response, next: NextFunction) {
     const id: string = req.params.id;
 
-    await ArticleCollector.searchAndAddArticles(id);
-
-    return res.status(200).json({ journalId: id });
+    ArticleCollector.searchAndAddArticles(id)
+      .then(() => {
+        return res.json({ journalId: id });
+      })
+      .catch(next);
   }
 }
 
@@ -41,76 +43,111 @@ class JournalController {
 const addJournalIfNotExists = (
   journalData: any,
   autocomplete: boolean = true
-): Promise<IJournal> => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Need at least one identifier (issn or eissn)
-      if (!journalData.issn || !journalData.eissn) {
-        throw new Error("Must specify at least one identifier (issn or eissn)");
-      }
-
-      // Complete unspecified data (title, issn, eissn)
-      if (
-        autocomplete &&
-        (!journalData.title || !journalData.issn || !journalData.eissn)
-      ) {
-        const searchTerm: string = journalData.eissn
-          ? journalData.eissn
-          : journalData.issn;
-
-        if (!searchTerm.length) {
-          throw new Error(
-            "Journal details are not specified (need at least title, issn or eissn)"
-          );
-        }
-
-        const searchResults: IJournal[] = await JournalCollector.searchJournals(
-          searchTerm
+) =>
+  Promise.resolve(journalData)
+    // Data integrity check
+    .then((data: any) => {
+      if (!(journalData.issn || journalData.eissn))
+        throw CreateError(
+          422,
+          "Must specify at least one identifier (issn or eissn)"
         );
-        const searchResult = searchResults[0];
-        if (searchResult) {
-          journalData.title = journalData.title
-            ? journalData.title
-            : searchResult.title;
-          journalData.issn = journalData.issn
-            ? journalData.issn
-            : searchResult.issn;
-          journalData.eissn = journalData.eissn
-            ? journalData.eissn
-            : searchResult.eissn;
-        }
-      }
 
-      // Check if (completed) journal already exists
+      return data;
+    })
+    // Verify ISSN and eISSN
+    .then((data) => {
+      if (data.issn && !verifyIssn(data.issn))
+        throw CreateError(422, `ISSN ${data.issn} is invalid`);
+      if (data.eissn && !verifyIssn(data.eissn))
+        throw CreateError(422, `eISSN ${data.eissn} is invalid`);
+
+      return new Journal(data);
+    })
+    // Autocomplete journal
+    .then((journal: IJournal) => {
+      if (!autocomplete) return journal;
+
+      const searchTerm = journal.eissn || journal.issn;
+      return JournalCollector.searchJournals(searchTerm)
+        .then((results) => {
+          const result = results[0];
+          journal.title = journal.title || result.title;
+          journal.issn = journal.issn || result.issn;
+          journal.eissn = journal.eissn || result.eissn;
+          return journal;
+        })
+        .catch((err) => {
+          return journal; // Ignore if autocompletion failed
+        });
+    })
+    // Check if journal already exists
+    .then((journal: IJournal) => {
       let conditionsArray = [];
-      if (journalData.issn) conditionsArray.push({ issn: journalData.issn });
-      if (journalData.eissn) conditionsArray.push({ eissn: journalData.eissn });
-      if (journalData.title) conditionsArray.push({ title: journalData.title });
+      if (journal.issn) conditionsArray.push({ issn: journal.issn });
+      if (journal.eissn) conditionsArray.push({ eissn: journal.eissn });
+      if (journal.title) conditionsArray.push({ title: journal.title });
 
       const condition = {
         $or: conditionsArray,
       };
-      const duplicate: IJournal | null = await Journal.findOne(
-        condition
-      ).exec();
-      if (duplicate) throw new Error("Journal already exists");
 
-      // Save journal
-      const journal: IJournal = new Journal(journalData);
-      await journal.save();
+      return Journal.findOne(condition)
+        .exec()
+        .then((duplicate: IJournal | null) => {
+          if (duplicate)
+            throw CreateError(
+              400,
+              `Journal ${journal} already exists in the database`
+            );
 
-      ArticleCollector.searchAndAddArticles(journal._id).catch();
-      CoverCollector.searchAndAddCover(journal._id).catch();
+          return journal;
+        })
+        .catch((err) => {
+          throw CreateError(
+            500,
+            `Cannot check for duplicate of journal ${journal}`
+          );
+        });
+    })
+    // Save journal in the database
+    .then((journal: IJournal) => {
+      return journal
+        .save()
+        .then((savedJournal) => {
+          return savedJournal;
+        })
+        .catch((err) => {
+          throw CreateError(
+            500,
+            `Cannot save journal ${journal} to the database`
+          );
+        });
+    })
+    // Search articles and cover
+    .then((journal) => {
+      return Promise.allSettled([
+        ArticleCollector.searchAndAddArticles(journal._id),
+        CoverCollector.searchAndAddCover(journal._id),
+      ])
+        .then((results) => {
+          return journal;
+        })
+        .catch((err) => {
+          throw CreateError(
+            `Something went wrong when adding articles and cover of the journal ${journal}`
+          );
+        });
+    })
+    .catch((err) => {
+      throw err;
+    });
 
-      return resolve(journal);
-    } catch (err) {
-      return reject(err);
-    }
-  });
-};
-
+/**
+ * Verify the format and check digit of the entered ISSN.
+ * @param issn ISSN (pISSN or eISSN to verify)
+ */
 const verifyIssn = (issn: string): boolean => {
-  issn = EscapeStringRegexp(issn);
   const issnRegex: RegExp = /^[0-9]{4}-[0-9]{3}[0-9xX]$/;
   if (!issnRegex.test(issn)) return false;
 

@@ -1,5 +1,4 @@
 import ExternalDataConfig from "./external-data.config";
-
 import Express from "express";
 import { Request, Response, NextFunction } from "express";
 import BodyParser from "body-parser";
@@ -7,8 +6,7 @@ import CookieParser from "cookie-parser";
 import Cors from "cors";
 import Morgan from "morgan";
 import Colors from "colors";
-import Boom from "@hapi/boom";
-
+import CreateError from "http-errors";
 import { JournalRouter, ArticleRouter, SearchRouter } from "./routes";
 
 class App {
@@ -76,43 +74,29 @@ class App {
   }
 
   private configureErrorHandling() {
-    /*
-    // Boom Errors
-    this.app.use(
-      (err: any, req: Request, res: Response, next: NextFunction) => {
-        if (err.isServer) {
-          // TODO: Don't show specific internal errors to user
-          return next();
-        }
+    function catch404(req: Request, res: Response, next: NextFunction) {
+      return res.status(404).json(CreateError(404));
+    }
 
-        return res.status(err.output.statusCode).json(err.output.payload);
-      }
-    );
-
-    // Server Errors
-    this.app.use(
-      (err: any, req: Request, res: Response, next: NextFunction) => {
-        return res.status(500).json({
-          statusCode: 500,
-          error: err,
-          message: "Internal Server Error",
-        });
-      }
-    );
-    */
     function errorHandler(
-      err: any,
+      err: CreateError.HttpError,
       req: Request,
       res: Response,
       next: NextFunction
     ) {
-      if (res.headersSent) {
-        return next(err);
-      }
-      res.status(500);
-      res.render("error", { error: err });
+      if (res.headersSent) return next(err);
+
+      const statusCode = err.statusCode || 500;
+      const payload =
+        statusCode === 500 ? CreateError(500, "Internal server error") : err;
+
+      if (process.env.NODE_ENV === "development") console.error(err);
+
+      return res.status(statusCode).json(payload);
     }
+
     this.app.use(errorHandler);
+    this.app.use(catch404);
   }
 }
 
