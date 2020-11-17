@@ -124,11 +124,11 @@ const addJournalIfNotExists = (
           );
         });
     })
-    // Search articles and cover
+    // TODO: Search articles and cover
     .then((journal) => {
       return Promise.allSettled([
         ArticleCollector.searchAndAddArticles(journal._id),
-        CoverCollector.searchAndAddCover(journal._id),
+        // CoverCollector.searchAndAddCover(journal._id),
       ])
         .then((results) => {
           return journal;

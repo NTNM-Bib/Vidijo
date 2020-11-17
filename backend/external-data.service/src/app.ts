@@ -8,6 +8,7 @@ import Morgan from "morgan";
 import Colors from "colors";
 import CreateError from "http-errors";
 import { JournalRouter, ArticleRouter, SearchRouter } from "./routes";
+import { Logger } from "./shared";
 
 class App {
   public app: Express.Application;
@@ -90,7 +91,7 @@ class App {
       const payload =
         statusCode === 500 ? CreateError(500, "Internal server error") : err;
 
-      if (process.env.NODE_ENV === "development") console.error(err);
+      Logger.error(new Error(payload.stack || payload.message));
 
       return res.status(statusCode).json(payload);
     }

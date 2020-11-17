@@ -11,61 +11,91 @@ import { DOAJArticle, DOAJResponse } from "./doaj.interface";
  *
  * @param journalId The journal to search and add articles for
  */
-// FIXME: DOAJ returns 429 (too many requests)
 export const searchAndAddArticles = (journalId: string) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      // Get journal identifier
-      const journal: IJournal | null = await Journal.findById(journalId).exec();
-      if (!journal)
-        throw new Error(`Cannot find the journal with ID ${journalId}`);
+  const pageSize = 100;
+  const wait = (delay: number) =>
+    new Promise((resolve) => setTimeout(resolve, delay));
 
-      // Query the first page to get total number of articles
-      const pageSize = 100; // 100 is the max number of DOAJ
-      const firstPageAddedResult = await searchAndAddArticlesPaginated(
-        journalId,
-        journal.identifier,
-        pageSize,
-        1
-      );
+  return (
+    Journal.findById(journalId)
+      .exec()
+      .then((journal) => {
+        if (!journal)
+          throw new Error(`Cannot find the journal with ID ${journalId}`);
 
-      // Create a promise for each page
-      let promises: Promise<{ total: number; added: number }>[] = [];
-      for (let i = 2; i * pageSize < firstPageAddedResult.total; ++i) {
-        const promise = searchAndAddArticlesPaginated(
+        return journal;
+      })
+      .catch((err) => {
+        throw new Error(
+          `Something went wrong when trying to find the journal with ID ${journalId}: ${err}`
+        );
+      })
+      // Get first results page
+      .then((journal) => {
+        return searchAndAddArticlesPaginated(
           journalId,
           journal.identifier,
           pageSize,
-          i
+          1
+        )
+          .then((firstPage) => ({ firstPage: firstPage, journal: journal }))
+          .catch((err) => {
+            throw err;
+          });
+      })
+      // Update journal metadata
+      .then((v) => {
+        const journal = v.journal;
+        journal.updated = new Date();
+        journal.latestPubdate = v.firstPage.latestPubdate || undefined;
+
+        return journal
+          .save()
+          .then((savedJournal) => ({ ...v, journal: savedJournal }))
+          .catch((err) => {
+            throw new Error(`Cannot save journal ${journal} ${err}`);
+          });
+      })
+      // Get remaining pages async
+      .then((v) => {
+        let promises: Promise<{ total: number; added: number }>[] = [];
+        for (let i = 2; i * pageSize < v.firstPage.total; ++i) {
+          const delay = i * 500;
+          const promise = wait(delay)
+            .then(() => {
+              Logger.log(`Getting page ${i}`);
+            })
+            .then(() =>
+              searchAndAddArticlesPaginated(
+                journalId,
+                v.journal.identifier,
+                pageSize,
+                i
+              )
+            );
+
+          promises = [...promises, promise];
+        }
+
+        return Promise.allSettled(promises).then((results) => {
+          const added = results.reduce((acc, settledPromise) => {
+            return acc + (settledPromise.status === "fulfilled" ? 1 : 0);
+          }, 0);
+
+          return { added: added, journal: v.journal };
+        });
+      })
+      .then((v) => {
+        Logger.log(`Added ${v.added} pages of articles to ${v.journal.title}`);
+        return v;
+      })
+      .catch((err) => {
+        throw (
+          (err as Error) ||
+          new Error("Something went wrong in searchAndAddArticles")
         );
-
-        promises = [...promises, promise];
-      }
-
-      // Set new updated date and latestPubdate
-      journal.updated = new Date();
-      journal.latestPubdate = firstPageAddedResult.latestPubdate || undefined;
-      await journal.save();
-
-      // Promise.all() for all possible pages (excluding the first one)
-      Promise.allSettled(promises)
-        .then((results) => {
-          const numberOfAddedArticles = results.reduce(
-            (acc, settledPromise) => {
-              return acc + (settledPromise.status === "fulfilled" ? 1 : 0);
-            },
-            0
-          );
-          Logger.log(
-            `Added ${numberOfAddedArticles} pages of articles to ${journal.title}`
-          );
-          return resolve({ added: numberOfAddedArticles });
-        })
-        .catch();
-    } catch (err) {
-      return reject(err);
-    }
-  });
+      })
+  );
 };
 
 /**
