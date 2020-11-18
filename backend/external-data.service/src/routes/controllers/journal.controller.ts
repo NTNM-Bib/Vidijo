@@ -42,7 +42,8 @@ class JournalController {
  */
 const addJournalIfNotExists = (
   journalData: any,
-  autocomplete: boolean = true
+  autocomplete: boolean = true,
+  shouldVerifyIssn: boolean = false
 ) =>
   Promise.resolve(journalData)
     // Data integrity check
@@ -57,9 +58,9 @@ const addJournalIfNotExists = (
     })
     // Verify ISSN and eISSN
     .then((data) => {
-      if (data.issn && !verifyIssn(data.issn))
+      if (shouldVerifyIssn && data.issn && !verifyIssn(data.issn))
         throw CreateError(422, `ISSN ${data.issn} is invalid`);
-      if (data.eissn && !verifyIssn(data.eissn))
+      if (shouldVerifyIssn && data.eissn && !verifyIssn(data.eissn))
         throw CreateError(422, `eISSN ${data.eissn} is invalid`);
 
       return new Journal(data);

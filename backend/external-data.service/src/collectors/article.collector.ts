@@ -1,5 +1,5 @@
 import Axios, { AxiosResponse } from "axios";
-import { IArticle, IJournal } from "../shared/interfaces";
+import { IArticle } from "../shared/interfaces";
 import { Article, Journal } from "../shared/models";
 import { sanitizeArticle } from "../sanitizer";
 import { Logger } from "../shared";
@@ -13,6 +13,7 @@ import { DOAJArticle, DOAJResponse } from "./doaj.interface";
  */
 export const searchAndAddArticles = (journalId: string) => {
   const pageSize = 100;
+
   const wait = (delay: number) =>
     new Promise((resolve) => setTimeout(resolve, delay));
 
@@ -86,7 +87,9 @@ export const searchAndAddArticles = (journalId: string) => {
         });
       })
       .then((v) => {
-        Logger.log(`Added ${v.added} pages of articles to ${v.journal.title}`);
+        Logger.log(
+          `Added ${v.added} pages containing up to ${pageSize} articles to ${v.journal.title}`
+        );
         return v;
       })
       .catch((err) => {
@@ -111,45 +114,82 @@ const searchAndAddArticlesPaginated = (
   journalIdentifier: string,
   pageSize: number = 100,
   page: number = 1
-): Promise<{ total: number; added: number; latestPubdate: Date }> => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const query: string = `https://doaj.org/api/v1/search/articles/issn:${journalIdentifier}?sort=created_date:desc&page=${page}&pageSize=${pageSize}`;
-      const response: AxiosResponse<DOAJResponse> = await Axios.get(query);
-      const doajJournals: DOAJArticle[] = response.data.results;
+) => {
+  const query: string = `https://doaj.org/api/v1/search/articles/issn:${journalIdentifier}?sort=created_date:desc&page=${page}&pageSize=${pageSize}`;
 
-      const articles: IArticle[] = doajJournals.map((doajArticle) => {
-        const article = {
-          doi:
-            doajArticle.bibjson.identifier.find((value) => value.type === "doi")
-              ?.id || "",
-          publishedIn: journalId,
-          title: doajArticle.bibjson.title,
-          authors: doajArticle.bibjson.author.map((v) => v.name),
-          abstract: doajArticle.bibjson.abstract,
-          pubdate: new Date(doajArticle.created_date),
-        } as IArticle;
+  return (
+    Axios.get(query)
+      // Get articles from DOAJ
+      .then((response: AxiosResponse<DOAJResponse>) => ({
+        doajArticles: response.data.results,
+        total: response.data.total,
+      }))
+      // Transform DOAJ articles to Vidijo articles
+      .then((v) => {
+        const articles = v.doajArticles.map((doajArticle) => {
+          const article = {
+            doi:
+              doajArticle.bibjson.identifier.find((v) => v.type === "doi")
+                ?.id || undefined,
+            publishedIn: journalId,
+            title: doajArticle.bibjson.title || undefined,
+            authors: doajArticle.bibjson.author.map((v) => v.name) || undefined,
+            abstract: doajArticle.bibjson.abstract || undefined,
+            pubdate: new Date(doajArticle.created_date) || undefined,
+          } as IArticle;
 
-        return sanitizeArticle(article);
-      });
-
-      const promises = articles.map((article) => {
-        return new Article(article).save();
-      });
-
-      Promise.allSettled(promises).then((results) => {
-        const numAddedArticles = results.reduce(
-          (acc, v) => acc + (v.status === "fulfilled" ? 1 : 0),
-          0
-        );
-        return resolve({
-          total: response.data.total as number,
-          added: numAddedArticles,
-          latestPubdate: new Date(response.data.results[0].created_date),
+          return article;
         });
-      });
-    } catch (err) {
-      return reject(err);
-    }
-  });
+        return { articles: articles, total: v.total };
+      })
+      // Sanitize articles, reject failed sanitization attempts
+      .then((v) =>
+        Promise.allSettled(
+          v.articles.map((article) => sanitizeArticle(article))
+        )
+          .then((results) => {
+            const sanitizedArticles = results.reduce(
+              (acc, v) => (v.status === "fulfilled" ? [...acc, v.value] : acc),
+              [] as IArticle[]
+            );
+
+            return { articles: sanitizedArticles, total: v.total };
+          })
+          .catch((err) => {
+            throw new Error(
+              `Promise.allSettled threw an unexpected error: ${err}`
+            );
+          })
+      )
+      // Save sanitized articles to the database
+      .then((v) =>
+        Promise.allSettled(
+          v.articles.map((article) => new Article(article).save())
+        )
+          .then((result) => ({
+            total: v.total,
+            added: result.reduce(
+              (acc, v) => (acc + v.status === "fulfilled" ? 1 : 0),
+              0
+            ),
+            latestPubdate:
+              v.articles.sort(
+                (a, b) => b.pubdate.getTime() - a.pubdate.getTime()
+              )[0]?.pubdate || null,
+          }))
+          .catch((err) => {
+            throw new Error(
+              `Unexpected error when trying to save articles: ${err}`
+            );
+          })
+      )
+      .catch((err) => {
+        throw (
+          (err as Error) ||
+          new Error(
+            `Something went wrong in searchAndAddArticlesPaginated(): ${err}`
+          )
+        );
+      })
+  );
 };
