@@ -1,10 +1,10 @@
-import { Document, Model } from "mongoose";
+import { Document, Model } from 'mongoose'
 
 interface ITokenDocument extends Document {
-  user: any;
-  token: string;
-  created: Date;
-  isVerified: boolean;
+  user: any
+  token: string
+  created: Date
+  isVerified: boolean
 }
 
 export interface IToken extends ITokenDocument {}

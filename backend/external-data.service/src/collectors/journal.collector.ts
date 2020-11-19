@@ -1,5 +1,5 @@
-import Axios, { AxiosResponse } from "axios";
-import { IJournal } from "../shared/interfaces";
+import Axios, { AxiosResponse } from 'axios'
+import { IJournal } from '../shared/interfaces'
 
 class JournalCollector {
   // Search journals by search term
@@ -8,54 +8,54 @@ class JournalCollector {
       async (resolve, reject) => {
         const result: AxiosResponse = await Axios.get(
           `https://doaj.org/api/v1/search/journals/${searchTerm}`
-        );
+        )
 
         if (!result) {
-          return reject(new Error("Cannot get journals from DOAJ API"));
+          return reject(new Error('Cannot get journals from DOAJ API'))
         }
 
-        const resultData = result.data;
+        const resultData = result.data
 
         // Get result array
-        let doajJournals;
+        let doajJournals
         try {
-          doajJournals = resultData.results;
+          doajJournals = resultData.results
         } catch (err) {
-          return resolve([]);
+          return resolve([])
         }
 
-        let journals: IJournal[] = [];
+        let journals: IJournal[] = []
         for (let doajJournal of doajJournals) {
-          let bibjson;
+          let bibjson
           try {
-            bibjson = doajJournal.bibjson;
-            let identifiers = bibjson.identifier;
+            bibjson = doajJournal.bibjson
+            let identifiers = bibjson.identifier
 
             // Build resulting journal.
-            let journal: IJournal = {} as IJournal;
-            journal.title = bibjson.title;
+            let journal: IJournal = {} as IJournal
+            journal.title = bibjson.title
 
             for (let identifier of identifiers) {
-              if (identifier.type === "eissn") {
-                journal.eissn = identifier.id;
-              } else if (identifier.type === "pissn") {
-                journal.issn = identifier.id;
+              if (identifier.type === 'eissn') {
+                journal.eissn = identifier.id
+              } else if (identifier.type === 'pissn') {
+                journal.issn = identifier.id
               }
             }
 
             // Push journal to result array.
-            journals.push(journal);
+            journals.push(journal)
           } catch (err) {
             // Continue with next result
           }
         }
 
-        return resolve(journals);
+        return resolve(journals)
       }
-    );
+    )
 
-    return promise;
+    return promise
   }
 }
 
-export default new JournalCollector();
+export default new JournalCollector()

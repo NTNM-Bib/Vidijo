@@ -1,10 +1,5 @@
-import JournalController from "./journal.controller";
-import ArticleController from "./article.controller";
-import SearchController from "./search.controller";
+import JournalController from './journal.controller'
+import ArticleController from './article.controller'
+import SearchController from './search.controller'
 
-
-export {
-    JournalController,
-    ArticleController,
-    SearchController
-}
+export { JournalController, ArticleController, SearchController }

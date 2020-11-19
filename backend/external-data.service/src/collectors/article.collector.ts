@@ -1,9 +1,9 @@
-import Axios, { AxiosResponse } from "axios";
-import { IArticle } from "../shared/interfaces";
-import { Article, Journal } from "../shared/models";
-import { sanitizeArticle } from "../sanitizer";
-import { Logger } from "../shared";
-import { DOAJArticle, DOAJResponse } from "./doaj.interface";
+import Axios, { AxiosResponse } from 'axios'
+import { IArticle } from '../shared/interfaces'
+import { Article, Journal } from '../shared/models'
+import { sanitizeArticle } from '../sanitizer'
+import { Logger } from '../shared'
+import { DOAJResponse } from './doaj.interface'
 
 /**
  * Retrieve articles from the DOAJ API and add them to the given journal
@@ -12,24 +12,24 @@ import { DOAJArticle, DOAJResponse } from "./doaj.interface";
  * @param journalId The journal to search and add articles for
  */
 export const searchAndAddArticles = (journalId: string) => {
-  const pageSize = 100;
+  const pageSize = 100
 
   const wait = (delay: number) =>
-    new Promise((resolve) => setTimeout(resolve, delay));
+    new Promise((resolve) => setTimeout(resolve, delay))
 
   return (
     Journal.findById(journalId)
       .exec()
       .then((journal) => {
         if (!journal)
-          throw new Error(`Cannot find the journal with ID ${journalId}`);
+          throw new Error(`Cannot find the journal with ID ${journalId}`)
 
-        return journal;
+        return journal
       })
       .catch((err) => {
         throw new Error(
           `Something went wrong when trying to find the journal with ID ${journalId}: ${err}`
-        );
+        )
       })
       // Get first results page
       .then((journal) => {
@@ -41,30 +41,30 @@ export const searchAndAddArticles = (journalId: string) => {
         )
           .then((firstPage) => ({ firstPage: firstPage, journal: journal }))
           .catch((err) => {
-            throw err;
-          });
+            throw err
+          })
       })
       // Update journal metadata
       .then((v) => {
-        const journal = v.journal;
-        journal.updated = new Date();
-        journal.latestPubdate = v.firstPage.latestPubdate || undefined;
+        const journal = v.journal
+        journal.updated = new Date()
+        journal.latestPubdate = v.firstPage.latestPubdate || undefined
 
         return journal
           .save()
           .then((savedJournal) => ({ ...v, journal: savedJournal }))
           .catch((err) => {
-            throw new Error(`Cannot save journal ${journal} ${err}`);
-          });
+            throw new Error(`Cannot save journal ${journal} ${err}`)
+          })
       })
       // Get remaining pages async
       .then((v) => {
-        let promises: Promise<{ total: number; added: number }>[] = [];
+        let promises: Promise<{ total: number; added: number }>[] = []
         for (let i = 2; i * pageSize < v.firstPage.total; ++i) {
-          const delay = i * 500;
+          const delay = i * 500
           const promise = wait(delay)
             .then(() => {
-              Logger.log(`Getting page ${i}`);
+              Logger.log(`Getting page ${i}`)
             })
             .then(() =>
               searchAndAddArticlesPaginated(
@@ -73,33 +73,33 @@ export const searchAndAddArticles = (journalId: string) => {
                 pageSize,
                 i
               )
-            );
+            )
 
-          promises = [...promises, promise];
+          promises = [...promises, promise]
         }
 
         return Promise.allSettled(promises).then((results) => {
           const added = results.reduce((acc, settledPromise) => {
-            return acc + (settledPromise.status === "fulfilled" ? 1 : 0);
-          }, 0);
+            return acc + (settledPromise.status === 'fulfilled' ? 1 : 0)
+          }, 0)
 
-          return { added: added, journal: v.journal };
-        });
+          return { added: added, journal: v.journal }
+        })
       })
       .then((v) => {
         Logger.log(
           `Added ${v.added} pages containing up to ${pageSize} articles to ${v.journal.title}`
-        );
-        return v;
+        )
+        return v
       })
       .catch((err) => {
         throw (
           (err as Error) ||
-          new Error("Something went wrong in searchAndAddArticles")
-        );
+          new Error('Something went wrong in searchAndAddArticles')
+        )
       })
-  );
-};
+  )
+}
 
 /**
  * Search and add articles of the given journal.
@@ -115,7 +115,7 @@ const searchAndAddArticlesPaginated = (
   pageSize: number = 100,
   page: number = 1
 ) => {
-  const query: string = `https://doaj.org/api/v1/search/articles/issn:${journalIdentifier}?sort=created_date:desc&page=${page}&pageSize=${pageSize}`;
+  const query: string = `https://doaj.org/api/v1/search/articles/issn:${journalIdentifier}?sort=created_date:desc&page=${page}&pageSize=${pageSize}`
 
   return (
     Axios.get(query)
@@ -129,18 +129,18 @@ const searchAndAddArticlesPaginated = (
         const articles = v.doajArticles.map((doajArticle) => {
           const article = {
             doi:
-              doajArticle.bibjson.identifier.find((v) => v.type === "doi")
+              doajArticle.bibjson.identifier.find((v) => v.type === 'doi')
                 ?.id || undefined,
             publishedIn: journalId,
             title: doajArticle.bibjson.title || undefined,
             authors: doajArticle.bibjson.author.map((v) => v.name) || undefined,
             abstract: doajArticle.bibjson.abstract || undefined,
             pubdate: new Date(doajArticle.created_date) || undefined,
-          } as IArticle;
+          } as IArticle
 
-          return article;
-        });
-        return { articles: articles, total: v.total };
+          return article
+        })
+        return { articles: articles, total: v.total }
       })
       // Sanitize articles, reject failed sanitization attempts
       .then((v) =>
@@ -149,16 +149,16 @@ const searchAndAddArticlesPaginated = (
         )
           .then((results) => {
             const sanitizedArticles = results.reduce(
-              (acc, v) => (v.status === "fulfilled" ? [...acc, v.value] : acc),
+              (acc, v) => (v.status === 'fulfilled' ? [...acc, v.value] : acc),
               [] as IArticle[]
-            );
+            )
 
-            return { articles: sanitizedArticles, total: v.total };
+            return { articles: sanitizedArticles, total: v.total }
           })
           .catch((err) => {
             throw new Error(
               `Promise.allSettled threw an unexpected error: ${err}`
-            );
+            )
           })
       )
       // Save sanitized articles to the database
@@ -169,7 +169,7 @@ const searchAndAddArticlesPaginated = (
           .then((result) => ({
             total: v.total,
             added: result.reduce(
-              (acc, v) => (acc + v.status === "fulfilled" ? 1 : 0),
+              (acc, v) => (acc + v.status === 'fulfilled' ? 1 : 0),
               0
             ),
             latestPubdate:
@@ -180,7 +180,7 @@ const searchAndAddArticlesPaginated = (
           .catch((err) => {
             throw new Error(
               `Unexpected error when trying to save articles: ${err}`
-            );
+            )
           })
       )
       .catch((err) => {
@@ -189,7 +189,7 @@ const searchAndAddArticlesPaginated = (
           new Error(
             `Something went wrong in searchAndAddArticlesPaginated(): ${err}`
           )
-        );
+        )
       })
-  );
-};
+  )
+}

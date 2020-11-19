@@ -1,34 +1,34 @@
-import { Request, Response, NextFunction } from "express";
-import { IJournal } from "../../shared/interfaces";
-import { Journal } from "../../shared/models";
+import { Request, Response, NextFunction } from 'express'
+import { IJournal } from '../../shared/interfaces'
+import { Journal } from '../../shared/models'
 import {
   CoverCollector,
   ArticleCollector,
   JournalCollector,
-} from "../../collectors";
-import CreateError from "http-errors";
+} from '../../collectors'
+import CreateError from 'http-errors'
 
 class JournalController {
   // Create a new journal (with cover and articles)
   public addNewJournal(req: Request, res: Response, next: NextFunction) {
-    const journal = req.body;
+    const journal = req.body
 
     addJournalIfNotExists(journal)
       .then((savedJournal) => {
-        return res.status(202).json(savedJournal);
+        return res.status(202).json(savedJournal)
       })
-      .catch(next);
+      .catch(next)
   }
 
   // Fetch newest articles of the journal with given ID
   public fetchNewestArticles(req: Request, res: Response, next: NextFunction) {
-    const id: string = req.params.id;
+    const id: string = req.params.id
 
     ArticleCollector.searchAndAddArticles(id)
       .then(() => {
-        return res.json({ journalId: id });
+        return res.json({ journalId: id })
       })
-      .catch(next);
+      .catch(next)
   }
 }
 
@@ -51,47 +51,47 @@ const addJournalIfNotExists = (
       if (!(journalData.issn || journalData.eissn))
         throw CreateError(
           422,
-          "Must specify at least one identifier (issn or eissn)"
-        );
+          'Must specify at least one identifier (issn or eissn)'
+        )
 
-      return data;
+      return data
     })
     // Verify ISSN and eISSN
     .then((data) => {
       if (shouldVerifyIssn && data.issn && !verifyIssn(data.issn))
-        throw CreateError(422, `ISSN ${data.issn} is invalid`);
+        throw CreateError(422, `ISSN ${data.issn} is invalid`)
       if (shouldVerifyIssn && data.eissn && !verifyIssn(data.eissn))
-        throw CreateError(422, `eISSN ${data.eissn} is invalid`);
+        throw CreateError(422, `eISSN ${data.eissn} is invalid`)
 
-      return new Journal(data);
+      return new Journal(data)
     })
     // Autocomplete journal
     .then((journal: IJournal) => {
-      if (!autocomplete) return journal;
+      if (!autocomplete) return journal
 
-      const searchTerm = journal.eissn || journal.issn;
+      const searchTerm = journal.eissn || journal.issn
       return JournalCollector.searchJournals(searchTerm)
         .then((results) => {
-          const result = results[0];
-          journal.title = journal.title || result.title;
-          journal.issn = journal.issn || result.issn;
-          journal.eissn = journal.eissn || result.eissn;
-          return journal;
+          const result = results[0]
+          journal.title = journal.title || result.title
+          journal.issn = journal.issn || result.issn
+          journal.eissn = journal.eissn || result.eissn
+          return journal
         })
         .catch((err) => {
-          return journal; // Ignore if autocompletion failed
-        });
+          return journal // Ignore if autocompletion failed
+        })
     })
     // Check if journal already exists
     .then((journal: IJournal) => {
-      let conditionsArray = [];
-      if (journal.issn) conditionsArray.push({ issn: journal.issn });
-      if (journal.eissn) conditionsArray.push({ eissn: journal.eissn });
-      if (journal.title) conditionsArray.push({ title: journal.title });
+      let conditionsArray = []
+      if (journal.issn) conditionsArray.push({ issn: journal.issn })
+      if (journal.eissn) conditionsArray.push({ eissn: journal.eissn })
+      if (journal.title) conditionsArray.push({ title: journal.title })
 
       const condition = {
         $or: conditionsArray,
-      };
+      }
 
       return Journal.findOne(condition)
         .exec()
@@ -100,75 +100,75 @@ const addJournalIfNotExists = (
             throw CreateError(
               400,
               `Journal ${journal} already exists in the database`
-            );
+            )
 
-          return journal;
+          return journal
         })
         .catch((err) => {
           throw CreateError(
             500,
             `Cannot check for duplicate of journal ${journal}`
-          );
-        });
+          )
+        })
     })
     // Save journal in the database
     .then((journal: IJournal) => {
       return journal
         .save()
         .then((savedJournal) => {
-          return savedJournal;
+          return savedJournal
         })
         .catch((err) => {
           throw CreateError(
             500,
             `Cannot save journal ${journal} to the database`
-          );
-        });
+          )
+        })
     })
-    // TODO: Search articles and cover
+    // Search articles and cover
     .then((journal) => {
       return Promise.allSettled([
         ArticleCollector.searchAndAddArticles(journal._id),
-        // CoverCollector.searchAndAddCover(journal._id),
+        CoverCollector.searchAndAddCover(journal._id),
       ])
-        .then((results) => {
-          return journal;
+        .then((_) => {
+          return journal
         })
         .catch((err) => {
           throw CreateError(
-            `Something went wrong when adding articles and cover of the journal ${journal}`
-          );
-        });
+            `Something went wrong when adding articles and cover of the journal ${journal}: ${err}`
+          )
+        })
     })
     .catch((err) => {
-      throw err;
-    });
+      throw err
+    })
 
 /**
  * Verify the format and check digit of the entered ISSN.
  * @param issn ISSN (pISSN or eISSN to verify)
  */
 const verifyIssn = (issn: string): boolean => {
-  const issnRegex: RegExp = /^[0-9]{4}-[0-9]{3}[0-9xX]$/;
-  if (!issnRegex.test(issn)) return false;
+  const issnRegex: RegExp = /^[0-9]{4}-[0-9]{3}[0-9xX]$/
+  if (!issnRegex.test(issn)) return false
 
   // Compute check digit
   // @ https://en.wikipedia.org/wiki/International_Standard_Serial_Number
-  let sum: number = 0;
-  let digitPosition: number = 8;
-  for (const c of issn.split("").slice(0, 8)) {
-    if (c === "-") continue;
-    const digit: number = +c;
-    sum += digit * digitPosition;
-    --digitPosition;
+  let sum: number = 0
+  let digitPosition: number = 8
+  for (const c of issn.split('').slice(0, 8)) {
+    if (c === '-') continue
+    const digit: number = +c
+    sum += digit * digitPosition
+    --digitPosition
   }
-  const checkDigit: number = 11 - (sum % 11);
-  let checkDigitString: string = checkDigit.toString();
+  const checkDigit: number = 11 - (sum % 11)
+  let checkDigitString: string = checkDigit.toString()
   if (checkDigit === 10) {
-    checkDigitString = "X";
+    checkDigitString = 'X'
   }
 
-  return issn[8].toLowerCase() === checkDigitString.toLowerCase();
-};
+  return issn[8].toLowerCase() === checkDigitString.toLowerCase()
+}
 
-export default new JournalController();
+export default new JournalController()

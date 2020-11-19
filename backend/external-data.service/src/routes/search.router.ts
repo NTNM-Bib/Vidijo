@@ -1,9 +1,9 @@
-import { Router } from "express";
-import { SearchController } from "./controllers";
+import { Router } from 'express'
+import { SearchController } from './controllers'
 
-const router: Router = Router();
+const router: Router = Router()
 
 // Search journals in 3rd party services
-router.get("/journals", SearchController.searchJournals);
+router.get('/journals', SearchController.searchJournals)
 
-export default router;
+export default router

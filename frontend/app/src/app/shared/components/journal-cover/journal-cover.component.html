@@ -3,13 +3,13 @@
   <div *ngIf="!triedLoadingCover || coverLoadedSuccessfully">
     <img
       class="background-fill"
-      [src]="journal.cover"
+      [src]="journalCoverUrl"
       (load)="handleCoverLoaded()"
       (error)="handleCoverError()"
     />
     <img
       class="cover-image"
-      [src]="journal.cover"
+      [src]="journalCoverUrl"
       alt="{{ journal.title }} Cover"
     />
   </div>
