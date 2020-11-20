@@ -1,65 +1,108 @@
 <div class="g_content" *ngIf="journal">
-    <section>
-        <div class="g_section-header">
-            <h1>Edit Journal</h1>
-            <p>Edit <i>{{ journal.title }}</i></p>
+  <section>
+    <div class="g_section-header">
+      <h1>Edit Journal</h1>
+      <p>
+        Edit <i>{{ journal.title }}</i>
+      </p>
+    </div>
+    <form [formGroup]="form">
+      <div class="g_section-content split-content">
+        <div class="cover-section">
+          <ngx-dropzone
+            [multiple]="false"
+            (change)="onSelectCover($event)"
+            accept="image/*"
+          >
+            <ngx-dropzone-label>Select new cover</ngx-dropzone-label>
+            <ngx-dropzone-image-preview
+              ngProjectAs="ngx-dropzone-preview"
+              [file]="newCoverFile"
+              [removable]="true"
+              (removed)="onRemoveCover()"
+              *ngIf="newCoverFile"
+            >
+            </ngx-dropzone-image-preview>
+          </ngx-dropzone>
         </div>
-        <form [formGroup]="form">
-            <div class="g_section-content">
-                <mat-form-field>
-                    <input matInput placeholder="Title" formControlName="title">
-                </mat-form-field>
-                <mat-form-field>
-                    <input matInput placeholder="ISSN" formControlName="issn">
-                </mat-form-field>
-                <mat-form-field>
-                    <input matInput placeholder="eISSN" formControlName="eissn">
-                </mat-form-field>
-                <mat-form-field>
-                    <input matInput placeholder="Cover" formControlName="cover">
-                </mat-form-field>
+        <div class="form-fields-section">
+          <mat-form-field>
+            <input matInput placeholder="Title" formControlName="title" />
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput placeholder="ISSN" formControlName="issn" />
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput placeholder="eISSN" formControlName="eissn" />
+          </mat-form-field>
 
-                <mat-form-field>
-                    <mat-chip-list #chipList>
-                        <mat-chip *ngFor="let category of journal.categories" removable
-                            (removed)="removeCategoryFromJournal(category)"
-                            [ngStyle]="{ 'background': category.color, 'color': '#fff' }">
-                            {{ category.title }}
-                            <mat-icon matChipRemove>cancel</mat-icon>
-                        </mat-chip>
-                        <input placeholder="Categories" #categoryInput formControlName="categories"
-                            [matAutocomplete]="auto" [matChipInputFor]="chipList"
-                            [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                            (matChipInputTokenEnd)="addCategoryToJournal($event)">
-                    </mat-chip-list>
-                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectedCategory($event)">
-                        <mat-option *ngFor="let categoryResult of categoriesSearchResults"
-                            [value]="categoryResult">
-                            {{ categoryResult.title }}
-                        </mat-option>
-                    </mat-autocomplete>
-                </mat-form-field>
-            </div>
+          <mat-form-field>
+            <mat-chip-list #chipList>
+              <mat-chip
+                *ngFor="let category of journal.categories"
+                removable
+                (removed)="removeCategoryFromJournal(category)"
+                [ngStyle]="{ background: category.color, color: '#fff' }"
+              >
+                {{ category.title }}
+                <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+              <input
+                placeholder="Categories"
+                #categoryInput
+                formControlName="categories"
+                [matAutocomplete]="auto"
+                [matChipInputFor]="chipList"
+              />
+            </mat-chip-list>
+            <mat-autocomplete
+              #auto="matAutocomplete"
+              (optionSelected)="selectedCategory($event)"
+            >
+              <mat-option
+                *ngFor="let categoryResult of categoriesSearchResults"
+                [value]="categoryResult"
+              >
+                {{ categoryResult.title }}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </div>
+      </div>
 
-            <div [ngClass]="isMobile ? 'g_section-action-row-fixed' : 'g_section-action-row'">
-                <button mat-button color="warn" class="g_neumorphism-button g_side-button-left" type="button"
-                    (click)="confirmDeletingJournal()">
-                    <mat-icon>
-                        delete
-                    </mat-icon>
-                    &nbsp; Delete Journal
-                </button>
+      <div
+        [ngClass]="
+          false ? 'g_section-action-row-fixed' : 'g_section-action-row'
+        "
+      >
+        <button
+          mat-button
+          color="warn"
+          class="g_neumorphism-button g_side-button-left"
+          type="button"
+          (click)="confirmDeletingJournal()"
+        >
+          <mat-icon> delete </mat-icon>
+          &nbsp; Delete Journal
+        </button>
 
-                <button mat-raised-button class="g_rounded-button" type="button" (click)="updateJournalData()">
-                    <mat-icon>
-                        done
-                    </mat-icon>
-                    &nbsp; Save Changes
-                </button>
+        <button
+          mat-raised-button
+          class="g_rounded-button"
+          type="button"
+          (click)="updateJournalData()"
+        >
+          <mat-icon> done </mat-icon>
+          &nbsp; Save Changes
+        </button>
 
-                <!-- Invisible dummy button on the right-->
-                <button mat-icon-button class="g_side-button-right" [hidden]="true"></button>
-            </div>
-        </form>
-    </section>
+        <!-- Invisible dummy button on the right-->
+        <button
+          mat-icon-button
+          class="g_side-button-right"
+          [hidden]="true"
+        ></button>
+      </div>
+    </form>
+  </section>
 </div>

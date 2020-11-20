@@ -5,13 +5,8 @@
  * Extends DefaultConfig
  */
 
-import { DefaultConfigClass } from "./shared/default.config";
+import { DefaultConfigClass } from './shared/default.config'
 
+export class UserConfigClass extends DefaultConfigClass {}
 
-export class UserConfigClass extends DefaultConfigClass {
-
-
-}
-
-
-export default new UserConfigClass();
+export default new UserConfigClass()

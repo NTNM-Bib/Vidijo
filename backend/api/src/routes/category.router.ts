@@ -1,22 +1,22 @@
-import { Router } from "express";
-import { CategoryController } from "./controllers";
-import * as Auth from "../auth";
+import { Router } from 'express'
+import { CategoryController } from './controllers'
+import * as Auth from '../auth'
 
-const router: Router = Router();
+const router: Router = Router()
 
 // GET all categories
-router.get("/", CategoryController.getCategories);
+router.get('/', CategoryController.getCategories)
 
 // GET the categories with given ID
-router.get("/:id", CategoryController.getCategory);
+router.get('/:id', CategoryController.getCategory)
 
 // Create a new categories
-router.post("/", Auth.isAdminUser, CategoryController.createCategory);
+router.post('/', Auth.isAdminUser, CategoryController.createCategory)
 
 // Patch the categories with given ID
-router.patch("/:id", Auth.isAdminUser, CategoryController.patchCategory);
+router.patch('/:id', Auth.isAdminUser, CategoryController.patchCategory)
 
 // Delete the categories with given ID
-router.delete("/:id", Auth.isAdminUser, CategoryController.deleteCategory);
+router.delete('/:id', Auth.isAdminUser, CategoryController.deleteCategory)
 
-export default router;
+export default router

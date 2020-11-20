@@ -1,8 +1,8 @@
-import { Journal, journalSchema } from "./journal.model";
-import { Article, articleSchema } from "./article.model";
-import { User, userSchema } from "./user.model";
-import { Category, categorySchema } from "./category.model";
-import { Token, tokenSchema } from "./token.model";
+import { Journal, journalSchema } from './journal.model'
+import { Article, articleSchema } from './article.model'
+import { User, userSchema } from './user.model'
+import { Category, categorySchema } from './category.model'
+import { Token, tokenSchema } from './token.model'
 
 export {
   Journal,
@@ -15,4 +15,4 @@ export {
   categorySchema,
   Token,
   tokenSchema,
-};
+}

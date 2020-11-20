@@ -1,19 +1,19 @@
-import ApiConfig from "../../api.config";
-import { Request, Response, NextFunction } from "express";
-import Axios, { AxiosResponse } from "axios";
-import { ICategory, IUser } from "../../shared/interfaces";
+import ApiConfig from '../../api.config'
+import { Request, Response, NextFunction } from 'express'
+import Axios, { AxiosResponse } from 'axios'
+import { ICategory, IUser } from '../../shared/interfaces'
 
 class PageController {
   // Get aggregated data for the discover page
   public async getHomePage(req: Request, res: Response, next: NextFunction) {
     // Home page requested, but no one is logged in -> empty home page
     if (!req.user) {
-      return res.status(200).json({});
+      return res.status(200).json({})
     }
 
-    const DAYS_BACK: number = 7;
-    const dateLastWeek: Date = new Date(new Date().getTime());
-    dateLastWeek.setDate(new Date().getDate() - DAYS_BACK);
+    const DAYS_BACK: number = 7
+    const dateLastWeek: Date = new Date(new Date().getTime())
+    dateLastWeek.setDate(new Date().getDate() - DAYS_BACK)
 
     const [
       recentlyUpdatedFavoriteJournalsResponse,
@@ -36,34 +36,34 @@ class PageController {
         }/favoriteJournals?limit=10&select=title cover&sort=+title`
       ),
     ]).catch((err) => {
-      return next(err);
-    });
+      return next(err)
+    })
 
     // Newest articles
-    const newestArticlesPromises: Promise<AxiosResponse<any>>[] = [];
+    const newestArticlesPromises: Promise<AxiosResponse<any>>[] = []
     for (let recentlyUpdatedFavoriteJournal of recentlyUpdatedFavoriteJournalsResponse
       .data.docs) {
       const promise = Axios.get(
         `${ApiConfig.API_URI}/v1/articles?publishedIn=${recentlyUpdatedFavoriteJournal._id}&sort=-pubdate&limit=3&select=title authors pubdate abstract`
-      );
-      newestArticlesPromises.push(promise);
+      )
+      newestArticlesPromises.push(promise)
     }
 
     const newestArticlesResponses: any[] | void = await Promise.all(
       newestArticlesPromises
     ).catch((err) => {
-      return next(err);
-    });
+      return next(err)
+    })
 
     if (!newestArticlesResponses) {
-      return next(new Error("newestArticlesResponses is void"));
+      return next(new Error('newestArticlesResponses is void'))
     }
 
-    let i = 0;
+    let i = 0
     for (let recentlyUpdatedFavoriteJournal of recentlyUpdatedFavoriteJournalsResponse
       .data.docs) {
       recentlyUpdatedFavoriteJournal.newestArticles =
-        newestArticlesResponses[i++].data.docs;
+        newestArticlesResponses[i++].data.docs
     }
 
     // Aggregate data
@@ -72,9 +72,9 @@ class PageController {
         recentlyUpdatedFavoriteJournalsResponse.data.docs,
       lastReadingListArticles: lastReadingListArticlesResponse.data.docs,
       favoriteJournals: favoriteJournalsResponse.data.docs,
-    };
+    }
 
-    return res.status(200).json(homePageData);
+    return res.status(200).json(homePageData)
   }
 
   // Get aggregated data for the discover page
@@ -83,9 +83,9 @@ class PageController {
     res: Response,
     next: NextFunction
   ) {
-    const DAYS_BACK: number = 7;
-    const dateLastWeek: Date = new Date(new Date().getTime());
-    dateLastWeek.setDate(new Date().getDate() - DAYS_BACK);
+    const DAYS_BACK: number = 7
+    const dateLastWeek: Date = new Date(new Date().getTime())
+    dateLastWeek.setDate(new Date().getDate() - DAYS_BACK)
 
     const [
       recentlyUpdatedJournalsResponse,
@@ -106,34 +106,34 @@ class PageController {
         `${ApiConfig.API_URI}/v1/journals?sort=-views&limit=10&select=title cover`
       ),
     ]).catch((err) => {
-      return next(err);
-    });
+      return next(err)
+    })
 
     // Newest articles
-    const newestArticlesPromises: Promise<AxiosResponse<any>>[] = [];
+    const newestArticlesPromises: Promise<AxiosResponse<any>>[] = []
     for (let recentlyUpdatedJournal of recentlyUpdatedJournalsResponse.data
       .docs) {
       const promise = Axios.get(
         `${ApiConfig.API_URI}/v1/articles?publishedIn=${recentlyUpdatedJournal._id}&sort=-pubdate&limit=3&select=title authors pubdate abstract`
-      );
-      newestArticlesPromises.push(promise);
+      )
+      newestArticlesPromises.push(promise)
     }
 
     const newestArticlesResponses: any[] | void = await Promise.all(
       newestArticlesPromises
     ).catch((err) => {
-      return next(err);
-    });
+      return next(err)
+    })
 
     if (!newestArticlesResponses) {
-      return next(new Error("newestArticlesResponses is void"));
+      return next(new Error('newestArticlesResponses is void'))
     }
 
-    let i = 0;
+    let i = 0
     for (let recentlyUpdatedJournal of recentlyUpdatedJournalsResponse.data
       .docs) {
       recentlyUpdatedJournal.newestArticles =
-        newestArticlesResponses[i++].data.docs;
+        newestArticlesResponses[i++].data.docs
     }
 
     // Aggregate data
@@ -142,9 +142,9 @@ class PageController {
       topCategories: topCategoriesResponse.data.docs,
       recentlyAddedJournals: recentlyAddedJournalsResponse.data.docs,
       mostViewedJournals: mostViewedJournalsResponse.data.docs,
-    };
+    }
 
-    return res.status(200).json(discoverPageData);
+    return res.status(200).json(discoverPageData)
   }
 
   // Get aggregated data for the journals page
@@ -154,29 +154,29 @@ class PageController {
     next: NextFunction
   ) {
     // Special categories: all journals & favorite journals (only if logged in)
-    let specialAvailableCategories: ICategory[] = [];
+    let specialAvailableCategories: ICategory[] = []
     specialAvailableCategories.push({
-      _id: "all",
-      title: "All Journals",
-    } as ICategory);
+      _id: 'all',
+      title: 'All Journals',
+    } as ICategory)
     if (req.user) {
       specialAvailableCategories.push({
-        _id: "favorites",
-        title: "Favorite Journals",
-      } as ICategory);
+        _id: 'favorites',
+        title: 'Favorite Journals',
+      } as ICategory)
     }
 
     // Sort
     const possibleSortValues: string[] = [
-      "+title",
-      "-latestPubdate",
-      "-added",
-      "-views",
-    ];
+      '+title',
+      '-latestPubdate',
+      '-added',
+      '-views',
+    ]
     const sort: string =
       possibleSortValues.indexOf(req.query.sort as string) >= 0
         ? (req.query.sort as string)
-        : "+title";
+        : '+title'
 
     let requests: Promise<any>[] = [
       // 1. Available categories
@@ -185,50 +185,50 @@ class PageController {
       // -> Appended in switch
       // 3. Journals
       // -> Appended in switch
-    ];
+    ]
 
     // Limit
-    const limit: number = 20;
+    const limit: number = 20
 
     // Category
-    const category = req.query.category ? req.query.category : "all";
+    const category = req.query.category ? req.query.category : 'all'
     switch (category) {
-      case "":
-      case "all": {
+      case '':
+      case 'all': {
         // Current category
         requests.push(
           new Promise((resolve, reject) => {
             return resolve({
               data: {
-                _id: "all",
-                title: "All Journals",
-                color: "#ffffff",
+                _id: 'all',
+                title: 'All Journals',
+                color: '#ffffff',
               } as ICategory,
-            });
+            })
           })
-        );
+        )
         // Journals
         requests.push(
           Axios.get(
             `${ApiConfig.API_URI}/v1/journals?sort=${sort}&limit=${limit}&select=title cover`
           )
-        );
-        break;
+        )
+        break
       }
 
-      case "favorites": {
+      case 'favorites': {
         // Current category
         requests.push(
           new Promise((resolve, reject) => {
             return resolve({
               data: {
-                _id: "favorites",
-                title: "Favorite Journals",
-                color: "#ffffff",
+                _id: 'favorites',
+                title: 'Favorite Journals',
+                color: '#ffffff',
               } as ICategory,
-            });
+            })
           })
-        );
+        )
         // Journals
         requests.push(
           Axios.get(
@@ -237,22 +237,22 @@ class PageController {
             }/favoriteJournals?sort=${sort}&limit=${limit}&select=title cover`,
             { withCredentials: true }
           )
-        );
-        break;
+        )
+        break
       }
 
       default: {
         // Current category
         requests.push(
           Axios.get(`${ApiConfig.API_URI}/v1/categories/${category}`)
-        );
+        )
         // Journals
         requests.push(
           Axios.get(
             `${ApiConfig.API_URI}/v1/journals?categories[]=${category}&sort=${sort}&limit=${limit}&select=title cover`
           )
-        );
-        break;
+        )
+        break
       }
     }
 
@@ -260,8 +260,8 @@ class PageController {
     const [availableCategories, categoryResponse, journalsResponse]:
       | any[]
       | void = await Promise.all(requests).catch((err) => {
-      return next(err);
-    });
+      return next(err)
+    })
 
     // Aggregate data
     const journalsPageData: any = {
@@ -271,9 +271,9 @@ class PageController {
       category: categoryResponse.data,
       sort: sort,
       journals: journalsResponse.data.docs,
-    };
+    }
 
-    return res.status(200).json(journalsPageData);
+    return res.status(200).json(journalsPageData)
   }
 
   // Get aggregated data for the categories page
@@ -287,20 +287,20 @@ class PageController {
         `${ApiConfig.API_URI}/v1/categories?select=title color&sort=+title`
       ),
     ]).catch((err) => {
-      return next(err);
-    });
+      return next(err)
+    })
 
     // Aggregate data
     const categoriesPageData: any = {
       categories: categoriesResultsResponse.data.docs,
-    };
+    }
 
-    return res.status(200).json(categoriesPageData);
+    return res.status(200).json(categoriesPageData)
   }
 
   // Get aggregated data for the search page
   public async getSearchPage(req: Request, res: Response, next: NextFunction) {
-    const searchQuery: string = req.query.q as string;
+    const searchQuery: string = req.query.q as string
 
     const [
       categoriesResultsResponse,
@@ -317,18 +317,18 @@ class PageController {
         `${ApiConfig.API_URI}/v1/articles?search=${searchQuery}&populate=publishedIn&populateSelect=cover title&sort=-pubdate&limit=15&select=title authors pubdate publishedIn doi`
       ),
     ]).catch((err) => {
-      return next(err);
-    });
+      return next(err)
+    })
 
     // Aggregate data
     const searchPageData: any = {
       categories: categoriesResultsResponse.data.docs,
       journals: journalsResultsResponse.data.docs,
       articles: articlesResultsResponse.data.docs,
-    };
+    }
 
-    return res.status(200).json(searchPageData);
+    return res.status(200).json(searchPageData)
   }
 }
 
-export default new PageController();
+export default new PageController()

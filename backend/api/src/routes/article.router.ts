@@ -1,12 +1,12 @@
-import { Router } from "express";
-import { ArticleController } from "./controllers";
+import { Router } from 'express'
+import { ArticleController } from './controllers'
 
-const router: Router = Router();
+const router: Router = Router()
 
 // GET articles
-router.get("/", ArticleController.getArticles);
+router.get('/', ArticleController.getArticles)
 
 // GET an article by id
-router.get("/:id", ArticleController.getArticleById);
+router.get('/:id', ArticleController.getArticleById)
 
-export default router;
+export default router

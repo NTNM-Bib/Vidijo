@@ -1,6 +1,3 @@
-import UserRouter from "./user.router";
+import UserRouter from './user.router'
 
-
-export {
-  UserRouter
-};
+export { UserRouter }

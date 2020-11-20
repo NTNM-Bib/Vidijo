@@ -1,12 +1,12 @@
-import Mongoose, { Schema } from "mongoose";
-import MongoosePaginate from "mongoose-paginate-v2";
-import { IArticle, IArticleModel } from "../interfaces/article.interface";
+import Mongoose, { Schema } from 'mongoose'
+import MongoosePaginate from 'mongoose-paginate-v2'
+import { IArticle, IArticleModel } from '../interfaces/article.interface'
 
 export const articleSchema: Schema = new Schema(
   {
     publishedIn: {
       type: Schema.Types.ObjectId,
-      ref: "Journal",
+      ref: 'Journal',
     },
 
     doi: {
@@ -16,7 +16,7 @@ export const articleSchema: Schema = new Schema(
 
     title: {
       type: String,
-      default: "",
+      default: '',
     },
 
     authors: {
@@ -26,7 +26,7 @@ export const articleSchema: Schema = new Schema(
 
     abstract: {
       type: String,
-      default: "",
+      default: '',
     },
 
     pubdate: {
@@ -44,31 +44,31 @@ export const articleSchema: Schema = new Schema(
     },
     id: false,
   }
-);
+)
 
-articleSchema.virtual("source").get(function (this: IArticle) {
-  return `https://doi.org/${this.doi}`;
-});
+articleSchema.virtual('source').get(function (this: IArticle) {
+  return `https://doi.org/${this.doi}`
+})
 
 // Let validation fail if article with same DOI already exists
-articleSchema.pre<IArticle>("validate", async function (next) {
+articleSchema.pre<IArticle>('validate', async function (next) {
   const articlesWithSameDOI: IArticle[] = await Article.find({ doi: this.doi })
     .exec()
     .catch((err) => {
-      throw err;
-    });
+      throw err
+    })
 
   if (articlesWithSameDOI.length > 0) {
-    return next(new Error(`Article with DOI ${this.doi} already exists`));
+    return next(new Error(`Article with DOI ${this.doi} already exists`))
   }
 
-  return next();
-});
+  return next()
+})
 
 // Pagination Plugin
-articleSchema.plugin(MongoosePaginate);
+articleSchema.plugin(MongoosePaginate)
 
 export const Article = Mongoose.model<IArticle, IArticleModel>(
-  "Article",
+  'Article',
   articleSchema
-);
+)

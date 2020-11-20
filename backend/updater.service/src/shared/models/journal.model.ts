@@ -1,6 +1,6 @@
-import Mongoose, { Schema } from "mongoose";
-import { IJournal, IJournalModel } from "../interfaces/journal.interface";
-import MongoosePaginate from "mongoose-paginate-v2";
+import Mongoose, { Schema } from 'mongoose'
+import { IJournal, IJournalModel } from '../interfaces/journal.interface'
+import MongoosePaginate from 'mongoose-paginate-v2'
 
 export const journalSchema: Schema = new Schema(
   {
@@ -24,12 +24,12 @@ export const journalSchema: Schema = new Schema(
 
     source: {
       type: String,
-      default: "",
+      default: '',
     },
 
     cover: {
       type: String,
-      default: "",
+      default: '',
     },
 
     added: {
@@ -52,7 +52,7 @@ export const journalSchema: Schema = new Schema(
     categories: [
       {
         type: Mongoose.Schema.Types.ObjectId,
-        ref: "Category",
+        ref: 'Category',
         default: [],
       },
     ],
@@ -67,30 +67,30 @@ export const journalSchema: Schema = new Schema(
     },
     id: false,
   }
-);
+)
 
-journalSchema.virtual("identifier").get(function (this: IJournal) {
-  return this.issn ? this.issn : this.eissn ? this.eissn : "";
-});
+journalSchema.virtual('identifier').get(function (this: IJournal) {
+  return this.issn ? this.issn : this.eissn ? this.eissn : ''
+})
 
 // Set Date when the journal was added
-journalSchema.pre<IJournal>("save", function (next) {
-  this.added = new Date();
-  return next();
-});
+journalSchema.pre<IJournal>('save', function (next) {
+  this.added = new Date()
+  return next()
+})
 
 // Increment view counter
-journalSchema.method("incViews", function (this: IJournal) {
+journalSchema.method('incViews', function (this: IJournal) {
   this.update({ $inc: { views: 1 } })
     .exec()
     .catch((err) => {
-      throw err;
-    });
-});
+      throw err
+    })
+})
 
-journalSchema.plugin(MongoosePaginate);
+journalSchema.plugin(MongoosePaginate)
 
 export const Journal = Mongoose.model<IJournal, IJournalModel>(
-  "Journal",
+  'Journal',
   journalSchema
-);
+)

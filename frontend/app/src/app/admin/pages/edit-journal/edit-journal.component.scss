@@ -1,4 +1,17 @@
 mat-form-field {
-    width: 100%;
-    box-sizing: border-box;
-  }
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.split-content {
+  display: grid;
+  grid-template-columns: 20% 80%;
+}
+
+.cover-section {
+  height: 100%;
+}
+
+.form-field-section {
+  height: 100%;
+}
