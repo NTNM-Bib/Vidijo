@@ -25,6 +25,7 @@ import {
 } from './routes'
 import { Logger } from './shared'
 import CreateError from 'http-errors'
+import FileUpload from 'express-fileupload'
 
 class App {
   public app: Express.Application
@@ -49,6 +50,8 @@ class App {
     this.configurePassport()
 
     this.configureMorgan()
+
+    this.configureFileUpload()
 
     // Router after logger!
     this.configureRoutes()
@@ -187,6 +190,14 @@ class App {
           ':status'
         )} :response-time ms - :res[content-length] ${Colors.green(':body')}`
       )
+    )
+  }
+
+  private configureFileUpload() {
+    this.app.use(
+      FileUpload({
+        createParentPath: true,
+      })
     )
   }
 

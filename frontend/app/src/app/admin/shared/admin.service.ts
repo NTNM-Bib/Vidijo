@@ -8,6 +8,7 @@ import { IUser } from "src/app/users/shared/user.interface";
 import { DatabaseService } from "src/app/core/database/database.service";
 import { IsLoadingService } from "@service-work/is-loading";
 import * as XLSX from "xlsx";
+import { tap } from "rxjs/operators";
 
 @Injectable({
   providedIn: "root",
@@ -92,7 +93,25 @@ export class AdminService {
     return promise;
   }
 
-  // TODO: Edit Journal
+  uploadNewCover(journalId: string, coverFile: File) {
+    const options = {
+      headers: new HttpHeaders({ "Content-Type": "multipart/form-data" }),
+      withCredentials: true,
+    };
+
+    const formData = new FormData();
+    formData.append("cover", coverFile, coverFile.name);
+
+    console.log("Trying to upload new cover");
+    console.table(formData.get("cover"));
+    return this.http
+      .put(
+        `${this.vidijoApiUrl}/journals/${journalId}/cover`,
+        formData,
+        options
+      )
+      .pipe(tap((v) => console.log(v)));
+  }
 
   // Remove the journal with given ID
   public deleteJournal(journalId: string): Promise<IJournal> {
@@ -268,9 +287,9 @@ export class AdminService {
   // Send data to the API to import journals and categories
   private async importData(data: VidijoData) {
     // FIXME: Fails if journal or category already exists -> Ignore already existing journals & categories instead and succeed
-    const categoryPromises: Promise<
-      ICategory
-    >[] = data.categories.map((category) => this.addCategory(category));
+    const categoryPromises: Promise<ICategory>[] = data.categories.map(
+      (category) => this.addCategory(category)
+    );
     await Promise.all(categoryPromises).catch();
 
     const journalPromises: Promise<IJournal>[] = data.journals.map((journal) =>

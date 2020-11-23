@@ -6,6 +6,7 @@ import Axios from 'axios'
 import EscapeStringRegexp from 'escape-string-regexp'
 import Logger from '../../shared/logger'
 import CreateError from 'http-errors'
+import Path from 'path'
 
 const MongoQueryString = require('mongo-querystring')
 const MongoQS = new MongoQueryString({
@@ -181,6 +182,48 @@ class JournalController {
           )
         }
         return res.json(articles)
+      })
+      .catch(next)
+  }
+
+  /**
+   * Upload a new cover for the journal with given ID
+   * @param req
+   * @param res
+   * @param next
+   */
+  public uploadNewCover(req: Request, res: Response, next: NextFunction) {
+    const id = req.params.id
+
+    Promise.resolve()
+      .then(() => {
+        if (!req.files) {
+          throw CreateError(400, 'No file was attached to this request')
+        }
+        return req.files
+      })
+      .then((files) => {
+        if (!files.cover) {
+          throw CreateError(
+            400,
+            'Cannot find a new cover file attached to this request'
+          )
+        }
+        return files.cover
+      })
+      .then((coverFile) => {
+        if (!coverFile.mimetype.startsWith('image'))
+          throw CreateError(
+            400,
+            `You must upload a file with mime type image/*. You uploaded ${coverFile.mimetype}`
+          )
+        return coverFile
+      })
+      .then((coverFile) => {
+        const coverPath = Path.normalize(`/var/vidijo/covers/${id}`)
+        return coverFile.mv(coverPath).then(() => {
+          return res.json({ success: true })
+        })
       })
       .catch(next)
   }

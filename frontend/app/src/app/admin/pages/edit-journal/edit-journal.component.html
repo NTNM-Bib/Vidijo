@@ -17,10 +17,10 @@
             <ngx-dropzone-label>Select new cover</ngx-dropzone-label>
             <ngx-dropzone-image-preview
               ngProjectAs="ngx-dropzone-preview"
-              [file]="newCoverFile"
+              [file]="coverFile"
               [removable]="true"
               (removed)="onRemoveCover()"
-              *ngIf="newCoverFile"
+              *ngIf="coverFile"
             >
             </ngx-dropzone-image-preview>
           </ngx-dropzone>

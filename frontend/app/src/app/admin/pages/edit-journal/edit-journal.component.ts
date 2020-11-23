@@ -25,7 +25,7 @@ export class EditJournalComponent implements OnInit {
 
   categoriesSearchResults: ICategory[] = [];
 
-  newCoverFile: File;
+  coverFile: File;
 
   constructor(
     private journalService: JournalService,
@@ -74,7 +74,6 @@ export class EditJournalComponent implements OnInit {
     this.form.controls["eissn"].setValue(this.journal.eissn);
   }
 
-  // TODO: ALSO UPDATE COVER IF SPECIFIED
   updateJournalData() {
     const updatedJournal = {
       _id: this.journal._id,
@@ -102,6 +101,12 @@ export class EditJournalComponent implements OnInit {
           true
         );
       });
+
+    if (this.coverFile) {
+      this.adminService
+        .uploadNewCover(this.journal._id, this.coverFile)
+        .subscribe();
+    }
   }
 
   confirmDeletingJournal() {
@@ -161,10 +166,35 @@ export class EditJournalComponent implements OnInit {
 
   // Cover dropzone
   onSelectCover(event) {
-    this.newCoverFile = event.addedFiles[0];
+    this.coverFile = event.addedFiles[0];
   }
 
   onRemoveCover() {
-    this.newCoverFile = null;
+    this.coverFile = null;
   }
+
+  /*
+  getCurrentCover() {
+    console.log("Getting cover...");
+    const url = `/static/covers/${this.journal._id}`;
+    fetch(url)
+      .then((response) => {
+        console.log("Response", response);
+        if (response.status !== 200) {
+          throw new Error(`Cannot get cover of journal ${this.journal._id}`);
+        }
+
+        return response;
+      })
+      .then((response) => response.blob().then((blob) => blob))
+      .then((blob) => {
+        const file = new File([blob], `${this.journal._id}`);
+
+        this.coverFile = file;
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
+  */
 }
