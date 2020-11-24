@@ -7,6 +7,7 @@ import { AlertService } from "src/app/core/alert/alert.service";
 import { AdminService } from "../../shared/admin.service";
 import { ICategory } from "src/app/journals/shared/category.interface";
 import { debounceTime } from "rxjs/operators";
+import { Location } from "@angular/common";
 
 @Component({
   selector: "app-edit-journal",
@@ -31,7 +32,8 @@ export class EditJournalComponent implements OnInit {
     private journalService: JournalService,
     private adminService: AdminService,
     private route: ActivatedRoute,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private location: Location
   ) {}
 
   ngOnInit() {
@@ -86,27 +88,44 @@ export class EditJournalComponent implements OnInit {
     this.journalService
       .updateJournal(updatedJournal)
       .then((updatedJournal: IJournal) => {
-        this.alertService.showSnackbarAlert(
-          `Successfully updated journal`,
-          "Okay",
-          () => {}
-        );
+        if (this.coverFile) {
+          this.adminService
+            .uploadNewCover(this.journal._id, this.coverFile)
+            .subscribe(
+              (_) => {
+                this.alertService.showSnackbarAlert(
+                  `Successfully updated journal data and cover`,
+                  "Okay",
+                  () => {}
+                );
+              },
+              (err: Error) => {
+                this.alertService.showSnackbarAlert(
+                  `Cannot upload new cover: ${err.message}`,
+                  "Okay",
+                  () => {},
+                  5000,
+                  true
+                );
+              }
+            );
+        } else {
+          this.alertService.showSnackbarAlert(
+            `Successfully updated journal data`,
+            "Okay",
+            () => {}
+          );
+        }
       })
       .catch((err: Error) => {
         this.alertService.showSnackbarAlert(
-          `Cannot update journal`,
+          `Cannot update journal data: ${err.message}`,
           "Okay",
           () => {},
           5000,
           true
         );
       });
-
-    if (this.coverFile) {
-      this.adminService
-        .uploadNewCover(this.journal._id, this.coverFile)
-        .subscribe();
-    }
   }
 
   confirmDeletingJournal() {
@@ -130,6 +149,9 @@ export class EditJournalComponent implements OnInit {
           `Okay`,
           () => {}
         );
+      })
+      .then((_) => {
+        this.location.back();
       })
       .catch((err: Error) => {
         this.alertService.showSnackbarAlert(

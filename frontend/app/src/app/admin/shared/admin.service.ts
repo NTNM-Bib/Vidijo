@@ -8,7 +8,7 @@ import { IUser } from "src/app/users/shared/user.interface";
 import { DatabaseService } from "src/app/core/database/database.service";
 import { IsLoadingService } from "@service-work/is-loading";
 import * as XLSX from "xlsx";
-import { tap } from "rxjs/operators";
+//import * as Sharp from "sharp";
 
 @Injectable({
   providedIn: "root",
@@ -93,24 +93,40 @@ export class AdminService {
     return promise;
   }
 
+  /*
+  private resizeCover(coverFile: File) {
+    coverFile.arrayBuffer().then((arrayBuffer) => {
+      const buffer = Buffer.from(arrayBuffer);
+
+      Sharp(buffer)
+        .resize(200, 300)
+        .toBuffer()
+        .then((buffer) => {
+          const s = `${buffer}`;
+          console.log(s);
+        });
+    });
+
+    return coverFile;
+  }
+  */
+
   uploadNewCover(journalId: string, coverFile: File) {
     const options = {
-      headers: new HttpHeaders({ "Content-Type": "multipart/form-data" }),
+      headers: new HttpHeaders({}), // doesn't work when specifying Content-Type: multipart/form-data
       withCredentials: true,
     };
+
+    //coverFile = this.resizeCover(coverFile);
 
     const formData = new FormData();
     formData.append("cover", coverFile, coverFile.name);
 
-    console.log("Trying to upload new cover");
-    console.table(formData.get("cover"));
-    return this.http
-      .put(
-        `${this.vidijoApiUrl}/journals/${journalId}/cover`,
-        formData,
-        options
-      )
-      .pipe(tap((v) => console.log(v)));
+    return this.http.put(
+      `${this.vidijoApiUrl}/journals/${journalId}/cover`,
+      formData,
+      options
+    );
   }
 
   // Remove the journal with given ID

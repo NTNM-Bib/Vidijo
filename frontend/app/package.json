@@ -33,6 +33,7 @@
     "ngx-color-picker": "^9.1.0",
     "ngx-dropzone": "^2.2.2",
     "rxjs": "^6.6.3",
+    "sharp": "^0.26.3",
     "tslib": "^1.14.1",
     "xlsx": "^0.16.8",
     "zone.js": "~0.10.3"
@@ -49,6 +50,7 @@
     "@types/jasminewd2": "^2.0.8",
     "@types/lodash": "^4.14.164",
     "@types/node": "~8.9.4",
+    "@types/sharp": "^0.26.1",
     "codelyzer": "^5.2.2",
     "jasmine-core": "~2.99.1",
     "jasmine-spec-reporter": "~4.2.1",
