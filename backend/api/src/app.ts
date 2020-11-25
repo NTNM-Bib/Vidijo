@@ -22,6 +22,7 @@ import {
   UserRouter,
   AuthRouter,
   PageRouter,
+  ImporterRouter,
 } from './routes'
 import { Logger } from './shared'
 import CreateError from 'http-errors'
@@ -171,6 +172,7 @@ class App {
     this.app.use('/v1/categories', CategoryRouter)
     this.app.use('/v1/users', UserRouter)
     this.app.use('/v1/auth', AuthRouter)
+    this.app.use('/v1/import', ImporterRouter)
   }
 
   private configureMorgan() {
