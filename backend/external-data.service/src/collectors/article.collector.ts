@@ -115,7 +115,7 @@ const searchAndAddArticlesPaginated = (
   pageSize: number = 100,
   page: number = 1
 ) => {
-  const query: string = `https://doaj.org/api/v1/search/articles/issn:${journalIdentifier}?sort=created_date:desc&page=${page}&pageSize=${pageSize}`
+  const query: string = `https://doaj.org/api/v2/search/articles/issn:${journalIdentifier}?sort=created_date:desc&page=${page}&pageSize=${pageSize}`
 
   return (
     Axios.get(query)

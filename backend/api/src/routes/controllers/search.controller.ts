@@ -8,11 +8,9 @@ class SearchController {
     const searchTerm: string = req.query.term as string
 
     Axios.get(
-      `${ApiConfig.EXTERNAL_DATA_SERVICE_URI}/v1/search/journals?term=${searchTerm}`
+      `${ApiConfig.EXTERNAL_DATA_SERVICE_URI}/v1/search/journals-partitioned?term=${searchTerm}`
     )
-      .then((response) => {
-        return res.json(response.data)
-      })
+      .then((response) => res.json(response.data))
       .catch(next)
   }
 }

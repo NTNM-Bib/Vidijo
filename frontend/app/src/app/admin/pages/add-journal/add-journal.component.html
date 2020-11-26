@@ -2,10 +2,13 @@
   <section>
     <div class="g_section-header">
       <h1>Add Journals</h1>
-      <p>
-        Search Journals to add to
-        <i>{{ category.title }}</i> or import your journals list
-      </p>
+      <p>Search journals in DOAJ or import your list of journals</p>
+      <!--
+        <p>
+          Search Journals to add to
+          <i>{{ category.title }}</i> or import your journals list
+        </p>
+      -->
     </div>
   </section>
 
@@ -23,20 +26,7 @@
   </section>
   <section *ngIf="noSearchResults"></section>
 
-  <section *ngIf="journalResultsInVidijo.length > 0">
-    <div class="g_section-header">
-      <h2>Installed</h2>
-    </div>
-    <div class="g_section-content">
-      <app-journals-list
-        [journals]="journalResultsInVidijo"
-        [showAddButton]="true"
-      >
-      </app-journals-list>
-    </div>
-  </section>
-
-  <section *ngIf="journalResultsInDOAJ.length > 0">
+  <section *ngIf="journalResultsInDOAJ.length">
     <div class="g_section-header">
       <h2>Not Installed</h2>
     </div>
@@ -44,6 +34,19 @@
       <app-journals-list
         [journals]="journalResultsInDOAJ"
         [showInstallButton]="true"
+      >
+      </app-journals-list>
+    </div>
+  </section>
+
+  <section *ngIf="journalResultsInVidijo.length">
+    <div class="g_section-header">
+      <h2>Installed</h2>
+    </div>
+    <div class="g_section-content">
+      <app-journals-list
+        [journals]="journalResultsInVidijo"
+        [showAddButton]="false"
       >
       </app-journals-list>
     </div>
@@ -77,10 +80,11 @@
         </p>
       </div>
       <!-- File info -->
-      <div *ngIf="data">
+      <div *ngIf="info">
         <p>
-          This file contains <span>{{ data.journals.length }}</span> journals
-          and <span>{{ data.categories.length }}</span> categories
+          This file contains
+          <span>{{ info.journalsOnList }}</span> journals.
+          <span>{{ info.journalsToAdd }}</span> are new and will be added.
         </p>
       </div>
     </div>
@@ -88,7 +92,7 @@
       <button
         mat-button
         class="g_rounded-button"
-        [disabled]="!journalsListFile"
+        [disabled]="!info"
         (click)="importJournalsList()"
       >
         Import Journals

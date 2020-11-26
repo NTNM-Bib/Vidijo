@@ -8,6 +8,7 @@ import { IUser } from "src/app/users/shared/user.interface";
 import { DatabaseService } from "src/app/core/database/database.service";
 import { IsLoadingService } from "@service-work/is-loading";
 import * as XLSX from "xlsx";
+import { tap } from "rxjs/operators";
 //import * as Sharp from "sharp";
 
 @Injectable({
@@ -40,28 +41,18 @@ export class AdminService {
     this.adminModeActive.next(false);
   }
 
-  public searchJournalsInDOAJ(searchTerm: string): Promise<IJournal[]> {
-    const promise: Promise<IJournal[]> = new Promise((resolve, reject) => {
-      this.isLoadingService.add();
-
-      this.http
-        .get<IJournal[]>(
-          `${this.vidijoApiUrl}/search?term=${searchTerm}`,
-          this.httpOptions
-        )
-        .subscribe(
-          (journalsFromDOAJ: IJournal[]) => {
-            this.isLoadingService.remove();
-            return resolve(journalsFromDOAJ);
-          },
-          (err: Error) => {
-            this.isLoadingService.remove();
-            return reject(err);
-          }
-        );
-    });
-
-    return promise;
+  public searchJournalsInDOAJ(searchTerm: string) {
+    this.isLoadingService.add();
+    return this.http
+      .get<{
+        alreadyExistingJournals: IJournal[];
+        availableJournals: IJournal[];
+      }>(`${this.vidijoApiUrl}/search?term=${searchTerm}`, this.httpOptions)
+      .pipe(
+        tap((_) => {
+          this.isLoadingService.remove();
+        })
+      );
   }
 
   // Add a new journal from DOAJ to Vidijo
@@ -294,50 +285,43 @@ export class AdminService {
     return promise;
   }
 
-  // Import data from an .xlsx file
-  async importXlsx(xlsxFile: File): Promise<any> {
-    const data: VidijoData = await this.xlsxToJson(xlsxFile);
-    return this.importData(data);
+  /**
+   * Get information about the uploaded .xlsx file
+   * E.g. how many journals are on the list, how many will be added, ...
+   * @param xlsxFile
+   */
+  public getXLSXInfo(xlsxFile: File) {
+    const options = {
+      headers: new HttpHeaders({}),
+      withCredentials: true,
+    };
+
+    const body = new FormData();
+    body.append("vidijodata", xlsxFile, xlsxFile.name);
+
+    return this.http.post(
+      `${this.vidijoApiUrl}/import/xlsx/info`,
+      body,
+      options
+    );
   }
 
-  // Send data to the API to import journals and categories
-  private async importData(data: VidijoData) {
-    // FIXME: Fails if journal or category already exists -> Ignore already existing journals & categories instead and succeed
-    const categoryPromises: Promise<ICategory>[] = data.categories.map(
-      (category) => this.addCategory(category)
-    );
-    await Promise.all(categoryPromises).catch();
+  /**
+   * Upload the .xlsx file to the server
+   * The server imports the journals in the background
+   */
+  public uploadXLSX(xlsxFile: File) {
+    const options = {
+      headers: new HttpHeaders({}),
+      withCredentials: true,
+    };
 
-    const journalPromises: Promise<IJournal>[] = data.journals.map((journal) =>
-      this.addJournal(journal)
-    );
-    await Promise.all(journalPromises).catch();
-  }
+    const body = new FormData();
+    body.append("vidijodata", xlsxFile, xlsxFile.name);
 
-  // Convert XLSX to JSON (VidijoData)
-  async xlsxToJson(dataFile: File): Promise<VidijoData> {
-    const promise: Promise<VidijoData> = new Promise((resolve, reject) => {
-      const data = { journals: [], categories: [] } as VidijoData;
-
-      const reader: FileReader = new FileReader();
-      reader.onload = (e: any) => {
-        const binaryString: string = e.target.result;
-        const workbook: XLSX.WorkBook = XLSX.read(binaryString, {
-          type: "binary",
-        });
-        const journals = <any[]>(
-          XLSX.utils.sheet_to_json(workbook.Sheets["journals"])
-        );
-        for (let journal of journals) {
-          data.journals.push(journal as IJournal);
-        }
-        return resolve(data);
-      };
-
-      reader.readAsBinaryString(dataFile);
-    });
-
-    return promise;
+    return this.http
+      .post(`${this.vidijoApiUrl}/import/xlsx`, body, options)
+      .pipe(tap((uploaded) => console.log(uploaded)));
   }
 }
 

@@ -24,7 +24,7 @@ export class AddJournalComponent implements OnInit {
   noSearchResults: boolean = true;
 
   journalsListFile: File;
-  data: VidijoData;
+  info: any = null;
 
   constructor(
     private journalService: JournalService,
@@ -100,12 +100,21 @@ export class AddJournalComponent implements OnInit {
           });
       }
 
-      this.adminService
-        .searchJournalsInDOAJ(searchTerm)
-        .then((journalsFromDOAJ: IJournal[]) => {
-          this.journalResultsInDOAJ = journalsFromDOAJ;
-        })
-        .catch();
+      this.adminService.searchJournalsInDOAJ(searchTerm).subscribe(
+        (result) => {
+          this.journalResultsInDOAJ = result.availableJournals;
+          this.journalResultsInVidijo = result.alreadyExistingJournals;
+        },
+        (err) => {
+          this.alertService.showSnackbarAlert(
+            `Something went wrong when searching journals: ${err}`,
+            "Okay",
+            () => {},
+            5000,
+            true
+          );
+        }
+      );
     });
 
     return promise;
@@ -115,22 +124,25 @@ export class AddJournalComponent implements OnInit {
   onSelect(event) {
     this.journalsListFile = event.addedFiles[0];
 
-    this.adminService
-      .xlsxToJson(this.journalsListFile)
-      .then((data: VidijoData) => {
-        this.data = data;
-      });
+    this.adminService.getXLSXInfo(this.journalsListFile).subscribe(
+      (info) => {
+        this.info = info;
+      },
+      (err) => {
+        console.error(err);
+      }
+    );
   }
 
   onRemove() {
     this.journalsListFile = null;
-    this.data = null;
+    this.info = null;
   }
 
   importJournalsList() {
     if (!this.journalsListFile) return;
 
-    this.adminService.importXlsx(this.journalsListFile).then(
+    this.adminService.uploadXLSX(this.journalsListFile).subscribe(
       (success) => {
         this.alertService.showDialogAlert(
           "Imported Journals",

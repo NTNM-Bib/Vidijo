@@ -17,7 +17,12 @@ class ImporterController {
    * @param next
    */
   public importXLSX(req: Request, res: Response, next: NextFunction) {
-    // TODO: Implement
+    Promise.resolve(req)
+      .then(checkUploadedFile)
+      .then(convertXLSXToVidijoData)
+      .then(importVidijoData)
+      .then((status) => res.json(status))
+      .catch(next)
   }
 
   /**
@@ -32,11 +37,42 @@ class ImporterController {
       .then(checkUploadedFile)
       .then(convertXLSXToVidijoData)
       .then(createInfoObject)
-      .then((info) => {
-        return res.json(info)
-      })
+      .then((info) => res.json(info))
       .catch(next)
   }
+}
+
+/**
+ * Import the journals contained in the given VidijoData object from DOAJ
+ * FIXME: Currently tries to get all articles immediately which overloads the DOAJ API
+ *
+ * @param vidijoData
+ */
+function importVidijoData(vidijoData: VidijoData) {
+  const wait = (delay: number) =>
+    new Promise((resolve) => setTimeout(resolve, delay))
+
+  let promises: Promise<any>[] = []
+  for (let i = 0; i < vidijoData.journals.length; ++i) {
+    const journal = vidijoData.journals[i]
+    const delay = i * 500
+    const promise = wait(delay)
+      .then(() => {
+        Logger.log(`Importing journal ${journal.eissn ?? journal.issn}`)
+      })
+      .then(() =>
+        wait(delay).then(() =>
+          Axios.post(
+            `${ApiConfig.EXTERNAL_DATA_SERVICE_URI}/v1/journals`,
+            journal
+          )
+        )
+      )
+
+    promises = [...promises, promise]
+  }
+
+  return Promise.allSettled(promises)
 }
 
 /**
@@ -56,15 +92,9 @@ function createInfoObject(vidijoData: VidijoData): Promise<VidijoDataInfo> {
     [] as string[]
   )
 
-  //const issnQuery = Journal.where('issn').in(issnArray).count()
   const journalsToAddQuery = Journal.find({
     $or: [{ issn: { $in: issnArray } }, { eissn: { $in: eissnArray } }],
   }).count()
-  //const journalsQuery = Journal.find().count().exec()
-  /*
-  const eissnQuery = Journal.where('eissn').in(eissnArray).select('_id')
-  const journalsQuery = issnQuery.intersects(eissnQuery).count()
-  */
 
   return journalsToAddQuery.exec().then(async (alreadyExisting) => {
     return {
@@ -73,18 +103,6 @@ function createInfoObject(vidijoData: VidijoData): Promise<VidijoDataInfo> {
       journalsToAdd: vidijoData.journals.length - alreadyExisting,
     } as VidijoDataInfo
   })
-
-  /*
-  return issnQuery.exec().then((alreadyExisting) => {
-    const numJournals = vidijoData.journals.reduce((acc) => acc + 1, 0)
-    const info = {
-      journals: numJournals,
-      newJournals: numJournals - alreadyExisting,
-    } as VidijoDataInfo
-
-    return info
-  })
-  */
 }
 
 /**
