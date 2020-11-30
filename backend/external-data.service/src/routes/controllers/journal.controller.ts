@@ -8,28 +8,26 @@ import {
 } from '../../collectors'
 import CreateError from 'http-errors'
 
-class JournalController {
-  // Create a new journal (with cover and articles)
-  public addNewJournal(req: Request, res: Response, next: NextFunction) {
-    const journal = req.body
+// Create a new journal (with cover and articles)
+export function addNewJournal(req: Request, res: Response, next: NextFunction) {
+  const journal = req.body
 
-    addJournalIfNotExists(journal)
-      .then((savedJournal) => {
-        return res.status(202).json(savedJournal)
-      })
-      .catch(next)
-  }
+  addJournalIfNotExists(journal)
+    .then((savedJournal) => res.status(202).json(savedJournal))
+    .catch(next)
+}
 
-  // Fetch newest articles of the journal with given ID
-  public fetchNewestArticles(req: Request, res: Response, next: NextFunction) {
-    const id: string = req.params.id
+// Fetch newest articles of the journal with given ID
+export function fetchNewestArticles(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const id: string = req.params.id
 
-    ArticleCollector.searchAndAddArticles(id)
-      .then(() => {
-        return res.json({ journalId: id })
-      })
-      .catch(next)
-  }
+  ArticleCollector.searchAndAddArticles(id)
+    .then(() => res.json({ journalId: id }))
+    .catch(next)
 }
 
 /**
@@ -40,7 +38,7 @@ class JournalController {
  * Only returns an error if the journal itself could not be added
  * If adding the cover or adding the articles failed, return an info object
  */
-const addJournalIfNotExists = (
+export const addJournalIfNotExists = (
   journalData: any,
   autocomplete: boolean = true,
   shouldVerifyIssn: boolean = false
@@ -69,13 +67,13 @@ const addJournalIfNotExists = (
     .then((journal: IJournal) => {
       if (!autocomplete) return journal
 
-      const searchTerm = journal.eissn || journal.issn
+      const searchTerm = journal.eissn ?? journal.issn
       return JournalCollector.searchJournals(searchTerm)
         .then((results) => {
           const result = results[0]
-          journal.title = journal.title || result.title
-          journal.issn = journal.issn || result.issn
-          journal.eissn = journal.eissn || result.eissn
+          journal.title = journal.title ?? result.title
+          journal.issn = journal.issn ?? result.issn
+          journal.eissn = journal.eissn ?? result.eissn
           return journal
         })
         .catch((err) => {
@@ -113,27 +111,22 @@ const addJournalIfNotExists = (
     })
     // Save journal in the database
     .then((journal: IJournal) => {
-      return journal
-        .save()
-        .then((savedJournal) => {
-          return savedJournal
-        })
-        .catch((err) => {
-          throw CreateError(
-            500,
-            `Cannot save journal ${journal} to the database`
-          )
-        })
+      return journal.save().catch((err) => {
+        throw CreateError(500, `Cannot save journal ${journal} to the database`)
+      })
     })
-    // Search articles and cover
+    // Search the newest 100 articles and a cover
     .then((journal) => {
       return Promise.allSettled([
-        ArticleCollector.searchAndAddArticles(journal._id),
+        ArticleCollector.searchAndAddArticlesPaginated(
+          journal._id,
+          journal.identifier,
+          100,
+          1
+        ),
         CoverCollector.searchAndAddCover(journal._id),
       ])
-        .then((_) => {
-          return journal
-        })
+        .then((_) => journal)
         .catch((err) => {
           throw CreateError(
             `Something went wrong when adding articles and cover of the journal ${journal}: ${err}`
@@ -148,7 +141,7 @@ const addJournalIfNotExists = (
  * Verify the format and check digit of the entered ISSN.
  * @param issn ISSN (pISSN or eISSN to verify)
  */
-const verifyIssn = (issn: string): boolean => {
+export function verifyIssn(issn: string): boolean {
   const issnRegex: RegExp = /^[0-9]{4}-[0-9]{3}[0-9xX]$/
   if (!issnRegex.test(issn)) return false
 
@@ -170,5 +163,3 @@ const verifyIssn = (issn: string): boolean => {
 
   return issn[8].toLowerCase() === checkDigitString.toLowerCase()
 }
-
-export default new JournalController()

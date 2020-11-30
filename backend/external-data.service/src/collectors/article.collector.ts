@@ -109,7 +109,7 @@ export const searchAndAddArticles = (journalId: string) => {
  * @param pageSize
  * @param page
  */
-const searchAndAddArticlesPaginated = (
+export const searchAndAddArticlesPaginated = (
   journalId: string,
   journalIdentifier: string,
   pageSize: number = 100,

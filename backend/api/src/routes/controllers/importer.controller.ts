@@ -8,43 +8,41 @@ import { IJournal, VidijoData, VidijoDataInfo } from '../../shared/interfaces'
 import { Logger } from '../../shared'
 import { Journal } from '../../shared/models'
 
-class ImporterController {
-  /**
-   * Import the uploaded list of Vidijo data to this route
-   *
-   * @param req
-   * @param res
-   * @param next
-   */
-  public importXLSX(req: Request, res: Response, next: NextFunction) {
-    Promise.resolve(req)
-      .then(checkUploadedFile)
-      .then(convertXLSXToVidijoData)
-      .then(importVidijoData)
-      .then((status) => res.json(status))
-      .catch(next)
-  }
+/**
+ * Import the uploaded list of Vidijo data to this route
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
+export function importXLSX(req: Request, res: Response, next: NextFunction) {
+  Promise.resolve(req)
+    .then(checkUploadedFile)
+    .then(convertXLSXToVidijoData)
+    .then(importVidijoData)
+    .then((status) => res.json(status))
+    .catch(next)
+}
 
-  /**
-   * Return the amount of new journals, ... in the provided .xlsx file
-   *
-   * @param req
-   * @param res
-   * @param next
-   */
-  public checkXLSX(req: Request, res: Response, next: NextFunction) {
-    Promise.resolve(req)
-      .then(checkUploadedFile)
-      .then(convertXLSXToVidijoData)
-      .then(createInfoObject)
-      .then((info) => res.json(info))
-      .catch(next)
-  }
+/**
+ * Return the amount of new journals, ... in the provided .xlsx file
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
+export function checkXLSX(req: Request, res: Response, next: NextFunction) {
+  Promise.resolve(req)
+    .then(checkUploadedFile)
+    .then(convertXLSXToVidijoData)
+    .then(createInfoObject)
+    .then((info) => res.json(info))
+    .catch(next)
 }
 
 /**
  * Import the journals contained in the given VidijoData object from DOAJ
- * FIXME: Currently tries to get all articles immediately which overloads the DOAJ API
+ * Only saves the first page of articles (at most 100)
  *
  * @param vidijoData
  */
@@ -55,7 +53,7 @@ function importVidijoData(vidijoData: VidijoData) {
   let promises: Promise<any>[] = []
   for (let i = 0; i < vidijoData.journals.length; ++i) {
     const journal = vidijoData.journals[i]
-    const delay = i * 500
+    const delay = i * 3000
     const promise = wait(delay)
       .then(() => {
         Logger.log(`Importing journal ${journal.eissn ?? journal.issn}`)
@@ -154,5 +152,3 @@ function checkUploadedFile(req: Request) {
 
   return req.files.vidijodata
 }
-
-export default new ImporterController()

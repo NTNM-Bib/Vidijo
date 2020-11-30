@@ -124,11 +124,7 @@ export const searchAndAddCover = (journalId: string) =>
 
           return url
         })
-        .then((url) =>
-          saveCoverToFileSystem(url, journalId).then((_) => {
-            Logger.log(`Downloaded the cover from ${url}`)
-          })
-        )
+        .then((url) => saveCoverToFileSystem(url, journalId).then())
     )
     .catch((err) => {
       Logger.log(`Cannot get a cover for ${journalId}: ${err}`)

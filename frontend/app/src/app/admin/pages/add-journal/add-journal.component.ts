@@ -142,6 +142,17 @@ export class AddJournalComponent implements OnInit {
   importJournalsList() {
     if (!this.journalsListFile) return;
 
+    this.alertService.showDialogAlert(
+      "Importing Journals...",
+      `
+      Vidijo now imports all journals from the list.
+      This may take a while.
+      You can continue using the app as usual or close it.
+      `,
+      "Okay",
+      () => {}
+    );
+
     this.adminService.uploadXLSX(this.journalsListFile).subscribe(
       (success) => {
         this.alertService.showDialogAlert(
