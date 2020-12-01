@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, HostListener, OnChanges } from "@angular/core";
+import { Component, OnInit, Input, HostListener } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { FormControl } from "@angular/forms";
 import { Observable } from "rxjs";
@@ -10,20 +10,21 @@ import { IArticle } from "../../shared/article.interface";
 import {
   BreakpointObserver,
   BreakpointState,
-  Breakpoints
+  Breakpoints,
 } from "@angular/cdk/layout";
 import { UserService } from "src/app/users/shared/user.service";
 import { IUser } from "src/app/users/shared/user.interface";
 import { AuthService } from "src/app/auth/auth.service";
 import { AlertService } from "src/app/core/alert/alert.service";
 import { Title } from "@angular/platform-browser";
-import { IsLoadingService } from '@service-work/is-loading';
-
+import { IsLoadingService } from "@service-work/is-loading";
+import { AdminService } from "src/app/admin/shared/admin.service";
+import { NavigationService } from "src/app/core/navigation/navigation.service";
 
 @Component({
   selector: "app-journal",
   templateUrl: "./journal.component.html",
-  styleUrls: ["./journal.component.scss"]
+  styleUrls: ["./journal.component.scss"],
 })
 export class JournalComponent implements OnInit {
   @Input() journal: IJournal;
@@ -48,19 +49,20 @@ export class JournalComponent implements OnInit {
   articlesPageLimit: number = 25;
   loadedAllArticles: boolean = false;
 
+  adminModeActive$ = this.adminService.adminModeActive;
 
   constructor(
     private route: ActivatedRoute,
     private journalService: JournalService,
     private userService: UserService,
     private authService: AuthService,
-    public reader: MatDialog,
     private breakpointObserver: BreakpointObserver,
     private alertService: AlertService,
     private titleService: Title,
-    private isLoadingService: IsLoadingService
-  ) { }
-
+    private isLoadingService: IsLoadingService,
+    private adminService: AdminService,
+    private navigationService: NavigationService
+  ) {}
 
   ngOnInit() {
     this.breakpointObserver
@@ -70,8 +72,7 @@ export class JournalComponent implements OnInit {
       });
 
     // Get journal from service
-    this.route.params.subscribe(async params => {
-
+    this.route.params.subscribe(async (params) => {
       await this.getJournal(params.id);
 
       // Set the title to ${journal.title} - Vidijo
@@ -84,17 +85,18 @@ export class JournalComponent implements OnInit {
 
         this.user = user;
         this.isLoggedIn = this.user !== null;
-        this.isFavorite = this.isLoggedIn && this.user.favoriteJournals.includes(this.journal._id);
+        this.isFavorite =
+          this.isLoggedIn &&
+          this.user.favoriteJournals.includes(this.journal._id);
       });
     });
   }
-
 
   async getJournal(id: string): Promise<void> {
     const promise: Promise<void> = new Promise((resolve, reject) => {
       this.isLoadingService.add();
 
-      this.journalService.getJournal(id).subscribe(async journal => {
+      this.journalService.getJournal(id).subscribe(async (journal) => {
         this.journal = journal;
         this.journal.articles = [];
         await this.getArticlesPaginated();
@@ -107,14 +109,15 @@ export class JournalComponent implements OnInit {
     return promise;
   }
 
-
   getArticlesPaginated(): Promise<void> {
     const promise: Promise<void> = new Promise<void>((resolve, reject) => {
       this.isLoadingService.add();
 
       this.currentlyLoadingArticles = true;
       this.journalService
-        .getArticles(`?publishedIn=${this.journal._id}&select=title authors pubdate abstract&sort=-pubdate&limit=${this.articlesPageLimit}&page=${this.articlesPage}`)
+        .getArticles(
+          `?publishedIn=${this.journal._id}&select=title authors pubdate abstract&sort=-pubdate&limit=${this.articlesPageLimit}&page=${this.articlesPage}`
+        )
         .subscribe((articles: any) => {
           if (articles.docs.length < 1) {
             this.loadedAllArticles = true;
@@ -145,18 +148,17 @@ export class JournalComponent implements OnInit {
           // Filter articles.
           this.filteredArticles = this.articleSearchFormControl.valueChanges.pipe(
             startWith(""),
-            map(value => this._filter(value))
+            map((value) => this._filter(value))
           );
 
           this.isLoadingService.remove();
           this.currentlyLoadingArticles = false;
           return resolve();
         });
-    })
+    });
 
     return promise;
   }
-
 
   private groupArticlesByMonth(articles: IArticle[]): Map<string, IArticle[]> {
     const monthNames: string[] = [
@@ -171,7 +173,7 @@ export class JournalComponent implements OnInit {
       "September",
       "October",
       "November",
-      "December"
+      "December",
     ];
 
     const result: Map<string, IArticle[]> = new Map<string, IArticle[]>();
@@ -184,7 +186,7 @@ export class JournalComponent implements OnInit {
         );
         const simplifiedDateString = `${
           monthNames[simplifiedDate.getMonth()]
-          } ${simplifiedDate.getFullYear()}`;
+        } ${simplifiedDate.getFullYear()}`;
 
         let articlesOfThisDate: IArticle[] = result.get(simplifiedDateString);
         if (!articlesOfThisDate) {
@@ -200,55 +202,82 @@ export class JournalComponent implements OnInit {
     return result;
   }
 
-
   get articleByMonthKeys() {
     return Array.from(this.articlesByMonth.keys());
   }
 
-
   private _filter(value: string): IArticle[] {
     const filterValue = value.toLowerCase();
-    return this.journal.articles.filter(article =>
+    return this.journal.articles.filter((article) =>
       article.title.toLowerCase().includes(filterValue)
     );
   }
 
-
   addToFavorites() {
-    this.userService.addFavoriteJournal(this.journal._id)
+    this.userService
+      .addFavoriteJournal(this.journal._id)
       .then(() => {
-        this.alertService.showSnackbarAlert("Added this journal to your favorites", "Okay", () => { })
+        this.alertService.showSnackbarAlert(
+          "Added this journal to your favorites",
+          "Okay",
+          () => {}
+        );
       })
       .catch(() => {
-        this.alertService.showSnackbarAlert(`Cannot add this journal to your favorites`, `Retry`, () => {
-          return this.addToFavorites();
-        }, 5000, true);
+        this.alertService.showSnackbarAlert(
+          `Cannot add this journal to your favorites`,
+          `Retry`,
+          () => {
+            return this.addToFavorites();
+          },
+          5000,
+          true
+        );
       });
   }
-
 
   removeFromFavorites() {
-    this.userService.removeFavoriteJournal(this.journal._id)
+    this.userService
+      .removeFavoriteJournal(this.journal._id)
       .then(() => {
-        this.alertService.showSnackbarAlert("Removed this journal from your favorites", "Okay", () => { })
+        this.alertService.showSnackbarAlert(
+          "Removed this journal from your favorites",
+          "Okay",
+          () => {}
+        );
       })
       .catch(() => {
-        this.alertService.showSnackbarAlert("Cannot remove this journal from your favorites", "Retry", () => {
-          this.removeFromFavorites();
-        }, 5000, true);
+        this.alertService.showSnackbarAlert(
+          "Cannot remove this journal from your favorites",
+          "Retry",
+          () => {
+            this.removeFromFavorites();
+          },
+          5000,
+          true
+        );
       });
   }
 
+  editJournal() {
+    this.navigationService.navigateToEditJournal(this.journal._id);
+  }
 
   // Load next page of articles when scrolled to bottom
   @HostListener("window:scroll")
   async getNextArticlePage() {
-    if (!this.journal || this.loadedAllArticles || this.currentlyLoadingArticles) {
+    if (
+      !this.journal ||
+      this.loadedAllArticles ||
+      this.currentlyLoadingArticles
+    ) {
       return;
     }
 
-    if (window.scrollY + window.innerHeight >
-      document.documentElement.scrollHeight - .3 * window.innerHeight) {
+    if (
+      window.scrollY + window.innerHeight >
+      document.documentElement.scrollHeight - 0.3 * window.innerHeight
+    ) {
       this.articlesPage++;
       await this.getArticlesPaginated();
     }

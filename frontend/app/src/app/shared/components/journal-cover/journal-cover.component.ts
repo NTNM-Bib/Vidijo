@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, OnChanges } from "@angular/core";
 import { IJournal } from "../../../journals/shared/journal.interface";
 import { IColor } from "../../../journals/shared/color.interface";
+import * as Color from "color";
 
 @Component({
   selector: "app-journal-cover",
@@ -12,20 +13,20 @@ export class JournalCoverComponent implements OnInit, OnChanges {
   triedLoadingCover: boolean = false;
   coverLoadedSuccessfully: boolean = false;
 
-  colorsToChooseFrom: IColor[] = [
-    { r: 122, g: 30, b: 73 } as IColor,
-    { r: 44, g: 143, b: 168 } as IColor,
-    { r: 53, g: 68, b: 66 } as IColor,
-    { r: 214, g: 107, b: 7 } as IColor,
-    { r: 152, g: 54, b: 110 } as IColor,
-    { r: 16, g: 175, b: 87 } as IColor,
-    { r: 57, g: 108, b: 155 } as IColor,
-    { r: 164, g: 37, b: 19 } as IColor,
-    { r: 80, g: 80, b: 100 } as IColor,
-    { r: 25, g: 133, b: 102 } as IColor,
-    { r: 168, g: 57, b: 57 } as IColor,
-  ];
-  colorsOfThisCover: string[] = [];
+  // The colors of the generated cover
+  colors: {
+    font: string;
+    background: string;
+    first: string;
+    second: string;
+    third: string;
+  } = {
+    font: "",
+    background: "",
+    first: "",
+    second: "",
+    third: "",
+  };
 
   ngOnInit() {
     this.generateColorsForThisCover();
@@ -36,23 +37,34 @@ export class JournalCoverComponent implements OnInit, OnChanges {
   }
 
   generateColorsForThisCover() {
-    if (!this.journal || !this.journal.title) {
-      return;
-    }
+    if (!this.journal || !this.journal.title) return;
 
-    this.colorsOfThisCover = [];
+    // Grey-shaded background colors
+    const availableBackgroundColors = [Color("#f2f2f2"), Color("#242424")];
+    const backgroundColor =
+      availableBackgroundColors[
+        this.journal.title.length % availableBackgroundColors.length
+      ];
 
-    const colorIndex: number =
-      this.journal.title
-        .toLocaleUpperCase()
-        .charCodeAt(Math.floor(this.journal.title.length / 2)) %
-      this.colorsToChooseFrom.length;
-    const selectedColor: IColor = this.colorsToChooseFrom[colorIndex];
+    this.colors.background = backgroundColor.hex();
+    this.colors.font = backgroundColor.negate().hex();
 
-    this.colorsOfThisCover.push(this.cssColorString(selectedColor));
-    this.colorsOfThisCover.push(this.cssColorString(selectedColor, -10));
-    this.colorsOfThisCover.push(this.cssColorString(selectedColor, -20));
-    this.colorsOfThisCover.push(this.cssColorString(selectedColor, -30));
+    // Colors of decoration
+    const availableBaseColors = [
+      Color("#e89c0e"),
+      Color("#0f9ca3"),
+      Color("#a30f52"),
+    ];
+    const baseColor =
+      availableBaseColors[
+        this.journal.title.length % availableBaseColors.length
+      ];
+
+    this.colors.first = baseColor.hex();
+    this.colors.second = baseColor.lighten(0.8).hex();
+    this.colors.third = baseColor.lighten(0.6).hex();
+
+    console.log(this.colors);
   }
 
   cssColorString(color: IColor, delta: number = 0): string {
