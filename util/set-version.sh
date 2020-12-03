@@ -20,10 +20,6 @@ read version
     cd ../backend/updater.service
     npm version ${version}
 )
-(
-    cd ../backend/user.service
-    npm version ${version}
-)
 
 echo Set version to ${version}. Press any key to continue...
 read

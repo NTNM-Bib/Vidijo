@@ -108,26 +108,6 @@ services:
     environment:
       - UPDATE_INTERVAL=5
 
-  # User Service
-  user.service:
-    container_name: vidijo_user.service.dev
-    build:
-      context: ./backend/user.service
-      dockerfile: dev.Dockerfile
-    depends_on:
-      - database
-      - api
-    restart: always
-    networks:
-      - backend
-    volumes:
-      - ./backend/user.service:/usr/src/app
-      - /usr/src/app/node_modules
-    env_file:
-      - ./services.dev.env
-    ports:
-      - 3002:3000
-
   # App
   app:
     container_name: vidijo_app.dev

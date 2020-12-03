@@ -20,10 +20,6 @@ read
     cd ../backend/updater.service
     npm update
 )
-(
-    cd ../backend/user.service
-    npm update
-)
 
 echo Updated dependencies. Press any key to continue...
 read

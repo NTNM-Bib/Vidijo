@@ -3,6 +3,12 @@ import { Request, Response, NextFunction } from 'express'
 import { IUser } from '../../shared/interfaces'
 import Axios from 'axios'
 import CreateError from 'http-errors'
+import Logger from '../../shared/logger'
+import EscapeStringRegexp from 'escape-string-regexp'
+import { User, Journal, Article } from '../../shared/models'
+
+const MongoQueryString = require('mongo-querystring')
+const MongoQS = new MongoQueryString()
 
 class UserController {
   // Get all users (admin only)
@@ -13,16 +19,89 @@ class UserController {
       throw CreateError(401, `Nobody is currently logged in`)
     }
 
-    // Convert parsed query back to string
-    let query: string = '?'
-    for (let key in req.query) {
-      query += `${key}=${req.query[key]}&`
+    const reqQuery: any = req.query
+
+    // Remove sorting, limit, selection, population & search from the query
+    let sort: string = reqQuery.sort ? reqQuery.sort : ''
+    reqQuery.sort = undefined
+
+    const DEFAULT_LIMIT: number = 50
+    let limit: number = reqQuery.limit ? +reqQuery.limit : DEFAULT_LIMIT
+    limit = limit > DEFAULT_LIMIT ? DEFAULT_LIMIT : limit
+    reqQuery.limit = undefined
+
+    let select: string = reqQuery.select ? reqQuery.select : ''
+    reqQuery.select = undefined
+
+    let populate: string = reqQuery.populate ? reqQuery.populate : ''
+    reqQuery.populate = undefined
+
+    let populateSelect: string = reqQuery.populateSelect
+      ? reqQuery.populateSelect
+      : ''
+    reqQuery.populateSelect = undefined
+
+    let page: number = reqQuery.page ? reqQuery.page : 1
+    reqQuery.page = undefined
+
+    let search: string = reqQuery.search ? reqQuery.search : ''
+    reqQuery.search = undefined
+
+    // Parse find conditions from remaining query
+    let findQuery = MongoQS.parse(reqQuery)
+    Logger.debug(findQuery)
+
+    // Build search query for multiple search terms
+    let searchTerms: string[] = search.split(' ')
+    let searchQuery = {
+      $and: [] as any[],
     }
 
-    Axios.get(`${ApiConfig.USER_SERVICE_URI}/v1/users${query}`)
-      .then((usersResponse) => {
-        return res.json(usersResponse.data)
-      })
+    for (let searchTerm of searchTerms) {
+      searchTerm = EscapeStringRegexp(searchTerm)
+      searchQuery.$and.push({
+        $or: [
+          {
+            username: {
+              $regex: `\\b${searchTerm}`,
+              $options: 'i',
+            },
+          },
+          {
+            firstName: {
+              $regex: `\\b${searchTerm}`,
+              $options: 'i',
+            },
+          },
+          {
+            secondName: {
+              $regex: `\\b${searchTerm}`,
+              $options: 'i',
+            },
+          },
+        ],
+      } as any)
+    }
+
+    // Change findQuery if query contains "search"
+    if (search && search !== '') {
+      findQuery = {
+        $and: [findQuery, searchQuery],
+      }
+    }
+
+    // Execute
+    const paginationOptions = {
+      populate: { path: populate, select: populateSelect },
+      select: select,
+      sort: sort,
+      collation: { locale: 'en' },
+      limit: limit,
+      page: page,
+    }
+
+    User.paginate(findQuery, paginationOptions)
+      .then((usersPage) => res.json(usersPage))
       .catch(next)
   }
 
@@ -35,7 +114,7 @@ class UserController {
     if (!canEdit(currentlyLoggedInUser, targetUserId)) {
       throw CreateError(
         401,
-        `User ${currentlyLoggedInUser._id} is missing permissions to edit user ${targetUserId}`
+        `User ${currentlyLoggedInUser._id} is missing permissions to get user ${targetUserId}`
       )
     }
 
@@ -43,9 +122,13 @@ class UserController {
       targetUserId = currentlyLoggedInUser._id
     }
 
-    Axios.get(`${ApiConfig.USER_SERVICE_URI}/v1/users/${targetUserId}`)
-      .then((userResponse) => {
-        return res.json(userResponse.data)
+    User.findById(targetUserId)
+      .exec()
+      .then((user: IUser | null) => {
+        if (!user)
+          throw CreateError(404, `User with ID ${targetUserId} does not exist`)
+
+        return res.json(user)
       })
       .catch(next)
   }
@@ -59,7 +142,7 @@ class UserController {
     if (!canEdit(currentlyLoggedInUser, targetUserId)) {
       throw CreateError(
         401,
-        `User ${currentlyLoggedInUser._id} is missing permissions to edit user ${targetUserId}`
+        `User ${currentlyLoggedInUser._id} is missing permissions to get favorite journals of user ${targetUserId}`
       )
     }
 
@@ -67,18 +150,40 @@ class UserController {
       targetUserId = currentlyLoggedInUser._id
     }
 
-    // Convert parsed query back to string
-    let query: string = '?'
-    for (let key in req.query) {
-      query += `${key}=${req.query[key]}&`
-    }
+    User.findById(targetUserId)
+      .exec()
+      .then((user) => {
+        if (!user)
+          throw CreateError(404, `User with ID ${targetUserId} does not exist`)
 
-    Axios.get(
-      `${ApiConfig.USER_SERVICE_URI}/v1/users/${targetUserId}/favoriteJournals${query}`
-    )
-      .then((response) => {
-        return res.json(response.data)
+        return user
       })
+      .then((user) => {
+        let query: string = ''
+        for (let key in req.query) {
+          query += `${key}=${req.query[key]}&`
+        }
+
+        // Build query for favorite journals
+        let idsString: string = ''
+        for (let favoriteJournalId of user.favoriteJournals) {
+          idsString += `_id[]=${favoriteJournalId}&`
+        }
+
+        // Prevent wrong results if there are no favorite journals
+        idsString = idsString === '' ? '_id=!' : idsString
+
+        return {
+          query: query,
+          favoriteJournalIds: idsString,
+        }
+      })
+      .then((res) =>
+        Axios.get(
+          `${ApiConfig.API_URI}/v1/journals?${res.query}${res.favoriteJournalIds}`
+        )
+      )
+      .then((response) => res.json(response.data))
       .catch(next)
   }
 
@@ -100,12 +205,28 @@ class UserController {
       targetUserId = currentlyLoggedInUser._id
     }
 
-    Axios.post(
-      `${ApiConfig.USER_SERVICE_URI}/v1/users/${targetUserId}/favoriteJournals/${journalId}`
-    )
-      .then((response) => {
-        return res.json(response.data)
+    Journal.findById(journalId)
+      .exec()
+      .then((journal) => {
+        if (!journal)
+          throw CreateError(404, `Journal with ID ${journalId} does not exist`)
+
+        return journal
       })
+      .then((journal) => {
+        const update = { $addToSet: { favoriteJournals: journal } }
+        return update
+      })
+      .then((update) =>
+        User.findByIdAndUpdate(targetUserId, update)
+          .exec()
+          .then((user) => {
+            if (!user)
+              throw CreateError(`User with ID ${targetUserId} does not exist`)
+            return user
+          })
+      )
+      .then((user) => res.json(user))
       .catch(next)
   }
 
@@ -131,11 +252,16 @@ class UserController {
       targetUserId = currentlyLoggedInUser._id
     }
 
-    Axios.delete(
-      `${ApiConfig.USER_SERVICE_URI}/v1/users/${targetUserId}/favoriteJournals/${journalId}`
-    )
-      .then((response) => {
-        return res.json(response.data)
+    const update = { $pull: { favoriteJournals: journalId } } as any
+
+    User.findByIdAndUpdate(targetUserId, update)
+      .exec()
+      .then((user) => {
+        if (!user) {
+          throw CreateError(404, `User with id ${targetUserId} does not exist`)
+        }
+
+        return res.json(user)
       })
       .catch(next)
   }
@@ -157,18 +283,31 @@ class UserController {
       targetUserId = currentlyLoggedInUser._id
     }
 
-    // Convert parsed query back to string
-    let query: string = '?'
-    for (let key in req.query) {
-      query += `${key}=${req.query[key]}&`
-    }
-
-    Axios.get(
-      `${ApiConfig.USER_SERVICE_URI}/v1/users/${targetUserId}/readingList${query}`
-    )
-      .then((readingListPageResponse) => {
-        return res.json(readingListPageResponse.data)
+    User.findById(targetUserId)
+      .exec()
+      .then((user) => {
+        if (!user)
+          throw CreateError(404, `User with ID ${targetUserId} does not exist`)
+        return user
       })
+      .then((user) => {
+        // Convert parsed query back to string
+        let query: string = '?'
+        for (let key in req.query) {
+          query += `${key}=${req.query[key]}&`
+        }
+
+        // Build query for reading list articles
+        let idsString: string = ''
+        for (let readingListArticleId of user.readingList) {
+          idsString += `_id[]=${readingListArticleId}&`
+        }
+
+        return Axios.get(
+          `${ApiConfig.API_URI}/v1/articles?${query}${idsString}`
+        )
+      })
+      .then((response) => res.json(response.data))
       .catch(next)
   }
 
@@ -194,12 +333,31 @@ class UserController {
       targetUserId = currentlyLoggedInUser._id
     }
 
-    Axios.post(
-      `${ApiConfig.USER_SERVICE_URI}/v1/users/${targetUserId}/readingList/${articleId}`
-    )
-      .then((response) => {
-        return res.json(response.data)
+    Article.findById(articleId)
+      .exec()
+      .then((article) => {
+        if (!article)
+          throw CreateError(404, `Article with ID ${articleId} does not exist`)
+
+        return article
       })
+      .then((article) => {
+        const update = { $addToSet: { readingList: article } }
+        return update
+      })
+      .then((update) =>
+        User.findByIdAndUpdate(targetUserId, update)
+          .exec()
+          .then((user) => {
+            if (!user)
+              throw CreateError(
+                404,
+                `User with ID ${targetUserId} does not exist`
+              )
+            return user
+          })
+      )
+      .then((user) => res.json(user))
       .catch(next)
   }
 
@@ -225,11 +383,16 @@ class UserController {
       targetUserId = currentlyLoggedInUser._id
     }
 
-    Axios.delete(
-      `${ApiConfig.USER_SERVICE_URI}/v1/users/${targetUserId}/readingList/${articleId}`
-    )
-      .then((response) => {
-        return res.json(response.data)
+    const update = { $pull: { readingList: articleId } } as any
+
+    User.findByIdAndUpdate(targetUserId, update)
+      .exec()
+      .then((user) => {
+        if (!user) {
+          throw CreateError(404, `User with ID ${targetUserId} does not exist`)
+        }
+
+        return res.json(user)
       })
       .catch(next)
   }
@@ -251,13 +414,40 @@ class UserController {
       targetUserId = currentlyLoggedInUser._id
     }
 
-    Axios.patch(
-      `${ApiConfig.USER_SERVICE_URI}/v1/users/${targetUserId}`,
-      req.body
-    )
-      .then((response) => {
-        return res.json(response.data)
+    Promise.resolve(req.body)
+      .then((update) => {
+        if (update.accessLevel && update.accessLevel !== 'admin') {
+          return User.find({
+            accessLevel: 'admin',
+          })
+            .count()
+            .exec()
+            .then((numberOfAdminUsers: number) => {
+              if (numberOfAdminUsers < 2)
+                throw CreateError(
+                  400,
+                  'Cannot remove admin privileges from the only admin user'
+                )
+
+              return update
+            })
+        }
+
+        return update
       })
+      .then((update) =>
+        User.findByIdAndUpdate(targetUserId, update)
+          .exec()
+          .then((user) => {
+            if (!user)
+              throw CreateError(
+                404,
+                `User with ID ${targetUserId} does not exist`
+              )
+            return user
+          })
+      )
+      .then((user) => res.json(user))
       .catch(next)
   }
 }
@@ -272,7 +462,7 @@ function canEdit(currentlyLoggedInUser: IUser, targetUserId: string): boolean {
     return true
   }
 
-  if (targetUserId === 'me' || targetUserId === currentlyLoggedInUser._id) {
+  if (targetUserId === 'me' || targetUserId === currentlyLoggedInUser.id) {
     return true
   }
 

@@ -38,15 +38,6 @@ read
     npm cache clean --force
     npm install
 )
-(
-    cd ../backend/user.service
-    rm -rf dist
-    rm -rf logs
-    rm -rf node_modules
-    rm -f package-lock.json
-    npm cache clean --force
-    npm install
-)
 
 echo Cleanup complete. Press any key to continue...
 read
