@@ -26,8 +26,7 @@ This folder contains the documentation for Vidijo. Its purpose is to provide an 
   - [Maintenance](#maintenance)
     - [Updating certificates](#updating-certificates)
     - [Troubleshooting](#troubleshooting)
-      - [Downloading Journals](#downloading-journals)
-      - [Downloading Articles](#downloading-articles)
+      - [Downloading Journals and Articles](#downloading-journals-and-articles)
       - [Automatic Cover Download](#automatic-cover-download)
       - [Third-Party Software](#third-party-software)
 
@@ -104,7 +103,7 @@ The structure of the frontend follows the conventions used in [Angular][ng] proj
 | `components/`        | contains the presentation components that can be used inside the pages (e.g. a journal) |
 | `pages/`             | contains the pages of this module (e.g. the discover page)                              |
 | `shared/`            | contains shared files for this module, like services and interfaces                     |
-| `*.module.ts`        | the module definition                                                                   |
+| `*.module.ts`        | the Angular module file                                                                 |
 
 #### Example
 
@@ -193,11 +192,48 @@ We use [DOAJ][doaj] as our main data source to retrieve journals and articles. S
 
 #### DOAJ API
 
+The [DOAJ][doaj] API is only accessed in our [External Data Service](#external-data-service) in `src/collectors/article.collector.ts` and `src/collectors/journal.collector.ts`.
+
+Currently, we use the following API endpoint to fetch the newest articles:
+
+```ts
+// Fetch newest articles
+`https://doaj.org/api/v2/search/articles/issn:${journalIdentifier}?sort=created_date:desc&page=${page}&pageSize=${pageSize}`;
+
+// journalIdentifier: the pISSN or eISSN of the journal to search articles for
+// page: the result page of the response (DOAJ returns pages containing a fixed number of articles)
+// pageSize: the number of articles on a single response page
+```
+
+We use this endpoint to get journals:
+
+```ts
+// Search for journals
+`https://doaj.org/api/v2/search/journals/${term}`;
+
+// term: the search term (e.g. Biology, the eISSN of the journal, ...)
+```
+
 #### JournalTOCs Website
+
+We use the [JournalTOCs][jt] website to download covers instead of an API. This means that we have to request the entire page and cut out the cover image. This happens in the [External Data Service](#external-data-service) in `src/collectors/cover.collector.ts`.
+
+The following URL is used to get the correct website to the requested journal:
+
+```ts
+// URL to JournalTOCs
+`http://www.journaltocs.ac.uk/index.php?action=tocs&issn=${journalIdentifier}`;
+
+// journalIdentifier: the pISSN or eISSN of the journal to search a cover for
+```
 
 ## Maintenance
 
+This section covers important tasks to keep the App running in production.
+
 ### Updating certificates
+
+A valid TLS certificate for the [API Gateway](#api-gateway) must be issued again after some time passes. Please have a look at the **Configuration** section in the main `README.md` file for more information on how to configure the [API Gateway](#api-gateway) and on where to place the certificate file and private key.
 
 ### Troubleshooting
 
@@ -206,13 +242,71 @@ Since software changes with time, some problems might occur that prevent Vidijo 
 
 This section aims to provide entrypoints for fixing problems that are caused by changing third-party software.
 
-#### Downloading Journals
+#### Downloading Journals and Articles
 
-#### Downloading Articles
+Journals are downloaded via the [DOAJ][doaj] API. If you tried to search for new journals to add to Vidijo and did not get any results, there might be something wrong with [DOAJ][doaj].
+
+During development of Vidijo, [DOAJ][doaj] introduced a new version of its API (v2) that changed the way responses were structured. Instead of keeping the old API version as is, they redirected v1 requests to the new version. Since the structure of v1 is different to v2, our functions had to be changed to successfully fetch journals and articles again.
+
+If this happens again in the future, you can apply the following steps to fix the problem:
+
+1. Check out the changes of the API on the [DOAJ][doaj] website
+2. Pick the pISSN or eISSN of a journal and call the new API endpoints (read section [DOAJ API](#doaj-api) for an overview on how the API is currently being used). In our case, I tried `https://doaj.org/api/v2/search/articles/issn:1726-4189?sort=created_date:desc&page=1&pageSize=1` to get a result page with one article of the journal "Biogeosciences" (sorted from newest to oldest)
+3. Open the `article.collector.ts` that contains the methods to retrieve articles or `journal.collector.ts` if something is wrong with searching or adding journals
+4. The method that contains the URL to the API endpoint is the one you have to change
+5. In this method there is a section where retrieved journals are converted to the Vidijo format (annotated by a comment).
+   It might look like the code listing below. In this part of the code you have to assign the correct values of the [DOAJ][doaj] API response to the matching fields of our own format. For example, our `title` is assigned to `doajArticle.bibjson.title`. If the [DOAJ][doaj] team decides to move the article title to a new location, `doajArticle.bibjson.title` returns no or a wrong value. Let's say they moved it to `bibjson.articleTitle`; then the line `title: doajArticle.bibjson.title || undefined,` must be changed to `title: doajArticle.bibjson.articleTitle ?? undefined,`
+
+```ts
+// Converting DOAJ article to Vidijo article
+const article = {
+  doi:
+    doajArticle.bibjson.identifier.find((v) => v.type === "doi")?.id ||
+    undefined,
+  publishedIn: journalId,
+  title: doajArticle.bibjson.title || undefined,
+  authors: doajArticle.bibjson.author.map((v) => v.name) || undefined,
+  abstract: doajArticle.bibjson.abstract || undefined,
+  pubdate: new Date(doajArticle.created_date) || undefined,
+} as IArticle;
+```
+
+Reassigning the correct response values to the matching fields of our own article and journal format should fix the problem.
 
 #### Automatic Cover Download
 
+The [External Data Service](#external-data-service) tries to automatically find a cover for newly added journals. We use the [JournalTOCs][jt] website for that.
+
+Since our backend downloads the entire HTML of the page and cuts out the journal cover, this method only works as long as the [JournalTOCs][jt] website structure stays the same. If they update their layout or change some element IDs, the automatic cover download might not work anymore.
+
+To fix this problem, open the file `src/collectors/cover.collector.ts` in the [External Data Service](#external-data-service). The method `searchCoverUrl` is the one that must be adjusted.
+
+This is the part of the code that extracts the cover from the HTML:
+
+```ts
+// Extract the cover src from the HTML
+(html) =>
+  html
+    .getElementById("column2Large")
+    .getElementsByTagName("img")[0]
+    .getAttribute("src") as string;
+```
+
+Pick a journal pISSN or eISSN and visit the [JournalTOCs][jt] website. Currently, this URL works: `http://www.journaltocs.ac.uk/index.php?action=tocs&issn=1726-4189`. Have a look at the page source in your browser and find the image that displays the journal cover.
+
+Now you have to adjust the above listed part of the code to get to this image and return the `src` attribute as a string.
+
+The current implementation works because the website has a `div` with ID `column2Large` that contains a single image - the cover image. We start by selecting this `div` using `.getElementById("column2Large")` and continue by selecting the cover image using `.getElementsByTagName("img")[0]` (select the first - and only - element with this tag name with `[0]`). After that, we use `.getAttribute("src") as string;` to get the `src` attribute and cast it to a string.
+
+Depending on how [JournalTOCs][jt] decides to restructure their website, you have to find a way on how to reliably select the cover image every time.
+
 #### Third-Party Software
+
+After a few years, some versions of third-party packages might become unavailable. In that case, you can try to update the dependencies to their newest minor versions using the utility script `/util/update-dependencies.sh` (e.g. version 1.8.2 to 1.9.0). Check out the [SemVer][semver] specification for more information about major, minor and patch releases.
+
+You should only update the packages to a new major version (e.g. from 2.7.9 to 3.0.1) if **absolutely necessary**! Since major releases contain breaking code changes, this might lead to breaking the entire app and having to rewrite bigger parts of it!
+
+If the current LTS versions of [Node.js][node] become unsupported, you can try changing the node image in all Dockerfiles (e.g. change `FROM node:14` to `FROM node:16`). Please make sure that the currently used version of Angular supports this version of [Node.js][node] and that [Express][express] also supports this version.
 
 [mean]: https://en.wikipedia.org/wiki/MEAN_(solution_stack)
 [ts]: https://www.typescriptlang.org/
@@ -231,3 +325,5 @@ This section aims to provide entrypoints for fixing problems that are caused by 
 [gulp]: https://gulpjs.com/
 [package-lock]: https://docs.npmjs.com/cli/v6/configuring-npm/package-lock-json
 [package]: https://docs.npmjs.com/cli/v6/configuring-npm/package-json
+[semver]: https://semver.org/lang/de/
+[node]: https://nodejs.org/en/docs/
