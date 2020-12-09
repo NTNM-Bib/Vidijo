@@ -9,7 +9,6 @@ read
     rm -rf dist
     rm -f package-lock.json
     npm cache clean --force
-    npm install
 )
 (
     cd ../backend/api
@@ -18,7 +17,6 @@ read
     rm -rf node_modules
     rm -f package-lock.json
     npm cache clean --force
-    npm install
 )
 (
     cd ../backend/external-data.service
@@ -27,7 +25,6 @@ read
     rm -rf node_modules
     rm -f package-lock.json
     npm cache clean --force
-    npm install
 )
 (
     cd ../backend/updater.service
@@ -36,7 +33,6 @@ read
     rm -rf node_modules
     rm -f package-lock.json
     npm cache clean --force
-    npm install
 )
 
 echo Cleanup complete. Press any key to continue...

@@ -22,7 +22,6 @@ services:
       - api
       - app
       - external-data.service
-      - user.service
     restart: always
     networks:
       - backend

@@ -1,9 +1,8 @@
 import UpdaterConfig from './updater.config'
-
 import Axios from 'axios'
-import { IJournal } from './shared/interfaces'
-import { Journal } from './shared/models'
-import { Logger } from './shared'
+import { IJournal } from 'vidijo-lib/lib/interfaces'
+import { Journal } from 'vidijo-lib/lib/models'
+import { Logger } from 'vidijo-lib'
 
 // Update the journal with oldest data
 export async function updateOldestJournal(): Promise<number> {

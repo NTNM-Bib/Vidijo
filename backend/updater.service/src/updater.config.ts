@@ -5,7 +5,7 @@
  * Extends DefaultConfig
  */
 
-import { DefaultConfigClass } from './shared/default.config'
+import { DefaultConfigClass } from 'vidijo-lib/lib/'
 
 export class UpdaterConfigClass extends DefaultConfigClass {
   public UPDATE_INTERVAL: number = this.getUpdateInterval()

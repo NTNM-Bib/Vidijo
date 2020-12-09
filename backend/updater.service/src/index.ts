@@ -1,7 +1,7 @@
 import UpdaterConfig from './updater.config'
 
 import Mongoose from 'mongoose'
-import Logger from './shared/logger'
+import { Logger } from 'vidijo-lib'
 import * as Updater from './updater'
 
 // Connect to MongoDB
@@ -71,7 +71,7 @@ process.on('unhandledRejection', (reason, promise) => {
 })
 
 // =-- Main --=
-Logger.log('Starting article collector service...')
+Logger.log('Starting updater service...')
 Logger.log(`NODE_ENV=${UpdaterConfig.NODE_ENV}`)
 
 Logger.log(`Connecting to database ${UpdaterConfig.MONGODB_URI}`)
