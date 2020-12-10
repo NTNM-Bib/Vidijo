@@ -1,8 +1,8 @@
 import ExternalDataConfig from '../external-data.config'
 import Axios from 'axios'
 import FS from 'fs'
-import { Journal } from '../shared/models'
-import { Logger } from '../shared'
+import { Journal } from 'vidijo-lib/lib/models'
+import { Logger } from 'vidijo-lib'
 
 const DomParser = require('dom-parser')
 const ImageDownloader = require('image-downloader')

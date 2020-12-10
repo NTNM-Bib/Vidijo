@@ -1,7 +1,7 @@
 import Axios, { AxiosResponse } from 'axios'
-import { IJournal } from '../shared/interfaces'
 import CreateError from 'http-errors'
-import { Journal } from '../shared/models'
+import { IJournal } from 'vidijo-lib/lib/interfaces'
+import { Journal } from 'vidijo-lib/lib/models'
 
 class JournalCollector {
   /**

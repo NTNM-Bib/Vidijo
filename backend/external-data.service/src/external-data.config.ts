@@ -5,7 +5,7 @@
  * Extends DefaultConfig
  */
 
-import { DefaultConfigClass } from './shared/default.config'
+import { DefaultConfigClass } from 'vidijo-lib'
 
 export class ExternalDataConfigClass extends DefaultConfigClass {
   public LOCAL_COVER_FOLDER: string = this.getLocalCoverFolder()

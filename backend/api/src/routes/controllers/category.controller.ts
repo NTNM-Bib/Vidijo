@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
 import EscapeStringRegexp from 'escape-string-regexp'
-import { Category } from '../../shared/models'
-import { ICategory } from '../../shared/interfaces'
-import Logger from '../../shared/logger'
+import { Category } from 'vidijo-lib/lib/models'
+import { ICategory } from 'vidijo-lib/lib/interfaces'
+import { Logger } from 'vidijo-lib'
 import CreateError from 'http-errors'
 
 const MongoQueryString = require('mongo-querystring')
@@ -134,7 +134,7 @@ class CategoryController {
 
     Category.deleteOne({ _id: id })
       .exec()
-      .then((result) => {
+      .then((result: any) => {
         return res.json(result)
       })
       .catch(next)

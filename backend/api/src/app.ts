@@ -12,8 +12,9 @@ import Morgan from 'morgan'
 import Colors from 'colors'
 import Helmet from 'helmet'
 import MustacheExpress from 'mustache-express'
-import { User } from './shared/models'
-import { IUser } from './shared/interfaces'
+import { Logger } from 'vidijo-lib'
+import { User } from 'vidijo-lib/lib/models'
+import { IUser } from 'vidijo-lib/lib/interfaces'
 import {
   JournalRouter,
   ArticleRouter,
@@ -24,7 +25,6 @@ import {
   PageRouter,
   ImporterRouter,
 } from './routes'
-import { Logger } from './shared'
 import CreateError from 'http-errors'
 import FileUpload from 'express-fileupload'
 
@@ -126,17 +126,20 @@ class App {
             return done(null, false)
           }
 
-          user.verifyPassword(password, (err: Error, verified: boolean) => {
-            if (err) {
-              throw err
-            }
+          user.verifyPassword(
+            password,
+            (err: Error | null, verified: boolean | null) => {
+              if (err) {
+                throw err
+              }
 
-            if (!verified) {
-              return done(null, false)
-            }
+              if (!verified) {
+                return done(null, false)
+              }
 
-            return done(null, user)
-          })
+              return done(null, user)
+            }
+          )
         })
       })
     )
@@ -186,6 +189,8 @@ class App {
       return body === '{}' ? '' : body
     })
 
+    // TODO: Why is Morgan not working anymore?
+    /*
     this.app.use(
       Morgan(
         `${Colors.blue(':method')} :url ${Colors.yellow(
@@ -193,6 +198,7 @@ class App {
         )} :response-time ms - :res[content-length] ${Colors.green(':body')}`
       )
     )
+    */
   }
 
   private configureFileUpload() {

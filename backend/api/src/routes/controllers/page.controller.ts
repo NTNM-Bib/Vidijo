@@ -1,7 +1,7 @@
 import ApiConfig from '../../api.config'
 import { Request, Response, NextFunction } from 'express'
 import Axios, { AxiosResponse } from 'axios'
-import { ICategory, IUser } from '../../shared/interfaces'
+import { ICategory, IUser } from 'vidijo-lib/lib/interfaces'
 
 class PageController {
   // Get aggregated data for the discover page
@@ -19,19 +19,19 @@ class PageController {
       recentlyUpdatedFavoriteJournalsResponse,
       lastReadingListArticlesResponse,
       favoriteJournalsResponse,
-    ] = await Promise.all([
+    ]: any = await Promise.all([
       Axios.get(
-        `${ApiConfig.USER_SERVICE_URI}/v1/users/${
+        `${ApiConfig.API_URI}/v1/users/${
           (req.user as IUser)._id
         }/favoriteJournals?latestPubdate=>${dateLastWeek}&sort=-latestPubdate&select=title cover`
       ),
       Axios.get(
-        `${ApiConfig.USER_SERVICE_URI}/v1/users/${
+        `${ApiConfig.API_URI}/v1/users/${
           (req.user as IUser)._id
         }/readingList?limit=5&populate=publishedIn&populateSelect=cover title&select=title authors pubdate doi`
       ),
       Axios.get(
-        `${ApiConfig.USER_SERVICE_URI}/v1/users/${
+        `${ApiConfig.API_URI}/v1/users/${
           (req.user as IUser)._id
         }/favoriteJournals?limit=10&select=title cover&sort=+title`
       ),
@@ -92,7 +92,7 @@ class PageController {
       topCategoriesResponse,
       recentlyAddedJournalsResponse,
       mostViewedJournalsResponse,
-    ] = await Promise.all([
+    ]: any = await Promise.all([
       Axios.get(
         `${ApiConfig.API_URI}/v1/journals?latestPubdate=>${dateLastWeek}&sort=-latestPubdate&limit=10&select=title cover`
       ),
@@ -232,7 +232,7 @@ class PageController {
         // Journals
         requests.push(
           Axios.get(
-            `${ApiConfig.USER_SERVICE_URI}/v1/users/${
+            `${ApiConfig.API_URI}/v1/users/${
               (req.user as IUser)._id
             }/favoriteJournals?sort=${sort}&limit=${limit}&select=title cover`,
             { withCredentials: true }
@@ -257,9 +257,11 @@ class PageController {
     }
 
     // Get all journals
-    const [availableCategories, categoryResponse, journalsResponse]:
-      | any[]
-      | void = await Promise.all(requests).catch((err) => {
+    const [
+      availableCategories,
+      categoryResponse,
+      journalsResponse,
+    ]: any[] = await Promise.all(requests).catch((err) => {
       return next(err)
     })
 
@@ -282,7 +284,7 @@ class PageController {
     res: Response,
     next: NextFunction
   ) {
-    const [categoriesResultsResponse] = await Promise.all([
+    const [categoriesResultsResponse]: any = await Promise.all([
       Axios.get(
         `${ApiConfig.API_URI}/v1/categories?select=title color&sort=+title`
       ),
@@ -306,7 +308,7 @@ class PageController {
       categoriesResultsResponse,
       journalsResultsResponse,
       articlesResultsResponse,
-    ] = await Promise.all([
+    ]: any = await Promise.all([
       Axios.get(
         `${ApiConfig.API_URI}/v1/categories?search=${searchQuery}&limit=15&sort=+title&select=title color`
       ),

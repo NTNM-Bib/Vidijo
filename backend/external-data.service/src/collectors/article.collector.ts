@@ -1,8 +1,8 @@
 import Axios, { AxiosResponse } from 'axios'
-import { IArticle } from '../shared/interfaces'
-import { Article, Journal } from '../shared/models'
+import { IArticle } from 'vidijo-lib/lib/interfaces'
+import { Article, Journal } from 'vidijo-lib/lib/models'
 import { sanitizeArticle } from '../sanitizer'
-import { Logger } from '../shared'
+import { Logger } from 'vidijo-lib'
 import { DOAJResponse } from './doaj.interface'
 
 /**

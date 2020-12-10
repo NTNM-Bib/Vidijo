@@ -2,7 +2,7 @@ import ApiConfig from './api.config' // IMPORTANT: THIS MUST BE THE FIRST IMPORT
 
 import Mongoose from 'mongoose'
 import App from './app'
-import Logger from './shared/logger'
+import { Logger } from 'vidijo-lib'
 
 App.listen(ApiConfig.PORT, async () => {
   Logger.log(`NODE_ENV='${ApiConfig.NODE_ENV}'`)

@@ -2,11 +2,9 @@ FROM node:14
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
-RUN npm install
-
 COPY . .
 
-EXPOSE 3000
+RUN npm install
+RUN npm run build
 
-CMD [ "npm", "run", "docker" ]
+CMD npm run docker:prod:start

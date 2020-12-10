@@ -1,34 +1,34 @@
 import ApiConfig from '../../api.config'
 import { Request, Response, NextFunction } from 'express'
 import Passport from 'passport'
-import Boom from '@hapi/boom'
 import Verification from '../../verification'
-import { IUser, IToken } from '../../shared/interfaces'
-import { User, Token } from '../../shared/models'
+import { IUser, IToken } from 'vidijo-lib/lib/interfaces'
+import { User, Token } from 'vidijo-lib/lib/models'
 import { v4 as UUIDv4 } from 'uuid'
 import UUIDValidate from 'uuid-validate'
+import CreateError from 'http-errors'
 
 class AuthController {
   // Local: Login
   public localLogin(req: Request, res: Response, next: NextFunction) {
     Passport.authenticate('local', (err: Error, user: any, info: any) => {
       if (err) {
-        return next(Boom.internal('Unexpected Authentication Error', err))
+        return next(err)
       }
 
       if (!user) {
-        return next(Boom.unauthorized('Wrong username or password'))
+        return next(CreateError(401, 'Wrong username or password'))
       }
 
       req.logIn(user, (err: Error) => {
         if (err) {
-          return next(Boom.unauthorized('Unexpected Login Error'))
+          return next(CreateError(401, 'Unexpected Login Error'))
         }
 
         if (!user.isVerified) {
           req.logOut()
           return next(
-            Boom.unauthorized('This account has not been verified yet.')
+            CreateError(401, 'This account has not been verified yet.')
           )
         }
 
@@ -85,18 +85,18 @@ class AuthController {
                   })
                   .catch((err: Error) => {
                     return next(
-                      Boom.conflict('Cannot send verification mail', err)
+                      CreateError(500, 'Cannot send verification mail', err)
                     )
                   })
               })
               .catch((err: Error) => {
                 return next(
-                  Boom.conflict('Cannot create Verification Token', err)
+                  CreateError(500, 'Cannot create Verification Token', err)
                 )
               })
           })
           .catch((err: Error) => {
-            return next(Boom.conflict('User cannot be created', err))
+            return next(CreateError(500, 'User cannot be created', err))
           })
       })
       .catch((err: Error) => {
@@ -108,7 +108,7 @@ class AuthController {
   public async localVerify(req: Request, res: Response, next: NextFunction) {
     const tokenString: string = req.body.token
     if (!tokenString) {
-      return next(Boom.badRequest('token missing in request body'))
+      return next(CreateError(400, 'token missing in request body'))
     }
 
     const token: IToken | null | void = await Token.findOne({
@@ -116,16 +116,16 @@ class AuthController {
     })
       .exec()
       .catch((err) => {
-        return next(Boom.conflict('Token cannot be checked', err))
+        return next(CreateError(500, 'Token cannot be checked', err))
       })
 
     if (!token) {
-      return next(Boom.notAcceptable('Invalid Authentication Token'))
+      return next(CreateError(406, 'Invalid Authentication Token'))
     }
 
     // Account already verified
     if (token.isVerified) {
-      return res.status(200).json({ alreadyVerified: true })
+      return res.json({ alreadyVerified: true })
     }
 
     const user: IUser | null | void = await User.findByIdAndUpdate(token.user, {
@@ -134,19 +134,23 @@ class AuthController {
       .exec()
       .catch((err) => {
         return next(
-          Boom.conflict('User of Authentication Token cannot be checked', err)
+          CreateError(
+            500,
+            'User of Authentication Token cannot be checked',
+            err
+          )
         )
       })
 
     if (!user) {
       return next(
-        Boom.notAcceptable('User of Authentication Token does not exist')
+        CreateError(406, 'User of Authentication Token does not exist')
       )
     }
 
     token.isVerified = true
     token.save().catch((err) => {
-      return next(Boom.conflict('Cannot modify authentication token', err))
+      return next(CreateError(500, 'Cannot modify authentication token', err))
     })
 
     return res.json({ success: true })

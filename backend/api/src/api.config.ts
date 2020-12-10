@@ -5,7 +5,7 @@
  * Extends DefaultConfig
  */
 
-import { DefaultConfigClass } from './shared/default.config'
+import { DefaultConfigClass } from 'vidijo-lib'
 
 export class ApiConfigClass extends DefaultConfigClass {
   public SESSION_SECRET: string = this.getSessionSecret()

@@ -2,7 +2,7 @@ import ExternalDataConfig from './external-data.config' // IMPORTANT: THIS MUST 
 
 import Mongoose from 'mongoose'
 import App from './app'
-import Logger from './shared/logger'
+import { Logger } from 'vidijo-lib'
 
 App.listen(ExternalDataConfig.PORT, async () => {
   Logger.log(`NODE_ENV='${ExternalDataConfig.NODE_ENV}'`)

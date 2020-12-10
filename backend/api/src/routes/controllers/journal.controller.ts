@@ -1,10 +1,10 @@
 import ApiConfig from '../../api.config'
 import { Request, Response, NextFunction } from 'express'
-import { IJournal, IArticle } from '../../shared/interfaces'
-import { Journal, Article } from '../../shared/models'
+import { IJournal, IArticle } from 'vidijo-lib/lib/interfaces'
+import { Journal, Article } from 'vidijo-lib/lib/models'
 import Axios from 'axios'
 import EscapeStringRegexp from 'escape-string-regexp'
-import Logger from '../../shared/logger'
+import { Logger } from 'vidijo-lib'
 import CreateError from 'http-errors'
 import Path from 'path'
 

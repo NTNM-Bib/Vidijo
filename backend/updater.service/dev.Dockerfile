@@ -2,10 +2,11 @@ FROM node:14
 
 WORKDIR /usr/src/app
 
-COPY package*.json ./
+COPY . .
+
 RUN npm install
-RUN npm install git+https://github.com/NTNM-Bib/VidijoLib.git
+RUN npm run build
 
 EXPOSE 3000
 
-CMD [ "npm", "run", "docker:dev:start" ]
+CMD npm run docker:dev:start

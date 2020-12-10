@@ -16,14 +16,12 @@
   "license": "GPLv3",
   "dependencies": {
     "axios": "^0.21.0",
-    "colors": "^1.4.0",
     "morgan": "^1.10.0",
     "natives": "^1.1.6",
     "vidijo-lib": "git+https://github.com/NTNM-Bib/VidijoLib.git"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
-    "@types/colors": "^1.2.1",
     "@types/morgan": "^1.9.2",
     "@types/node": "^14.14.6",
     "concurrently": "^5.3.0",

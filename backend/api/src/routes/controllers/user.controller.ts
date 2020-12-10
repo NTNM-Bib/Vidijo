@@ -1,11 +1,11 @@
 import ApiConfig from '../../api.config'
 import { Request, Response, NextFunction } from 'express'
-import { IUser } from '../../shared/interfaces'
+import { IUser } from 'vidijo-lib/lib/interfaces'
 import Axios from 'axios'
 import CreateError from 'http-errors'
-import Logger from '../../shared/logger'
+import { Logger } from 'vidijo-lib'
 import EscapeStringRegexp from 'escape-string-regexp'
-import { User, Journal, Article } from '../../shared/models'
+import { User, Journal, Article } from 'vidijo-lib/lib/models'
 
 const MongoQueryString = require('mongo-querystring')
 const MongoQS = new MongoQueryString()
@@ -101,7 +101,7 @@ class UserController {
     }
 
     User.paginate(findQuery, paginationOptions)
-      .then((usersPage) => res.json(usersPage))
+      .then((usersPage: any) => res.json(usersPage))
       .catch(next)
   }
 

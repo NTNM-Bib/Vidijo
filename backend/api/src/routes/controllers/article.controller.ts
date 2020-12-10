@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express'
 import EscapeStringRegexp from 'escape-string-regexp'
-import { IArticle } from '../../shared/interfaces'
-import { Article } from '../../shared/models'
-import Logger from '../../shared/logger'
+import { IArticle } from 'vidijo-lib/lib/interfaces'
+import { Article } from 'vidijo-lib/lib/models'
+import { Logger } from 'vidijo-lib'
 import CreateError from 'http-errors'
 
 const MongoQueryString = require('mongo-querystring')

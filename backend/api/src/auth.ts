@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express'
-import Boom from '@hapi/boom'
+import CreateError from 'http-errors'
 
 // Check if the current user has access level "admin" (highest level)
 export function isAdminUser(req: Request, res: Response, next: NextFunction) {
@@ -7,13 +7,13 @@ export function isAdminUser(req: Request, res: Response, next: NextFunction) {
     const user: any = req.user
 
     if (!user) {
-      return next(Boom.unauthorized())
+      return next(CreateError(401, 'No user is attached to this request'))
     }
 
     const accessLevel: 'default' | 'admin' = user.accessLevel
 
     if (accessLevel === null) {
-      return next(Boom.unauthorized())
+      return next(CreateError(401, 'Access level of this user is not set'))
     }
 
     user.checkAccessLevel(
@@ -24,14 +24,14 @@ export function isAdminUser(req: Request, res: Response, next: NextFunction) {
         }
 
         if (!accessLevelHighEnough) {
-          return next(Boom.unauthorized())
+          return next(CreateError(401, 'Access level of this user is too low'))
         }
 
         return next()
       }
     )
   } else {
-    return next(Boom.unauthorized())
+    return next(CreateError(401, 'User is not authenticated'))
   }
 }
 
@@ -41,13 +41,13 @@ export function isDefaultUser(req: Request, res: Response, next: NextFunction) {
     const user: any = req.user
 
     if (!user) {
-      return next(Boom.unauthorized())
+      return next(CreateError(401, 'No user is attached to this request'))
     }
 
     const accessLevel: 'default' | 'admin' = user.accessLevel
 
     if (accessLevel === null) {
-      return next(Boom.unauthorized())
+      return next(CreateError(401, 'Access level of this user is not set'))
     }
 
     user.checkAccessLevel(
@@ -58,13 +58,13 @@ export function isDefaultUser(req: Request, res: Response, next: NextFunction) {
         }
 
         if (!accessLevelHighEnough) {
-          return next(Boom.unauthorized())
+          return next(CreateError(401, 'Access level of this user is too low'))
         }
 
         return next()
       }
     )
   } else {
-    return next(Boom.unauthorized())
+    return next(CreateError(401, 'User is not authenticated'))
   }
 }

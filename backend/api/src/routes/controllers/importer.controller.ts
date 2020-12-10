@@ -1,12 +1,12 @@
 import ApiConfig from '../../api.config'
 import { Request, Response, NextFunction } from 'express'
-import Axios, { AxiosResponse } from 'axios'
+import Axios from 'axios'
 import CreateError from 'http-errors'
 import XLSX from 'xlsx'
 import fileUpload from 'express-fileupload'
-import { IJournal, VidijoData, VidijoDataInfo } from '../../shared/interfaces'
-import { Logger } from '../../shared'
-import { Journal } from '../../shared/models'
+import { IJournal, VidijoData, VidijoDataInfo } from 'vidijo-lib/lib/interfaces'
+import { Logger } from 'vidijo-lib'
+import { Journal } from 'vidijo-lib/lib/models'
 
 /**
  * Import the uploaded list of Vidijo data to this route
@@ -94,7 +94,7 @@ function createInfoObject(vidijoData: VidijoData): Promise<VidijoDataInfo> {
     $or: [{ issn: { $in: issnArray } }, { eissn: { $in: eissnArray } }],
   }).count()
 
-  return journalsToAddQuery.exec().then(async (alreadyExisting) => {
+  return journalsToAddQuery.exec().then(async (alreadyExisting: any) => {
     return {
       journalsInDatabase: await Journal.find().count().exec(),
       journalsOnList: vidijoData.journals.length,

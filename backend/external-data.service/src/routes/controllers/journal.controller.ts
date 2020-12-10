@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express'
-import { IJournal } from '../../shared/interfaces'
-import { Journal } from '../../shared/models'
+import { IJournal } from 'vidijo-lib/lib/interfaces'
+import { Journal } from 'vidijo-lib/lib/models'
 import {
   CoverCollector,
   ArticleCollector,

@@ -1,4 +1,4 @@
-import { IArticle } from './shared/interfaces'
+import { IArticle } from 'vidijo-lib/lib/interfaces'
 import HtmlToText from 'html-to-text'
 import _ from 'lodash'
 

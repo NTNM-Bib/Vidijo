@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
-import { IJournal } from '../../shared/interfaces'
+import { IJournal } from 'vidijo-lib/lib/interfaces'
 import CreateError from 'http-errors'
 import { JournalCollector } from '../../collectors'
-import { Logger } from '../../shared'
 
 class SearchController {
   // Search journals in 3rd party services

@@ -5,10 +5,9 @@ import BodyParser from 'body-parser'
 import CookieParser from 'cookie-parser'
 import Cors from 'cors'
 import Morgan from 'morgan'
-import Colors from 'colors'
 import CreateError from 'http-errors'
-import { JournalRouter, ArticleRouter, SearchRouter } from './routes'
-import { Logger } from './shared'
+import { JournalRouter, SearchRouter } from './routes'
+import { Logger } from 'vidijo-lib'
 
 class App {
   public app: Express.Application
@@ -50,7 +49,6 @@ class App {
 
   private configureRoutes() {
     this.app.use('/v1/journals', JournalRouter)
-    this.app.use('/v1/articles', ArticleRouter)
     this.app.use('/v1/search', SearchRouter)
   }
 
@@ -65,6 +63,7 @@ class App {
       return body === '{}' ? '' : body
     })
 
+    /*
     this.app.use(
       Morgan(
         `${Colors.blue(':method')} :url ${Colors.yellow(
@@ -72,6 +71,7 @@ class App {
         )} :response-time ms - :res[content-length] ${Colors.green(':body')}`
       )
     )
+    */
   }
 
   private configureErrorHandling() {
