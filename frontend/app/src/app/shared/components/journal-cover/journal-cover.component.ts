@@ -1,4 +1,11 @@
-import { Component, OnInit, Input, OnChanges } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Input,
+  OnChanges,
+  ElementRef,
+  ViewChild,
+} from "@angular/core";
 import { IJournal } from "../../../journals/shared/journal.interface";
 import { IColor } from "../../../journals/shared/color.interface";
 import * as Color from "color";
@@ -15,18 +22,20 @@ export class JournalCoverComponent implements OnInit, OnChanges {
 
   // The colors of the generated cover
   colors: {
-    font: string;
-    background: string;
-    first: string;
-    second: string;
-    third: string;
+    title: string;
+    titleContainer: string;
+    gradientStart: string;
+    gradientEnd: string;
   } = {
-    font: "",
-    background: "",
-    first: "",
-    second: "",
-    third: "",
+    title: "",
+    titleContainer: "",
+    gradientStart: "",
+    gradientEnd: "",
   };
+
+  @ViewChild("generatedCoverContainer") generatedCoverContainer: ElementRef;
+
+  constructor() {}
 
   ngOnInit() {
     this.generateColorsForThisCover();
@@ -40,31 +49,31 @@ export class JournalCoverComponent implements OnInit, OnChanges {
     if (!this.journal || !this.journal.title) return;
 
     // Grey-shaded background colors
-    const availableBackgroundColors = [Color("#f2f2f2"), Color("#242424")];
-    const backgroundColor =
-      availableBackgroundColors[
-        this.journal.title.length % availableBackgroundColors.length
+    const availableTitleContainerColors = [Color("#f2f2f2"), Color("#242424")];
+    const titleContainerColor =
+      availableTitleContainerColors[
+        this.journal.title.length % availableTitleContainerColors.length
       ];
 
-    this.colors.background = backgroundColor.hex();
-    this.colors.font = backgroundColor.negate().hex();
+    this.colors.titleContainer = titleContainerColor.hex();
+    this.colors.title = titleContainerColor.negate().hex();
 
     // Colors of decoration
-    const availableBaseColors = [
+    const availableGradientBaseColors = [
       Color("#e89c0e"),
       Color("#0f9ca3"),
       Color("#a30f52"),
+      Color("#097b67"),
+      Color("#d95a00"),
+      Color("#a60881"),
     ];
-    const baseColor =
-      availableBaseColors[
-        this.journal.title.length % availableBaseColors.length
+    const gradientBaseColor =
+      availableGradientBaseColors[
+        this.journal.title.length % availableGradientBaseColors.length
       ];
 
-    this.colors.first = baseColor.hex();
-    this.colors.second = baseColor.lighten(0.8).hex();
-    this.colors.third = baseColor.lighten(0.6).hex();
-
-    console.log(this.colors);
+    this.colors.gradientStart = gradientBaseColor.hex();
+    this.colors.gradientEnd = gradientBaseColor.rotate(20).hex();
   }
 
   cssColorString(color: IColor, delta: number = 0): string {
@@ -83,5 +92,15 @@ export class JournalCoverComponent implements OnInit, OnChanges {
 
   get journalCoverUrl(): string {
     return `/static/covers/${this.journal._id}`;
+  }
+
+  get titleFontSize() {
+    if (!this.generatedCoverContainer) return 0;
+
+    const fontSize = Math.floor(
+      this.generatedCoverContainer.nativeElement.offsetWidth / 14
+    );
+
+    return fontSize;
   }
 }

@@ -19,46 +19,42 @@
     *ngIf="
       !triedLoadingCover || (triedLoadingCover && !coverLoadedSuccessfully)
     "
+    class="generated-cover-container"
+    #generatedCoverContainer
   >
-    <!--
     <div
       class="background-fill"
-      [ngStyle]="{ background: colorsOfThisCover[0] }"
+      [ngStyle]="{
+        background:
+          'linear-gradient(90deg, ' +
+          colors.gradientStart +
+          ' 0%, ' +
+          colors.gradientEnd +
+          ' 100%)'
+      }"
     ></div>
     <div
-      class="cover-image generated-cover-image"
-      [ngStyle]="{ background: colorsOfThisCover[0] }"
+      class="generated-title-container"
+      [ngStyle]="{ background: colors.titleContainer }"
     >
-      <svg height="100%" width="100%" class="svg">
-        <circle cx="100" cy="20" r="40" [attr.fill]="colorsOfThisCover[1]" />
-        <circle cx="100" cy="100" r="80" [attr.fill]="colorsOfThisCover[2]" />
-        <circle cx="200" cy="270" r="180" [attr.fill]="colorsOfThisCover[3]" />
-      </svg>
-      <div class="generated-title-container">
-        <div minFontSize="20" maxFontSize="60" class="cover-title-generated">
-          {{ journal.title }}
-        </div>
+      <div
+        class="cover-title-generated"
+        [ngStyle]="{ color: colors.title, 'font-size': titleFontSize + 'px' }"
+        *ngIf="titleFontSize > 5"
+      >
+        {{ journal.title }}
       </div>
     </div>
-  -->
     <div
-      class="background-fill"
-      [ngStyle]="{ background: colors.background }"
+      class="cover generated-cover-image"
+      [ngStyle]="{
+        background:
+          'linear-gradient(90deg, ' +
+          colors.gradientStart +
+          ' 0%, ' +
+          colors.gradientEnd +
+          ' 100%)'
+      }"
     ></div>
-    <div
-      class="cover-image generated-cover-image"
-      [ngStyle]="{ background: colors.first }"
-    >
-      <div class="generated-title-container">
-        <div
-          minFontSize="20"
-          maxFontSize="60"
-          class="cover-title-generated"
-          [ngStyle]="{ color: colors.font, background: colors.background }"
-        >
-          {{ journal.title }}
-        </div>
-      </div>
-    </div>
   </div>
 </div>

@@ -22,22 +22,34 @@
   width: 100%;
 }
 
-.generated-cover-image {
-  height: 95%;
+.generated-cover-container {
+  position: relative;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
 }
 
-.cover-title-generated {
+.generated-cover-image {
   position: relative;
-  color: #ffffff;
-  text-align: left;
-  font-size: 1.5em;
+  height: 50%;
+  width: 100%;
 }
 
 .generated-title-container {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
+  position: relative;
   height: 50%;
-  padding: 10px;
+  width: 100%;
+}
+
+.cover-title-generated {
+  color: #ffffff;
+  text-align: left;
+  font-size: 1.5em;
+  margin: 25px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-height: 100%;
 }
