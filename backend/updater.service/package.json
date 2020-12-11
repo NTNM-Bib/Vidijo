@@ -23,7 +23,7 @@
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/morgan": "^1.9.2",
-    "@types/node": "^14.14.6",
+    "@types/node": "^14.14.12",
     "concurrently": "^5.3.0",
     "nodemon": "^2.0.6",
     "prettier": "^2.2.0",

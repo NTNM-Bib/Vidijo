@@ -7,6 +7,7 @@ import EscapeStringRegexp from 'escape-string-regexp'
 import { Logger } from 'vidijo-lib'
 import CreateError from 'http-errors'
 import Path from 'path'
+import fileUpload from 'express-fileupload'
 
 const MongoQueryString = require('mongo-querystring')
 const MongoQS = new MongoQueryString({
@@ -212,7 +213,7 @@ export function uploadNewCover(
           'Cannot find a new cover file attached to this request'
         )
       }
-      return files.cover
+      return files.cover as fileUpload.UploadedFile
     })
     .then((coverFile) => {
       if (!coverFile.mimetype.startsWith('image'))

@@ -17,7 +17,7 @@ class App {
 
     this.configureCookieParser()
     this.configureBodyParser()
-    this.configureCors()
+    //this.configureCors()
 
     this.configureMorgan()
 
@@ -36,6 +36,7 @@ class App {
     this.app.use(CookieParser())
   }
 
+  /*
   private configureCors() {
     const corsOptions = {
       credentials: true,
@@ -46,6 +47,7 @@ class App {
 
     this.app.use(Cors(corsOptions))
   }
+  */
 
   private configureRoutes() {
     this.app.use('/v1/journals', JournalRouter)

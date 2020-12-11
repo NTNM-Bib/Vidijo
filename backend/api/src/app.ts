@@ -9,7 +9,6 @@ import MongoDBStoreConnect from 'connect-mongodb-session'
 import Passport from 'passport'
 import PassportLocal from 'passport-local'
 import Morgan from 'morgan'
-import Colors from 'colors'
 import Helmet from 'helmet'
 import MustacheExpress from 'mustache-express'
 import { Logger } from 'vidijo-lib'
@@ -43,7 +42,7 @@ class App {
 
     this.configureCookieParser()
     this.configureBodyParser()
-    this.configureCors()
+    //this.configureCors()
 
     // Auth
     this.configureMongoDBSessionStore()
@@ -158,6 +157,7 @@ class App {
     })
   }
 
+  /*
   private configureCors() {
     const corsOptions: CorsOptions = {
       credentials: true,
@@ -166,6 +166,7 @@ class App {
 
     this.app.use(Cors(corsOptions))
   }
+  */
 
   private configureRoutes() {
     this.app.use('/v1/pages', PageRouter)

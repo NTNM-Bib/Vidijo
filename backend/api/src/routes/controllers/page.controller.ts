@@ -261,9 +261,7 @@ class PageController {
       availableCategories,
       categoryResponse,
       journalsResponse,
-    ]: any[] = await Promise.all(requests).catch((err) => {
-      return next(err)
-    })
+    ]: any[] = await Promise.all(requests)
 
     // Aggregate data
     const journalsPageData: any = {

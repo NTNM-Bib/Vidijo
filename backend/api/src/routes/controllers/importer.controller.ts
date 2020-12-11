@@ -140,13 +140,15 @@ function checkUploadedFile(req: Request) {
     )
   }
 
+  req.files.vidijodata = req.files.vidijodata as fileUpload.UploadedFile
+
   if (
     req.files.vidijodata.mimetype !==
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
   ) {
     throw CreateError(
       400,
-      `You must upload a file with mime type application/vnd.openxmlformats-officedocument.spreadsheetml.sheet. You uploaded ${req.files.vidijoData.mimetype}`
+      `You must upload a file with mime type application/vnd.openxmlformats-officedocument.spreadsheetml.sheet. You uploaded ${req.files.vidijodata.mimetype}`
     )
   }
 

@@ -10,5 +10,6 @@
     "skipLibCheck": true,
     "removeComments": true,
     "lib": ["ES2020.Promise", "DOM"]
-  }
+  },
+  "exclude": ["./gulpfile.ts", "./templates/**/*"]
 }

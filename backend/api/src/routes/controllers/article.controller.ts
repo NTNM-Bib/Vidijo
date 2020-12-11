@@ -99,7 +99,7 @@ class ArticleController {
     }
 
     Article.paginate(findQuery, paginationOptions)
-      .then((articlesPage) => {
+      .then((articlesPage: any) => {
         return res.json(articlesPage)
       })
       .catch(next)

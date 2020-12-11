@@ -1,26 +1,20 @@
-import Gulp from "gulp";
-
+import Gulp from 'gulp'
 
 const paths: any = {
-    templates: {
-        src: "src/templates/**/*",
-        dest: "dist/src/templates/"
-    }
+  templates: {
+    src: 'src/templates/**/*',
+    dest: 'dist/templates/',
+  },
 }
-
 
 export function templates() {
-    return Gulp.src(paths.templates.src)
-        .pipe(Gulp.dest(paths.templates.dest));
+  return Gulp.src(paths.templates.src).pipe(Gulp.dest(paths.templates.dest))
 }
-
 
 export function watch() {
-    Gulp.watch(paths.templates.src, templates);
+  Gulp.watch(paths.templates.src, templates)
 }
 
+const build = Gulp.parallel(templates)
 
-const build = Gulp.parallel(templates);
-
-
-export default build;
+export default build
