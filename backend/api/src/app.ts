@@ -3,7 +3,6 @@ import Express from 'express'
 import { Request, Response, NextFunction } from 'express'
 import BodyParser from 'body-parser'
 import CookieParser from 'cookie-parser'
-import Cors, { CorsOptions } from 'cors'
 import ExpressSession from 'express-session'
 import MongoDBStoreConnect from 'connect-mongodb-session'
 import Passport from 'passport'
@@ -157,17 +156,6 @@ class App {
     })
   }
 
-  /*
-  private configureCors() {
-    const corsOptions: CorsOptions = {
-      credentials: true,
-      origin: undefined,
-    }
-
-    this.app.use(Cors(corsOptions))
-  }
-  */
-
   private configureRoutes() {
     this.app.use('/v1/pages', PageRouter)
     this.app.use('/v1/journals', JournalRouter)
@@ -227,7 +215,7 @@ class App {
       const payload =
         statusCode === 500 ? CreateError(500, 'Internal server error') : err
 
-      Logger.error(new Error(payload.stack || payload.message))
+      Logger.error(new Error(err.stack || err.message))
 
       return res.status(statusCode).json(payload)
     }
