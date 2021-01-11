@@ -22,6 +22,7 @@ export class EditJournalComponent implements OnInit {
     issn: new FormControl(""),
     eissn: new FormControl(""),
     categories: new FormControl(""),
+    useGeneratedCover: new FormControl(false),
   });
 
   categoriesSearchResults: ICategory[] = [];
@@ -74,6 +75,9 @@ export class EditJournalComponent implements OnInit {
     this.form.controls["title"].setValue(this.journal.title);
     this.form.controls["issn"].setValue(this.journal.issn);
     this.form.controls["eissn"].setValue(this.journal.eissn);
+    this.form.controls["useGeneratedCover"].setValue(
+      this.journal.useGeneratedCover
+    );
   }
 
   updateJournalData() {
@@ -83,6 +87,7 @@ export class EditJournalComponent implements OnInit {
       issn: this.form.controls["issn"].value,
       eissn: this.form.controls["eissn"].value,
       categories: this.transformCategoriesToIdArray(this.journal.categories),
+      useGeneratedCover: this.form.controls["useGeneratedCover"].value,
     } as IJournal;
 
     this.journalService

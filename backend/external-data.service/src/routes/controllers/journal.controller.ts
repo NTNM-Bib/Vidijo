@@ -102,7 +102,7 @@ export const addJournalIfNotExists = (
 
           return journal
         })
-        .catch((err) => {
+        .catch((err: any) => {
           throw CreateError(
             500,
             `Cannot check for duplicate of journal ${journal}`

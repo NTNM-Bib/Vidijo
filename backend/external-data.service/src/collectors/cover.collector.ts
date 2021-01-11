@@ -3,6 +3,7 @@ import Axios from 'axios'
 import FS from 'fs'
 import { Journal } from 'vidijo-lib/lib/models'
 import { Logger } from 'vidijo-lib'
+import { IJournal } from 'vidijo-lib/lib/interfaces'
 
 const DomParser = require('dom-parser')
 const ImageDownloader = require('image-downloader')
@@ -100,19 +101,19 @@ export const searchAndAddCover = (journalId: string) =>
   Journal.findById(journalId)
     .exec()
     // Check if journal to search a cover for exists
-    .then((journal) => {
+    .then((journal: IJournal) => {
       if (!journal)
         throw new Error(
           `Cannot find the journal with ID ${journalId} and thus not update its cover`
         )
       return journal
     })
-    .then((journal) => {
+    .then((journal: IJournal) => {
       Logger.log(`Trying to find a cover for journal ${journal.title}...`)
       return journal
     })
     // Search the cover URL and save it to the FS
-    .then((journal) =>
+    .then((journal: IJournal) =>
       searchCoverUrl(journal.identifier)
         // Upgrade URL to https if necessary
         .then((url) => {
@@ -126,7 +127,7 @@ export const searchAndAddCover = (journalId: string) =>
         })
         .then((url) => saveCoverToFileSystem(url, journalId).then())
     )
-    .catch((err) => {
+    .catch((err: any) => {
       Logger.log(`Cannot get a cover for ${journalId}: ${err}`)
       throw err
     })

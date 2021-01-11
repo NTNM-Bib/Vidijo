@@ -145,7 +145,7 @@ class App {
     this.app.use(Passport.initialize())
     this.app.use(Passport.session())
 
-    Passport.serializeUser((user: IUser, done) => {
+    Passport.serializeUser((user: any, done) => {
       done(null, user._id)
     })
 

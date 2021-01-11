@@ -17,7 +17,9 @@
   <!-- Generated Cover -->
   <div
     *ngIf="
-      !triedLoadingCover || (triedLoadingCover && !coverLoadedSuccessfully)
+      journal.useGeneratedCover ||
+      !triedLoadingCover ||
+      (triedLoadingCover && !coverLoadedSuccessfully)
     "
     class="generated-cover-container"
     #generatedCoverContainer

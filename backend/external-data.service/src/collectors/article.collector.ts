@@ -1,5 +1,5 @@
 import Axios, { AxiosResponse } from 'axios'
-import { IArticle } from 'vidijo-lib/lib/interfaces'
+import { IArticle, IJournal } from 'vidijo-lib/lib/interfaces'
 import { Article, Journal } from 'vidijo-lib/lib/models'
 import { sanitizeArticle } from '../sanitizer'
 import { Logger } from 'vidijo-lib'
@@ -20,19 +20,19 @@ export const searchAndAddArticles = (journalId: string) => {
   return (
     Journal.findById(journalId)
       .exec()
-      .then((journal) => {
+      .then((journal: IJournal) => {
         if (!journal)
           throw new Error(`Cannot find the journal with ID ${journalId}`)
 
         return journal
       })
-      .catch((err) => {
+      .catch((err: any) => {
         throw new Error(
           `Something went wrong when trying to find the journal with ID ${journalId}: ${err}`
         )
       })
       // Get first results page
-      .then((journal) => {
+      .then((journal: IJournal) => {
         return searchAndAddArticlesPaginated(
           journalId,
           journal.identifier,
@@ -45,20 +45,20 @@ export const searchAndAddArticles = (journalId: string) => {
           })
       })
       // Update journal metadata
-      .then((v) => {
+      .then((v: any) => {
         const journal = v.journal
         journal.updated = new Date()
         journal.latestPubdate = v.firstPage.latestPubdate || undefined
 
         return journal
           .save()
-          .then((savedJournal) => ({ ...v, journal: savedJournal }))
-          .catch((err) => {
+          .then((savedJournal: IJournal) => ({ ...v, journal: savedJournal }))
+          .catch((err: any) => {
             throw new Error(`Cannot save journal ${journal} ${err}`)
           })
       })
       // Get remaining pages async
-      .then((v) => {
+      .then((v: any) => {
         let promises: Promise<{ total: number; added: number }>[] = []
         for (let i = 2; i * pageSize < v.firstPage.total; ++i) {
           const delay = i * 500
@@ -86,13 +86,13 @@ export const searchAndAddArticles = (journalId: string) => {
           return { added: added, journal: v.journal }
         })
       })
-      .then((v) => {
+      .then((v: any) => {
         Logger.log(
           `Added ${v.added} pages containing up to ${pageSize} articles to ${v.journal.title}`
         )
         return v
       })
-      .catch((err) => {
+      .catch((err: any) => {
         throw (
           (err as Error) ||
           new Error('Something went wrong in searchAndAddArticles')

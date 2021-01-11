@@ -10,7 +10,7 @@ export async function updateOldestJournal(): Promise<number> {
     const oldestJournal: IJournal | null | void = await Journal.findOne()
       .sort({ updated: 1 })
       .exec()
-      .catch((err) => {
+      .catch((err: any) => {
         return reject(err)
       })
 

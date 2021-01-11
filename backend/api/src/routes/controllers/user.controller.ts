@@ -1,6 +1,6 @@
 import ApiConfig from '../../api.config'
 import { Request, Response, NextFunction } from 'express'
-import { IUser } from 'vidijo-lib/lib/interfaces'
+import { IArticle, IJournal, IUser } from 'vidijo-lib/lib/interfaces'
 import Axios from 'axios'
 import CreateError from 'http-errors'
 import { Logger } from 'vidijo-lib'
@@ -157,13 +157,13 @@ export function getFavoriteJournals(
 
   User.findById(targetUserId)
     .exec()
-    .then((user) => {
+    .then((user: IUser) => {
       if (!user)
         throw CreateError(404, `User with ID ${targetUserId} does not exist`)
 
       return user
     })
-    .then((user) => {
+    .then((user: IUser) => {
       let query: string = ''
       for (let key in req.query) {
         query += `${key}=${req.query[key]}&`
@@ -183,12 +183,12 @@ export function getFavoriteJournals(
         favoriteJournalIds: idsString,
       }
     })
-    .then((res) =>
+    .then((res: any) =>
       Axios.get(
         `${ApiConfig.API_URI}/v1/journals?${res.query}${res.favoriteJournalIds}`
       )
     )
-    .then((response) => res.json(response.data))
+    .then((response: any) => res.json(response.data))
     .catch(next)
 }
 
@@ -216,26 +216,26 @@ export function addFavoriteJournal(
 
   Journal.findById(journalId)
     .exec()
-    .then((journal) => {
+    .then((journal: IJournal) => {
       if (!journal)
         throw CreateError(404, `Journal with ID ${journalId} does not exist`)
 
       return journal
     })
-    .then((journal) => {
+    .then((journal: IJournal) => {
       const update = { $addToSet: { favoriteJournals: journal } }
       return update
     })
-    .then((update) =>
+    .then((update: any) =>
       User.findByIdAndUpdate(targetUserId, update)
         .exec()
-        .then((user) => {
+        .then((user: IUser) => {
           if (!user)
             throw CreateError(`User with ID ${targetUserId} does not exist`)
           return user
         })
     )
-    .then((user) => res.json(user))
+    .then((user: IUser) => res.json(user))
     .catch(next)
 }
 
@@ -265,7 +265,7 @@ export function removeFavoriteJournal(
 
   User.findByIdAndUpdate(targetUserId, update)
     .exec()
-    .then((user) => {
+    .then((user: IUser) => {
       if (!user) {
         throw CreateError(404, `User with id ${targetUserId} does not exist`)
       }
@@ -298,12 +298,12 @@ export function getReadingList(
 
   User.findById(targetUserId)
     .exec()
-    .then((user) => {
+    .then((user: IUser) => {
       if (!user)
         throw CreateError(404, `User with ID ${targetUserId} does not exist`)
       return user
     })
-    .then((user) => {
+    .then((user: IUser) => {
       // Convert parsed query back to string
       let query: string = '?'
       for (let key in req.query) {
@@ -317,10 +317,10 @@ export function getReadingList(
       }
 
       return Axios.get(
-        `${ApiConfig.API_URI}/v1/articles?${query}${idsString}&populate=publishedIn&populateSelect=title`
+        `${ApiConfig.API_URI}/v1/articles?${query}${idsString}&populate=publishedIn&populateSelect=title useGeneratedCover`
       )
     })
-    .then((response) => res.json(response.data))
+    .then((response: any) => res.json(response.data))
     .catch(next)
 }
 
@@ -348,20 +348,20 @@ export function addArticleToReadingList(
 
   Article.findById(articleId)
     .exec()
-    .then((article) => {
+    .then((article: IArticle) => {
       if (!article)
         throw CreateError(404, `Article with ID ${articleId} does not exist`)
 
       return article
     })
-    .then((article) => {
+    .then((article: IArticle) => {
       const update = { $addToSet: { readingList: article } }
       return update
     })
-    .then((update) =>
+    .then((update: any) =>
       User.findByIdAndUpdate(targetUserId, update)
         .exec()
-        .then((user) => {
+        .then((user: IUser) => {
           if (!user)
             throw CreateError(
               404,
@@ -370,7 +370,7 @@ export function addArticleToReadingList(
           return user
         })
     )
-    .then((user) => res.json(user))
+    .then((user: IUser) => res.json(user))
     .catch(next)
 }
 
@@ -400,7 +400,7 @@ export function removeArticleFromReadingList(
 
   User.findByIdAndUpdate(targetUserId, update)
     .exec()
-    .then((user) => {
+    .then((user: IUser) => {
       if (!user) {
         throw CreateError(404, `User with ID ${targetUserId} does not exist`)
       }
@@ -451,7 +451,7 @@ export function patchUser(req: Request, res: Response, next: NextFunction) {
     .then((update) =>
       User.findByIdAndUpdate(targetUserId, update)
         .exec()
-        .then((user) => {
+        .then((user: IUser) => {
           if (!user)
             throw CreateError(
               404,

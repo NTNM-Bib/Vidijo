@@ -56,7 +56,7 @@ async function homePageGetReadingList(
     .reduce((acc, id) => `${acc ? `${acc}&` : acc}_id[]=${id}`, '')
 
   const readingListResponse = await Axios.get(
-    `${ApiConfig.API_URI}/v1/articles?${idQuery}&populate=publishedIn&populateSelect=title`
+    `${ApiConfig.API_URI}/v1/articles?${idQuery}&populate=publishedIn&populateSelect=title useGeneratedCover`
   )
 
   homePageData.lastReadingListArticles = readingListResponse.data.docs
@@ -194,7 +194,7 @@ async function discoverPageGetRecentlyAddedJournals(
   dateLastWeek.setDate(new Date().getDate() - DAYS_BACK)
 
   const recentlyAdded = await Axios.get(
-    `${ApiConfig.API_URI}/v1/journals?sort=-added&limit=10&select=title cover&added=>${dateLastWeek}`
+    `${ApiConfig.API_URI}/v1/journals?sort=-added&limit=10&select=title cover useGeneratedCover&added=>${dateLastWeek}`
   ).then((response) => response.data.docs)
 
   discoverPageData.recentlyAddedJournals = recentlyAdded ?? []
@@ -205,7 +205,7 @@ async function discoverPageGetMostViewedJournals(
   discoverPageData: DiscoverPageData
 ): Promise<DiscoverPageData> {
   const mostViewed = await Axios.get(
-    `${ApiConfig.API_URI}/v1/journals?sort=-views&limit=10&select=title cover&views=>50`
+    `${ApiConfig.API_URI}/v1/journals?sort=-views&limit=10&select=title cover useGeneratedCover&views=>50`
   ).then((response) => response.data.docs)
 
   discoverPageData.mostViewedJournals = mostViewed ?? []
@@ -340,7 +340,7 @@ async function journalsPageGetJournals(
   switch (category) {
     case 'all': {
       journalsResponse = await Axios.get(
-        `${ApiConfig.API_URI}/v1/journals?sort=${sort}&limit=20&select=title cover`
+        `${ApiConfig.API_URI}/v1/journals?sort=${sort}&limit=20&select=title cover useGeneratedCover`
       )
       break
     }
@@ -360,7 +360,7 @@ async function journalsPageGetJournals(
     }
     default: {
       journalsResponse = await Axios.get(
-        `${ApiConfig.API_URI}/v1/journals?categories[]=${category}&sort=${sort}&limit=20&select=title cover`
+        `${ApiConfig.API_URI}/v1/journals?categories[]=${category}&sort=${sort}&limit=20&select=title cover useGeneratedCover`
       )
       break
     }
@@ -444,7 +444,7 @@ async function searchPageGetJournals(
   term: string
 ): Promise<SearchPageData> {
   const journals = await Axios.get(
-    `${ApiConfig.API_URI}/v1/journals?search=${term}&limit=15&sort=+title&select=title cover issn eissn`
+    `${ApiConfig.API_URI}/v1/journals?search=${term}&limit=15&sort=+title&select=title cover issn eissn useGeneratedCover`
   ).then((response) => response.data.docs)
 
   searchPageData.journals = journals ?? []
@@ -456,7 +456,7 @@ async function searchPageGetArticles(
   term: string
 ): Promise<SearchPageData> {
   const articles = await Axios.get(
-    `${ApiConfig.API_URI}/v1/articles?search=${term}&populate=publishedIn&populateSelect=cover title&sort=-pubdate&limit=15&select=title authors pubdate publishedIn doi`
+    `${ApiConfig.API_URI}/v1/articles?search=${term}&populate=publishedIn&populateSelect=cover title useGeneratedCover&sort=-pubdate&limit=15&select=title authors pubdate publishedIn doi`
   ).then((response) => response.data.docs)
 
   searchPageData.articles = articles ?? []

@@ -115,7 +115,7 @@ class AuthController {
       token: tokenString,
     })
       .exec()
-      .catch((err) => {
+      .catch((err: any) => {
         return next(CreateError(500, 'Token cannot be checked', err))
       })
 
@@ -132,7 +132,7 @@ class AuthController {
       isVerified: true,
     })
       .exec()
-      .catch((err) => {
+      .catch((err: any) => {
         return next(
           CreateError(
             500,
@@ -219,7 +219,7 @@ class AuthController {
     user.password = password
     // Expire stored reset token
     user.passwordResetExpires = new Date()
-    await user.save().catch((_) => {
+    await user.save().catch((_: any) => {
       return res.status(400).json({ error: 'cannot change password' })
     })
 
