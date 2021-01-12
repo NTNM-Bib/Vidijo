@@ -236,26 +236,9 @@ class AuthController {
   ) {
     res.render('verification-mail.template.mustache', {
       firstName: 'Thomas',
+      vidijoURI: ApiConfig.VIDIJO_URI,
       verificationLink: 'https://www.vidijo.org',
     })
-  }
-
-  // Preview Verification Complete Page
-  public previewVerificationComplete(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    res.render('verification-complete.template.mustache')
-  }
-
-  // Preview already verified page
-  public previewAlreadyVerified(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    res.render('verification-already-verified.template.mustache')
   }
 }
 

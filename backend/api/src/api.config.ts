@@ -13,8 +13,8 @@ export class ApiConfigClass extends DefaultConfigClass {
   public MAIL_PORT: number = this.getMailPort()
   public MAIL_USERNAME: string = this.getMailUsername()
   public MAIL_PASSWORD: string = this.getMailPassword()
+  public MAIL_SENDER_NAME: string = this.getMailSenderName()
   public INSTITUTION_NAME: string = this.getInstitutionName()
-  public INSTITUTION_LOGO_URI: string = this.getInstitutionLogoUri()
   public API_URI_HOSTED: string = this.getApiUriHosted()
 
   private getSessionSecret(): string {
@@ -76,6 +76,17 @@ export class ApiConfigClass extends DefaultConfigClass {
 
     return process.env.MAIL_PASSWORD
   }
+  private getMailSenderName(): string {
+    if (!process.env.MAIL_SENDER_NAME) {
+      const mailSenderNameMissingError: Error = new Error(
+        'MAIL_SENDER_NAME is missing. Please provide the sender name that appears in the mail details'
+      )
+      console.error(mailSenderNameMissingError)
+      throw mailSenderNameMissingError // this is a critical error that leads to a crash
+    }
+
+    return process.env.MAIL_SENDER_NAME
+  }
 
   private getInstitutionName(): string {
     if (!process.env.INSTITUTION_NAME) {
@@ -87,18 +98,6 @@ export class ApiConfigClass extends DefaultConfigClass {
     }
 
     return process.env.INSTITUTION_NAME
-  }
-
-  private getInstitutionLogoUri(): string {
-    if (!process.env.INSTITUTION_LOGO_URI) {
-      const institutionLogoUriMissingError: Error = new Error(
-        "Please provide the URI to the institution logo in the .env file. You can set it with 'INSTITUTION_LOGO_URI=<your institution logo URI>'"
-      )
-      console.error(institutionLogoUriMissingError)
-      throw institutionLogoUriMissingError // this is a critical error that leads to a crash
-    }
-
-    return process.env.INSTITUTION_LOGO_URI
   }
 
   private getApiUriHosted(): string {

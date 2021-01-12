@@ -102,8 +102,8 @@ Afterwards the 3 contained files must be adjusted as follows:
   - `MAIL_HOST`: the host of the mail service used for sending verification mails (e.g. mail.example.com)
   - `MAIL_USERNAME`: login username of the Vidijo mail account
   - `MAIL_PASSWORD`: login password of the Vidijo mail account
+  - `MAIL_SENDER_NAME`: address of the sender (in our case `"Vidijo" <vidijo@ntnm-bib.de>`)
   - `INSTITUTION_NAME`: the name of your institution (will be displayed on the website besides the upper left logo)
-  - `INSTITUTION_LOGO_URI`: the URI of your institution logo (e.g. https://vidijo.org/static/logos/vidijo.png)
   - `API_URI_HOSTED`: the URI of the API (in our case https://vidijo.org/api; replace vidijo.org with your domain)
 
 - `/config/external-data.service.env`
@@ -113,7 +113,7 @@ Afterwards the 3 contained files must be adjusted as follows:
 - `/config/shared.env`
   - `VIDIJO_URI`: the URI of your Vidijo installation (in our case https://www.vidijo.org; replace www.vidijo.org with your domain)
 
-2. `/backend/api-gateway/config` folder
+1. `/backend/api-gateway/config` folder
 
 Locate the `config.example` folder at `/backend/api-gateway` and make a copy of it, and rename it to `config`. Also rename the contained folder `certificates.example` to `certificates`.
 
@@ -163,7 +163,7 @@ Running the application in development mode enables live code reloading for the 
 
 Locate the `config.dev.example` folder in the project root and make a copy of it; rename this copy to `config.dev`. The contained files must be renamed as well by removing ".example" from their names.
 
-- `api.dev.env`: you can enter the values from `api.env` in the main `config` folder and change the domain of `INSTITUTION_LOGO_URI` and `API_URI_HOSTED` to `localhost` (e.g. https://localhost/static/logos/vidijo.png and https://localhost/api)
+- `api.dev.env`: you can enter the values from `api.env` in the main `config` folder and change the domain of `API_URI_HOSTED` to `localhost` (e.g. https://localhost/api)
 - `external-data.service.dev.env`: you can set the value of `PUBLIC_COVER_URL` to `https://localhost/static/covers`
 
 The final folder should look like this:
@@ -229,8 +229,14 @@ Distributed under the GPL-3.0 License. See `LICENSE.md` for more information.
 
 ## Contact
 
-Uwe Geith _(Project Manager)_ - uwe.geith@leibniz-inm.de  
-Thomas Kraß _(Developer)_ - krass@ntnm-bib.de
+**Uwe Geith _(Project Manager)_**  
+uwe.geith@leibniz-inm.de
+
+**Thomas Kraß _(Developer)_**  
+krass@ntnm-bib.de (_until February 2021_)
+https://github.com/ThomasKrass
+
+---
 
 Source code available at: [https://github.com/NTNM-Bib/Vidijo][vidijo-github-url]
 

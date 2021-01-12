@@ -2,6 +2,7 @@ import ApiConfig from '../../api.config'
 import { Request, Response, NextFunction } from 'express'
 import Axios from 'axios'
 import { IArticle, ICategory, IJournal, IUser } from 'vidijo-lib/lib/interfaces'
+import { Logger } from 'vidijo-lib'
 
 interface HomePageData {
   recentlyUpdatedFavoriteJournals: any[]
@@ -77,41 +78,24 @@ async function homePageGetNewestArticles(
     .slice(0, 5)
     .reduce((acc, id) => `${acc ? `${acc}&` : acc}_id[]=${id}`, '')
 
-  const promises = await Axios.get(
-    `${ApiConfig.API_URI}/v1/journals?${idQuery}&sort=+title`
-  )
-    .then((response) => response.data.docs as IJournal[])
-    .then((journals) =>
-      journals
-        .sort((a, b) => {
-          if (!a.latestPubdate) return -1
-          if (!b.latestPubdate) return 1
+  return Promise.resolve(homePageData).then(async (homePageData) => {
+    const newestFavorites: IJournal[] = await Axios.get(
+      `${ApiConfig.API_URI}/v1/journals?${idQuery}&sort=+title&latestPubdate=>${dateLastWeek}`
+    ).then((response) => response.data.docs)
 
-          const delta =
-            new Date(a.latestPubdate).getTime() -
-            new Date(b.latestPubdate).getTime()
+    for (let favorite of newestFavorites) {
+      const newestArticles: IArticle[] = await Axios.get(
+        `${ApiConfig.API_URI}/v1/articles?publishedIn=${favorite._id}&limit=3&sort=-pubdate&pubdate=>${dateLastWeek}`
+      ).then((response) => response.data.docs)
 
-          return delta > 0 ? 1 : delta < 0 ? -1 : 0
-        })
-        .map(async (fav) => {
-          const newestArticles = await Axios.get(
-            `${ApiConfig.API_URI}/v1/articles?publishedIn=${fav._id}&limit=3&sort=-pubdate&pubdate=>${dateLastWeek}`
-          )
+      homePageData.recentlyUpdatedFavoriteJournals.push({
+        ...favorite,
+        newestArticles: newestArticles,
+      })
+    }
 
-          if (!newestArticles.data.docs.length) return
-
-          const journalWithNewestArticles = {
-            ...fav,
-            newestArticles: newestArticles.data.docs,
-          }
-
-          homePageData.recentlyUpdatedFavoriteJournals.push(
-            journalWithNewestArticles
-          )
-        })
-    )
-
-  return Promise.all(promises).then(() => homePageData)
+    return homePageData
+  })
 }
 
 interface DiscoverPageData {

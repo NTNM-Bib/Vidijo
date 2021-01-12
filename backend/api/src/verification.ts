@@ -32,11 +32,13 @@ class Verification {
   // Renders the Mustache template using the given information
   private htmlVerificationMail(
     firstName: string,
+    vidijoURI: string,
     verificationLink: string
   ): string {
     const view: any = {
       firstName: firstName,
       verificationLink: verificationLink,
+      vidijoURI: vidijoURI,
     }
 
     // Render mail template to an html string
@@ -53,12 +55,12 @@ class Verification {
   ): string {
     const lines: string[] = [
       `Hello, ${firstName}`,
-      'Thank you for creating a new account at www.vidijo.org!',
+      `Thank you for creating a new account at ${ApiConfig.VIDIJO_URI}`,
       'Please verify your email address by calling the link below.',
       '',
       `${verificationLink}`,
       '',
-      'This link will expire in 24 hours. You can safely ignore this message if you did not create an account.',
+      'You can safely ignore this message if you did not create an account.',
     ]
 
     return lines.join('\n')
@@ -127,13 +129,17 @@ class Verification {
   // Send the Verification Mail
   public async sendVerificationMail(user: IUser, verificationLink: string) {
     const info = await this.mailTransporter.sendMail({
-      from: '"Vidijo" <vidijo@ntnm-bib.de>',
+      from: `${ApiConfig.MAIL_SENDER_NAME}`,
       to: `"${user.firstName} ${user.secondName ? user.secondName : ''}" <${
         user.username
       }>`,
       subject: 'Vidijo | Verify your account',
       text: this.plainTextVerificationMail(user.firstName, verificationLink),
-      html: this.htmlVerificationMail(user.firstName, verificationLink),
+      html: this.htmlVerificationMail(
+        user.firstName,
+        ApiConfig.VIDIJO_URI,
+        verificationLink
+      ),
     })
 
     // When using Ethereal, the link to the message is printed to the console.
@@ -146,7 +152,7 @@ class Verification {
   // Send the password reset mail containing a password reset link
   public async sendPasswordResetMail(user: IUser, passwordResetLink: string) {
     const info = await this.mailTransporter.sendMail({
-      from: '"Vidijo" <vidijo@ntnm-bib.de>',
+      from: `${ApiConfig.MAIL_SENDER_NAME}`,
       to: `"${user.firstName} ${user.secondName ? user.secondName : ''}" <${
         user.username
       }>`,

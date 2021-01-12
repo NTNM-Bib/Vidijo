@@ -12,6 +12,8 @@ COPY ./config/privacy-policy.html /var/www/static/privacy-policy/privacy-policy.
 
 COPY ./examples/ /var/www/static/examples
 
+COPY ./config/icon.png /var/www/static/icons/icon.png
+
 # Symbolic link from sites-available to sites-enabled
 RUN ln -s /etc/nginx/conf.d/sites-available /etc/nginx/conf.d/sites-enabled
 
