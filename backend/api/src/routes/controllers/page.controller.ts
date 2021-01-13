@@ -36,12 +36,15 @@ async function homePageGetFavoriteJournals(
 ): Promise<HomePageData> {
   // Build the ID query string for mongo-querystring (all journals with IDs $in array of favoriteJournals)
   // Outputs something like this: _id[]=1234&_id[]=5678 (journal 1234 and 5678 are favorites)
-  const idQuery: string = (user.favoriteJournals as string[])
-    .slice(0, 5)
-    .reduce((acc, id) => `${acc ? `${acc}&` : acc}_id[]=${id}`, '')
+  if (!user) throw Error(`Requested favorite journals, but no one is logged in`)
+
+  const idQuery: string = (user.favoriteJournals as string[]).reduce(
+    (acc, id) => `${acc ? `${acc}&` : acc}_id[]=${id}`,
+    ''
+  )
 
   const favoriteJournalsResponse = await Axios.get(
-    `${ApiConfig.API_URI}/v1/journals?${idQuery}&sort=+title`
+    `${ApiConfig.API_URI}/v1/journals?${idQuery}&sort=+title&limit=10`
   )
 
   homePageData.favoriteJournals = favoriteJournalsResponse.data.docs
@@ -52,12 +55,13 @@ async function homePageGetReadingList(
   homePageData: HomePageData,
   user: IUser
 ): Promise<HomePageData> {
-  const idQuery: string = (user.readingList as string[])
-    .slice(0, 5)
-    .reduce((acc, id) => `${acc ? `${acc}&` : acc}_id[]=${id}`, '')
+  const idQuery: string = (user.readingList as string[]).reduce(
+    (acc, id) => `${acc ? `${acc}&` : acc}_id[]=${id}`,
+    ''
+  )
 
   const readingListResponse = await Axios.get(
-    `${ApiConfig.API_URI}/v1/articles?${idQuery}&populate=publishedIn&populateSelect=title useGeneratedCover`
+    `${ApiConfig.API_URI}/v1/articles?${idQuery}&limit=5&populate=publishedIn&populateSelect=title useGeneratedCover`
   )
 
   homePageData.lastReadingListArticles = readingListResponse.data.docs
@@ -74,13 +78,14 @@ async function homePageGetNewestArticles(
 
   homePageData.recentlyUpdatedFavoriteJournals = []
 
-  const idQuery: string = (user.favoriteJournals as string[])
-    .slice(0, 5)
-    .reduce((acc, id) => `${acc ? `${acc}&` : acc}_id[]=${id}`, '')
+  const idQuery: string = (user.favoriteJournals as string[]).reduce(
+    (acc, id) => `${acc ? `${acc}&` : acc}_id[]=${id}`,
+    ''
+  )
 
   return Promise.resolve(homePageData).then(async (homePageData) => {
     const newestFavorites: IJournal[] = await Axios.get(
-      `${ApiConfig.API_URI}/v1/journals?${idQuery}&sort=+title&latestPubdate=>${dateLastWeek}`
+      `${ApiConfig.API_URI}/v1/journals?${idQuery}&sort=-latestPubdate&latestPubdate=>${dateLastWeek}&limit=10`
     ).then((response) => response.data.docs)
 
     for (let favorite of newestFavorites) {
@@ -135,28 +140,24 @@ async function discoverPageGetNewestArticles(
 
   discoverPageData.recentlyUpdatedJournals = []
 
-  const promises = await Axios.get(
-    `${ApiConfig.API_URI}/v1/journals?sort=-latestPubdate&limit=10`
-  )
-    .then((response) => response.data.docs as IJournal[])
-    .then((journals) =>
-      journals.map(async (j) => {
-        const newestArticles = await Axios.get(
-          `${ApiConfig.API_URI}/v1/articles?publishedIn=${j._id}&limit=3&sort=-pubdate&pubdate=>${dateLastWeek}`
-        )
+  return Promise.resolve(discoverPageData).then(async (discoverPageData) => {
+    const newestJournals: IJournal[] = await Axios.get(
+      `${ApiConfig.API_URI}/v1/journals?sort=-latestPubdate&latestPubdate=>${dateLastWeek}&limit=10`
+    ).then((response) => response.data.docs)
 
-        if (!newestArticles.data.docs.length) return
+    for (let journal of newestJournals) {
+      const newestArticles: IArticle[] = await Axios.get(
+        `${ApiConfig.API_URI}/v1/articles?publishedIn=${journal._id}&limit=3&sort=-pubdate&pubdate=>${dateLastWeek}`
+      ).then((response) => response.data.docs)
 
-        const journalWithNewestArticles = {
-          ...j,
-          newestArticles: newestArticles.data.docs,
-        }
-
-        discoverPageData.recentlyUpdatedJournals.push(journalWithNewestArticles)
+      discoverPageData.recentlyUpdatedJournals.push({
+        ...journal,
+        newestArticles: newestArticles,
       })
-    )
+    }
 
-  return Promise.all(promises).then(() => discoverPageData)
+    return discoverPageData
+  })
 }
 
 async function discoverPageGetTopCategories(

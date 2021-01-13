@@ -30,9 +30,7 @@ export class ReadingListComponent implements OnInit {
   // Get Reading List
   private getReadingListArticles() {
     this.userService
-      .getReadingList(
-        `?populate=publishedIn&populateSelect=title useGeneratedCover`
-      )
+      .getReadingList(`?populate=publishedIn`)
       .then((readingList: IArticle[]) => {
         this.readingList = readingList;
       })

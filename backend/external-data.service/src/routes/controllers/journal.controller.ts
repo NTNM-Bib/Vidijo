@@ -74,6 +74,7 @@ export const addJournalIfNotExists = (
           journal.title = journal.title ?? result.title
           journal.issn = journal.issn ?? result.issn
           journal.eissn = journal.eissn ?? result.eissn
+          journal.added = new Date()
           return journal
         })
         .catch((err) => {
