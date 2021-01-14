@@ -16,8 +16,8 @@
   "license": "GPLv3",
   "dependencies": {
     "axios": "^0.21.1",
+    "graceful-fs": "^4.2.4",
     "morgan": "^1.10.0",
-    "natives": "^1.1.6",
     "vidijo-lib": "git+https://github.com/NTNM-Bib/VidijoLib.git"
   },
   "devDependencies": {

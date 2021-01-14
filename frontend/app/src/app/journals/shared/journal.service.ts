@@ -61,8 +61,12 @@ export class JournalService {
 
   getHomePage(): Promise<IHomePage> {
     const promise: Promise<IHomePage> = new Promise((resolve, reject) => {
-      if (this.databaseService.homePage) {
-        return resolve(this.databaseService.homePage);
+      if (this.databaseService.getHomePage()) {
+        console.log(
+          "HOME PAGE IS AVAILABLE",
+          this.databaseService.getHomePage()
+        );
+        return resolve(this.databaseService.getHomePage());
       }
 
       this.isLoadingService.add();
@@ -87,8 +91,8 @@ export class JournalService {
 
   getDiscoverPage(): Promise<IDiscoverPage> {
     const promise: Promise<IDiscoverPage> = new Promise((resolve, reject) => {
-      if (this.databaseService.getDiscoverPage()) {
-        return resolve(this.databaseService.getDiscoverPage());
+      if (this.databaseService.discoverPage) {
+        return resolve(this.databaseService.discoverPage);
       }
 
       this.isLoadingService.add();

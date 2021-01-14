@@ -22,6 +22,7 @@
     "dom-parser": "^0.1.6",
     "escape-string-regexp": "^4.0.0",
     "express": "^4.17.1",
+    "graceful-fs": "^4.2.4",
     "html-to-text": "^5.1.1",
     "http-errors": "^1.8.0",
     "image-downloader": "^4.0.2",
@@ -31,7 +32,6 @@
     "mongodb": "^3.6.2",
     "mongoose": "^5.11.11",
     "morgan": "^1.10.0",
-    "natives": "^1.1.6",
     "qs": "^6.9.4",
     "validator": "^13.5.2",
     "vidijo-lib": "git+https://github.com/NTNM-Bib/VidijoLib.git"
@@ -42,7 +42,6 @@
     "@types/connect-timeout": "0.0.34",
     "@types/cookie-parser": "^1.4.2",
     "@types/cors": "^2.8.9",
-    "@types/escape-string-regexp": "^2.0.1",
     "@types/express": "^4.17.8",
     "@types/html-to-text": "^5.1.2",
     "@types/http-errors": "^1.8.0",

@@ -109,6 +109,8 @@ export function getUser(req: Request, res: Response, next: NextFunction) {
   const currentlyLoggedInUser: any = req.user
   let targetUserId: string = req.params.id
 
+  if (!currentlyLoggedInUser) return res.json({})
+
   // Check if currently logged in user can edit the target user
   if (!canEdit(currentlyLoggedInUser, targetUserId)) {
     throw CreateError(
@@ -304,6 +306,12 @@ export function getReadingList(
       return user
     })
     .then((user: IUser) => {
+      if (!user.readingList.length) {
+        return res.json({
+          docs: [],
+        })
+      }
+
       // Convert parsed query back to string
       let query: string = '?'
       for (let key in req.query) {

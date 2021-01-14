@@ -38,6 +38,11 @@ async function homePageGetFavoriteJournals(
   // Outputs something like this: _id[]=1234&_id[]=5678 (journal 1234 and 5678 are favorites)
   if (!user) throw Error(`Requested favorite journals, but no one is logged in`)
 
+  if (!user.favoriteJournals.length) {
+    homePageData.favoriteJournals = []
+    return homePageData
+  }
+
   const idQuery: string = (user.favoriteJournals as string[]).reduce(
     (acc, id) => `${acc ? `${acc}&` : acc}_id[]=${id}`,
     ''
@@ -60,6 +65,11 @@ async function homePageGetReadingList(
     ''
   )
 
+  if (!user.readingList.length) {
+    homePageData.lastReadingListArticles = []
+    return homePageData
+  }
+
   const readingListResponse = await Axios.get(
     `${ApiConfig.API_URI}/v1/articles?${idQuery}&limit=5&populate=publishedIn&populateSelect=title useGeneratedCover`
   )
@@ -72,6 +82,11 @@ async function homePageGetNewestArticles(
   homePageData: HomePageData,
   user: IUser
 ): Promise<HomePageData> {
+  if (!user.favoriteJournals.length) {
+    homePageData.recentlyUpdatedFavoriteJournals = []
+    return homePageData
+  }
+
   const DAYS_BACK: number = 7
   const dateLastWeek: Date = new Date(new Date().getTime())
   dateLastWeek.setDate(new Date().getDate() - DAYS_BACK)
@@ -332,6 +347,15 @@ async function journalsPageGetJournals(
     case 'favorites': {
       if (!user)
         throw Error(`Requested favorite journals, but no one is logged in`)
+
+      if (!user.favoriteJournals.length) {
+        journalsResponse = {
+          data: {
+            docs: [],
+          },
+        }
+        break
+      }
 
       const idQuery: string = (user.favoriteJournals as string[]).reduce(
         (acc, id) => `${acc ? `${acc}&` : acc}_id[]=${id}`,

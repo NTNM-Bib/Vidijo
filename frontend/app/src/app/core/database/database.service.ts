@@ -1,9 +1,7 @@
 import { Injectable } from "@angular/core";
 import { IHomePage } from "src/app/journals/shared/home-page.interface";
 import { IDiscoverPage } from "src/app/journals/shared/discover-page.interface";
-import { IJournalsPage } from "src/app/journals/shared/journals-page.interface";
 import { ICategoriesPage } from "src/app/journals/shared/categories-page.interface";
-import { ISearchPage } from "src/app/journals/shared/search-page.interface";
 
 @Injectable({
   providedIn: "root",
@@ -11,13 +9,13 @@ import { ISearchPage } from "src/app/journals/shared/search-page.interface";
 export class DatabaseService {
   private _homePage: IHomePage;
   private _discoverPage: IDiscoverPage;
-  private _journalsPage: IJournalsPage;
   private _categoriesPage: ICategoriesPage;
-  private _searchPage: ISearchPage;
 
   constructor() {}
 
   public flushCache() {
+    console.log("FLUSHING DATABASE CACHE...");
+
     this.flushHomePage();
     this.flushDiscoverPage();
     this.flushCategoriesPage();
@@ -27,21 +25,20 @@ export class DatabaseService {
     this._homePage = homePage;
   }
 
-  get homePage(): IHomePage {
+  public getHomePage(): IHomePage {
     return this._homePage;
   }
 
-  public getHomePage() {}
-
   public flushHomePage() {
     this._homePage = null;
+    console.log("HOME PAGE FLUSHED: ", this._homePage);
   }
 
   public cacheDiscoverPage(discoverPage: IDiscoverPage) {
     this._discoverPage = discoverPage;
   }
 
-  public getDiscoverPage(): IDiscoverPage {
+  public get discoverPage(): IDiscoverPage {
     return this._discoverPage;
   }
 
