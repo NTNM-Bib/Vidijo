@@ -6,10 +6,7 @@ import { IJournal } from "../shared/journal.interface";
 import { IArticle } from "../shared/article.interface";
 import { ICategory } from "./category.interface";
 import { IsLoadingService } from "@service-work/is-loading";
-import { IHomePage } from "./home-page.interface";
-import { IDiscoverPage } from "./discover-page.interface";
 import { IJournalsPage } from "./journals-page.interface";
-import { ICategoriesPage } from "./categories-page.interface";
 import { ISearchPage } from "./search-page.interface";
 import { DatabaseService } from "src/app/core/database/database.service";
 
@@ -33,9 +30,6 @@ export class JournalService {
   // =-- Admin Functionality --=
   updateJournal(journal: IJournal): Promise<IJournal> {
     const promise: Promise<IJournal> = new Promise((resolve, reject) => {
-      // Flush Cache
-      this.databaseService.flushCache();
-
       this.isLoadingService.add();
       this.http
         .patch<IJournal>(
@@ -46,10 +40,12 @@ export class JournalService {
         .subscribe(
           (updatedJournal: IJournal) => {
             this.isLoadingService.remove();
+            this.databaseService.reloadData();
             return resolve(updatedJournal);
           },
           (err: Error) => {
             this.isLoadingService.remove();
+            this.databaseService.reloadData();
             return reject(err);
           }
         );
@@ -58,62 +54,6 @@ export class JournalService {
     return promise;
   }
   // =-- Admin Functionality End --=
-
-  getHomePage(): Promise<IHomePage> {
-    const promise: Promise<IHomePage> = new Promise((resolve, reject) => {
-      if (this.databaseService.getHomePage()) {
-        console.log(
-          "HOME PAGE IS AVAILABLE",
-          this.databaseService.getHomePage()
-        );
-        return resolve(this.databaseService.getHomePage());
-      }
-
-      this.isLoadingService.add();
-
-      this.http
-        .get<IHomePage>(`${this.vidijoApiUrl}/pages/home`, httpOptions)
-        .subscribe(
-          (homePage: IHomePage) => {
-            this.isLoadingService.remove();
-            this.databaseService.cacheHomePage(homePage);
-            return resolve(homePage);
-          },
-          (err: any) => {
-            this.isLoadingService.remove();
-            return reject(new Error("Cannot load home page data"));
-          }
-        );
-    });
-
-    return promise;
-  }
-
-  getDiscoverPage(): Promise<IDiscoverPage> {
-    const promise: Promise<IDiscoverPage> = new Promise((resolve, reject) => {
-      if (this.databaseService.discoverPage) {
-        return resolve(this.databaseService.discoverPage);
-      }
-
-      this.isLoadingService.add();
-
-      this.http
-        .get<IDiscoverPage>(`${this.vidijoApiUrl}/pages/discover`, httpOptions)
-        .subscribe(
-          (discoverPage: IDiscoverPage) => {
-            this.isLoadingService.remove();
-            this.databaseService.cacheDiscoverPage(discoverPage);
-            return resolve(discoverPage);
-          },
-          (err: any) => {
-            this.isLoadingService.remove();
-            return reject(new Error("Cannot load discover page data"));
-          }
-        );
-    });
-
-    return promise;
-  }
 
   getJournalsPage(
     category: string = "",
@@ -135,35 +75,6 @@ export class JournalService {
           (err: any) => {
             this.isLoadingService.remove();
             return reject(new Error("Cannot load journals page data"));
-          }
-        );
-    });
-
-    return promise;
-  }
-
-  getCategoriesPage(): Promise<ICategoriesPage> {
-    const promise: Promise<ICategoriesPage> = new Promise((resolve, reject) => {
-      if (this.databaseService.getCategoriesPage()) {
-        return resolve(this.databaseService.getCategoriesPage());
-      }
-
-      this.isLoadingService.add();
-
-      this.http
-        .get<ICategoriesPage>(
-          `${this.vidijoApiUrl}/pages/categories`,
-          httpOptions
-        )
-        .subscribe(
-          (categoriesPage: ICategoriesPage) => {
-            this.isLoadingService.remove();
-            this.databaseService.cacheCategoriesPage(categoriesPage);
-            return resolve(categoriesPage);
-          },
-          (err: any) => {
-            this.isLoadingService.remove();
-            return reject(new Error("Cannot load categories page data"));
           }
         );
     });

@@ -77,7 +77,7 @@ export class AuthService {
       )
       .pipe(
         tap((user: IUser) => {
-          this.databaseService.flushCache();
+          this.databaseService.reloadData();
           this.currentUser.next(user);
         })
       );
@@ -85,7 +85,7 @@ export class AuthService {
 
   public logout() {
     // Flush Cache
-    this.databaseService.flushCache();
+    this.databaseService.reloadData();
 
     this.http
       .post<IUser>(

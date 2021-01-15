@@ -15,19 +15,28 @@
         <!-- All Journals -->
         <div class="g_grid-item-3-2">
           <div class="g_grid-item-content">
-            <app-journal-category [category]="allJournalsCategory" specialIcon="apps"></app-journal-category>
+            <app-journal-category
+              [category]="allJournalsCategory"
+              specialIcon="apps"
+            ></app-journal-category>
           </div>
         </div>
 
         <!-- Favorites -->
         <div class="g_grid-item-3-2" *ngIf="isLoggedIn">
           <div class="g_grid-item-content">
-            <app-journal-category [category]="favoritesCategory" specialIcon="favorite"></app-journal-category>
+            <app-journal-category
+              [category]="favoritesCategory"
+              specialIcon="favorite"
+            ></app-journal-category>
           </div>
         </div>
 
         <!-- Other Categories -->
-        <div class="g_grid-item-3-2" *ngFor="let category of categories">
+        <div
+          class="g_grid-item-3-2"
+          *ngFor="let category of (data$ | async)?.categories"
+        >
           <div class="g_grid-item-content">
             <app-journal-category [category]="category"></app-journal-category>
           </div>

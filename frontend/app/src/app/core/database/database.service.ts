@@ -2,59 +2,63 @@ import { Injectable } from "@angular/core";
 import { IHomePage } from "src/app/journals/shared/home-page.interface";
 import { IDiscoverPage } from "src/app/journals/shared/discover-page.interface";
 import { ICategoriesPage } from "src/app/journals/shared/categories-page.interface";
+import { Observable, ReplaySubject, Subject, Subscription } from "rxjs";
+import { IsLoadingService } from "@service-work/is-loading";
+import { environment } from "src/environments/environment";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import Axios from "axios";
 
 @Injectable({
   providedIn: "root",
 })
 export class DatabaseService {
-  private _homePage: IHomePage;
-  private _discoverPage: IDiscoverPage;
-  private _categoriesPage: ICategoriesPage;
+  public homePageData$: ReplaySubject<IHomePage> = new ReplaySubject<IHomePage>();
+  public discoverPageData$: ReplaySubject<IDiscoverPage> = new ReplaySubject<IDiscoverPage>();
+  public categoriesPageData$: ReplaySubject<ICategoriesPage> = new ReplaySubject<ICategoriesPage>();
 
-  constructor() {}
+  private vidijoApiUrl = environment.vidijoApiUrl;
 
-  public flushCache() {
-    console.log("FLUSHING DATABASE CACHE...");
-
-    this.flushHomePage();
-    this.flushDiscoverPage();
-    this.flushCategoriesPage();
+  constructor(private isLoadingService: IsLoadingService) {
+    this.reloadData();
   }
 
-  public cacheHomePage(homePage: IHomePage) {
-    this._homePage = homePage;
+  public reloadData() {
+    this.isLoadingService.add();
+
+    Promise.all([
+      this.loadHomePageData(),
+      this.loadDiscoverPageData(),
+      this.loadCategoriesPageData(),
+    ])
+      .then(() => {
+        this.isLoadingService.remove();
+      })
+      .catch((err) => {
+        this.isLoadingService.remove();
+      });
   }
 
-  public getHomePage(): IHomePage {
-    return this._homePage;
+  async loadHomePageData() {
+    const response = await Axios.get(`${this.vidijoApiUrl}/pages/home`, {
+      withCredentials: true,
+    });
+
+    this.homePageData$.next(response.data);
   }
 
-  public flushHomePage() {
-    this._homePage = null;
-    console.log("HOME PAGE FLUSHED: ", this._homePage);
+  async loadDiscoverPageData() {
+    const response = await Axios.get(`${this.vidijoApiUrl}/pages/discover`, {
+      withCredentials: true,
+    });
+
+    this.discoverPageData$.next(response.data);
   }
 
-  public cacheDiscoverPage(discoverPage: IDiscoverPage) {
-    this._discoverPage = discoverPage;
-  }
+  async loadCategoriesPageData() {
+    const response = await Axios.get(`${this.vidijoApiUrl}/pages/categories`, {
+      withCredentials: true,
+    });
 
-  public get discoverPage(): IDiscoverPage {
-    return this._discoverPage;
-  }
-
-  public flushDiscoverPage() {
-    this._discoverPage = null;
-  }
-
-  public cacheCategoriesPage(categoriesPage: ICategoriesPage) {
-    this._categoriesPage = categoriesPage;
-  }
-
-  public getCategoriesPage(): ICategoriesPage {
-    return this._categoriesPage;
-  }
-
-  public flushCategoriesPage() {
-    this._categoriesPage = null;
+    this.categoriesPageData$.next(response.data);
   }
 }

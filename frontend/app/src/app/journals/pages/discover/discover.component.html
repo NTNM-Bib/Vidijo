@@ -8,7 +8,7 @@
   </section>
 
   <!-- Recently updated journals -->
-  <section *ngIf="recentlyUpdatedJournals.length > 0">
+  <section *ngIf="(data$ | async)?.recentlyUpdatedJournals?.length">
     <div class="g_section-header">
       <div class="g_section-header-row">
         <h2>Newest Articles</h2>
@@ -31,7 +31,7 @@
         <div
           [ngClass]="isMobile ? 'g_grid-item-1-1' : 'g_grid-item'"
           *ngFor="
-            let journal of recentlyUpdatedJournals.slice(
+            let journal of (data$ | async)?.recentlyUpdatedJournals?.slice(
               0,
               numJournalsToDisplay
             )
@@ -48,7 +48,7 @@
   </section>
 
   <!-- Top categories -->
-  <section *ngIf="categories.length > 0">
+  <section *ngIf="(data$ | async)?.topCategories?.length">
     <div class="g_section-header">
       <div class="g_section-header-row">
         <h2>Top Categories</h2>
@@ -67,7 +67,10 @@
       <div
         [ngClass]="isMobile ? 'g_grid-with-horizontal-scrolling-2' : 'g_grid'"
       >
-        <div class="g_grid-item-3-2" *ngFor="let category of categories">
+        <div
+          class="g_grid-item-3-2"
+          *ngFor="let category of (data$ | async)?.topCategories"
+        >
           <div class="g_grid-item-content">
             <app-journal-category [category]="category"></app-journal-category>
           </div>
@@ -77,7 +80,7 @@
   </section>
 
   <!-- Recently added journals -->
-  <section *ngIf="recentlyAddedJournals.length > 0">
+  <section *ngIf="(data$ | async)?.recentlyAddedJournals?.length">
     <div class="g_section-header">
       <div class="g_section-header-row">
         <h2>Recently Added</h2>
@@ -100,10 +103,9 @@
         <div
           class="g_grid-item"
           *ngFor="
-            let journalRecentlyAdded of recentlyAddedJournals.slice(
-              0,
-              numJournalsToDisplay
-            )
+            let journalRecentlyAdded of (
+              data$ | async
+            )?.recentlyAddedJournals?.slice(0, numJournalsToDisplay)
           "
         >
           <div class="g_grid-item-content">
@@ -117,7 +119,7 @@
   </section>
 
   <!-- Most viewed journals -->
-  <section *ngIf="mostViewedJournals.length > 0">
+  <section *ngIf="(data$ | async)?.mostViewedJournals?.length > 0">
     <div class="g_section-header">
       <div class="g_section-header-row">
         <h2>Most Viewed</h2>
@@ -140,7 +142,7 @@
         <div
           class="g_grid-item"
           *ngFor="
-            let journalMostViewed of mostViewedJournals.slice(
+            let journalMostViewed of (data$ | async)?.mostViewedJournals?.slice(
               0,
               numJournalsToDisplay
             )

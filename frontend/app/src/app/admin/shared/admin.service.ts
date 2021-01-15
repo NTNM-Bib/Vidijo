@@ -56,9 +56,6 @@ export class AdminService {
   // Add a new journal from DOAJ to Vidijo
   public addJournal(journal: IJournal): Promise<IJournal> {
     const promise: Promise<IJournal> = new Promise((resolve, reject) => {
-      // Flush Cache
-      this.databaseService.flushCache();
-
       this.isLoadingService.add();
 
       this.http
@@ -70,10 +67,12 @@ export class AdminService {
         .subscribe(
           (addedJournal: IJournal) => {
             this.isLoadingService.remove();
+            this.databaseService.reloadData();
             return resolve(addedJournal);
           },
           (err: Error) => {
             this.isLoadingService.remove();
+            this.databaseService.reloadData();
             return reject(err);
           }
         );
@@ -101,9 +100,6 @@ export class AdminService {
   // Remove the journal with given ID
   public deleteJournal(journalId: string): Promise<IJournal> {
     const promise: Promise<IJournal> = new Promise((resolve, reject) => {
-      // Flush Cache
-      this.databaseService.flushCache();
-
       this.isLoadingService.add();
 
       this.http
@@ -114,10 +110,12 @@ export class AdminService {
         .subscribe(
           (deletedJournal: IJournal) => {
             this.isLoadingService.remove();
+            this.databaseService.reloadData();
             return resolve(deletedJournal);
           },
           (err: Error) => {
             this.isLoadingService.remove();
+            this.databaseService.reloadData();
             return reject(err);
           }
         );
@@ -129,9 +127,6 @@ export class AdminService {
   // Add Category
   public addCategory(category: ICategory): Promise<ICategory> {
     const promise: Promise<ICategory> = new Promise((resolve, reject) => {
-      // Flush Cache
-      this.databaseService.flushCache();
-
       this.isLoadingService.add();
 
       this.http
@@ -143,10 +138,12 @@ export class AdminService {
         .subscribe(
           (addedCategory: ICategory) => {
             this.isLoadingService.remove();
+            this.databaseService.reloadData();
             return resolve(addedCategory);
           },
           (err: Error) => {
             this.isLoadingService.remove();
+            this.databaseService.reloadData();
             return reject(err);
           }
         );
@@ -158,9 +155,6 @@ export class AdminService {
   // Edit category data
   public updateCategory(category: ICategory): Promise<ICategory> {
     const promise: Promise<ICategory> = new Promise((resolve, reject) => {
-      // Flush Cache
-      this.databaseService.flushCache();
-
       this.isLoadingService.add();
 
       this.http
@@ -172,10 +166,12 @@ export class AdminService {
         .subscribe(
           (updatedCategory: ICategory) => {
             this.isLoadingService.remove();
+            this.databaseService.reloadData();
             return resolve(updatedCategory);
           },
           (err: Error) => {
             this.isLoadingService.remove();
+            this.databaseService.reloadData();
             return reject(err);
           }
         );
@@ -187,9 +183,6 @@ export class AdminService {
   // Remove the category with given ID
   public deleteCategory(categoryId: string): Promise<ICategory> {
     const promise: Promise<ICategory> = new Promise((resolve, reject) => {
-      // Flush Cache
-      this.databaseService.flushCache();
-
       this.isLoadingService.add();
 
       this.http
@@ -200,10 +193,12 @@ export class AdminService {
         .subscribe(
           (deletedCategory: ICategory) => {
             this.isLoadingService.remove();
+            this.databaseService.reloadData();
             return resolve(deletedCategory);
           },
           (err: Error) => {
             this.isLoadingService.remove();
+            this.databaseService.reloadData();
             return reject(err);
           }
         );
@@ -237,9 +232,6 @@ export class AdminService {
   // Edit user data
   public updateUser(user: IUser): Promise<IUser> {
     const promise: Promise<IUser> = new Promise((resolve, reject) => {
-      // Flush Cache
-      this.databaseService.flushCache();
-
       this.isLoadingService.add();
 
       this.http
@@ -251,10 +243,12 @@ export class AdminService {
         .subscribe(
           (updatedUser: IUser) => {
             this.isLoadingService.remove();
+            this.databaseService.reloadData();
             return resolve(updatedUser);
           },
           (err: Error) => {
             this.isLoadingService.remove();
+            this.databaseService.reloadData();
             return reject(err);
           }
         );
