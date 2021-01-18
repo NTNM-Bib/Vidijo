@@ -1,18 +1,18 @@
-import { Component, OnInit, AfterViewInit, HostListener } from "@angular/core";
-import { JournalService } from "../../shared/journal.service";
-import { IJournal } from "../../shared/journal.interface";
+import { Component, OnInit, HostListener } from "@angular/core";
 import * as _ from "lodash";
 import {
   BreakpointObserver,
   BreakpointState,
   Breakpoints,
 } from "@angular/cdk/layout";
-import { ActivatedRoute, Router, Params } from "@angular/router";
+import { ActivatedRoute, Router } from "@angular/router";
 import { ICategory } from "../../shared/category.interface";
 import { Title } from "@angular/platform-browser";
-import { IsLoadingService } from "@service-work/is-loading";
 import { AdminService } from "src/app/admin/shared/admin.service";
 import { IJournalsPage } from "../../shared/journals-page.interface";
+import { Observable } from "rxjs";
+import { DatabaseService } from "src/app/core/database/database.service";
+import { JournalService } from "../../shared/journal.service";
 
 @Component({
   selector: "app-all",
@@ -21,17 +21,9 @@ import { IJournalsPage } from "../../shared/journals-page.interface";
 })
 export class AllComponent implements OnInit {
   isMobile: boolean;
+  adminModeActive$: Observable<boolean>;
 
-  adminModeActive: boolean;
-
-  // Journals
-  journals: IJournal[] = [];
-
-  // Categories
-  availableCategories: ICategory[];
-  currentCategory: ICategory = {
-    _id: "all",
-  } as ICategory;
+  data: IJournalsPage;
 
   // Sort
   sort: "+title" | "-latestPubdate" | "-added" | "-views" = "+title";
@@ -56,7 +48,7 @@ export class AllComponent implements OnInit {
 
   // Pagination
   currentlyLoadingJournals: boolean = false;
-  journalsPage: number = 1;
+  journalsPage: number = 2;
   journalsPageLimit: number = 20;
   loadedAllJournals: boolean = false;
 
@@ -64,12 +56,13 @@ export class AllComponent implements OnInit {
   categoryParam: string = "";
 
   constructor(
-    private journalService: JournalService,
     private breakpointObserver: BreakpointObserver,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private titleService: Title,
-    private adminService: AdminService
+    private adminService: AdminService,
+    private databaseService: DatabaseService,
+    private journalService: JournalService
   ) {}
 
   async ngOnInit() {
@@ -79,63 +72,37 @@ export class AllComponent implements OnInit {
         this.isMobile = state.matches;
       });
 
-    // Check if in admin mode
-    this.adminService.adminModeActive.subscribe((active: boolean) => {
-      this.adminModeActive = active;
+    this.adminModeActive$ = this.adminService.adminModeActive$;
+
+    this.databaseService.journalsPageData$.subscribe((data) => {
+      this.resetPagination();
+      this.data = data;
+      this.titleService.setTitle(`${data?.category?.title} - Vidijo`);
     });
 
     // Check for route changes
     this.activatedRoute.queryParams.subscribe(async (params) => {
       this.sortParam = params.sort;
       this.categoryParam = params.category;
-      await this.getJournalsPage(this.categoryParam, this.sortParam);
 
-      this.titleService.setTitle(`${this.currentCategory.title} - Vidijo`);
+      this.databaseService.reloadJournalsPageIfParamsChanged(
+        this.categoryParam,
+        this.sortParam
+      );
     });
   }
 
-  async getJournalsPage(category: string, sort: string) {
-    // Reset page when changing sorting
-    this.journalsPage = 1;
-    this.loadedAllJournals = false;
+  getTitle(data: IJournalsPage): string {
+    if (!data) return "";
 
-    const journalsPage: IJournalsPage = await this.journalService
-      .getJournalsPage(category, sort)
-      .catch();
-
-    this.setCustomAvailableCategories(journalsPage.availableCategories);
-    this.setCustomCurrentCategory(journalsPage.category);
-    this.journals = journalsPage.journals;
-    this.sort = journalsPage.sort;
-
-    this.loadedAllJournals =
-      journalsPage.journals.length < this.journalsPageLimit;
-  }
-
-  getJournalsPaginated(): Promise<void> {
-    const promise: Promise<void> = new Promise<void>((resolve, reject) => {
-      this.currentlyLoadingJournals = true;
-      this.journalService
-        .getJournals(
-          `?select=title useGeneratedCover&sort=${
-            this.sortParam ? this.sortParam : "+title"
-          }&categories=${this.categoryParam ? this.categoryParam : ""}&limit=${
-            this.journalsPageLimit
-          }&page=${this.journalsPage}`
-        )
-        .subscribe((journals: any) => {
-          if (journals.docs.length < 1) {
-            this.loadedAllJournals = true;
-          }
-
-          this.journals = this.journals.concat(journals.docs);
-
-          this.currentlyLoadingJournals = false;
-          return resolve();
-        });
-    });
-
-    return promise;
+    switch (data.category._id) {
+      case "all":
+        return "All Journals";
+      case "favorites":
+        return "My Favorites";
+      default:
+        return data.category.title;
+    }
   }
 
   onCategoryButtonClick(category: ICategory) {
@@ -179,47 +146,35 @@ export class AllComponent implements OnInit {
     });
   }
 
-  setCustomAvailableCategories(categories: ICategory[]) {
-    this.availableCategories = categories.map((category: ICategory) => {
-      if (category._id === "all") {
-        return {
-          _id: category._id,
-          title: "All Journals",
-          color: category.color,
-          icon: "apps",
-        } as ICategory;
-      }
-
-      if (category._id === "favorites") {
-        return {
-          _id: category._id,
-          title: "My Favorites",
-          color: category.color,
-          icon: "favorite",
-        } as ICategory;
-      }
-
-      return category;
-    });
+  private resetPagination() {
+    this.loadedAllJournals = false;
+    this.journalsPage = 2;
   }
 
-  setCustomCurrentCategory(category: ICategory) {
-    if (category._id === "all") {
-      category.title = "All Journals";
-      category.icon = "apps";
-      this.currentCategory = category;
-      return;
-    }
+  getJournalsPaginated(): Promise<void> {
+    const promise: Promise<void> = new Promise<void>((resolve, reject) => {
+      this.currentlyLoadingJournals = true;
+      this.journalService
+        .getJournals(
+          `?select=title useGeneratedCover&sort=${
+            this.sortParam ? this.sortParam : "+title"
+          }&categories=${this.categoryParam ? this.categoryParam : ""}&limit=${
+            this.journalsPageLimit
+          }&page=${this.journalsPage}`
+        )
+        .subscribe((journals: any) => {
+          if (journals.docs.length < 1) {
+            this.loadedAllJournals = true;
+          }
 
-    if (category._id === "favorites") {
-      category.title = "My Favorites";
-      category.icon = "favorite";
-      this.currentCategory = category;
-      return;
-    }
+          this.data.journals = this.data.journals.concat(journals.docs);
 
-    this.currentCategory = category;
-    return;
+          this.currentlyLoadingJournals = false;
+          return resolve();
+        });
+    });
+
+    return promise;
   }
 
   // Load next page of articles when scrolled to bottom

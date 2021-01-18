@@ -9,6 +9,7 @@ import { IsLoadingService } from "@service-work/is-loading";
 import { IJournalsPage } from "./journals-page.interface";
 import { ISearchPage } from "./search-page.interface";
 import { DatabaseService } from "src/app/core/database/database.service";
+import { catchError, tap } from "rxjs/operators";
 
 const httpOptions = {
   headers: new HttpHeaders({ "Content-Type": "application/json" }),

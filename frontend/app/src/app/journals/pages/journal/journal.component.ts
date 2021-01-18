@@ -49,7 +49,7 @@ export class JournalComponent implements OnInit {
   articlesPageLimit: number = 25;
   loadedAllArticles: boolean = false;
 
-  adminModeActive$ = this.adminService.adminModeActive;
+  adminModeActive$ = this.adminService.adminModeActive$;
 
   constructor(
     private route: ActivatedRoute,

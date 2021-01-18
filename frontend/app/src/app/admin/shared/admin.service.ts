@@ -19,24 +19,24 @@ export class AdminService {
   };
   private vidijoApiUrl = environment.vidijoApiUrl;
 
-  public adminModeActive: BehaviorSubject<boolean>;
+  public adminModeActive$: BehaviorSubject<boolean>;
 
   constructor(
     private http: HttpClient,
     private databaseService: DatabaseService,
     private isLoadingService: IsLoadingService
   ) {
-    this.adminModeActive = new BehaviorSubject<boolean>(false);
+    this.adminModeActive$ = new BehaviorSubject<boolean>(false);
   }
 
   // Enter admin mode
   public enterAdminMode() {
-    this.adminModeActive.next(true);
+    this.adminModeActive$.next(true);
   }
 
   // Exit admin mode
   public exitAdminMode() {
-    this.adminModeActive.next(false);
+    this.adminModeActive$.next(false);
   }
 
   public searchJournalsInDOAJ(searchTerm: string) {

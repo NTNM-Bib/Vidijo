@@ -24,8 +24,6 @@ export class HomeComponent implements OnInit {
   isMobile: boolean = false;
   user: IUser = {} as IUser;
 
-  titleInfoText: string = "";
-
   // Reading List
   numDisplayedReadingListArticles: number = 5;
   readingListEditMode: boolean = false;
@@ -56,10 +54,6 @@ export class HomeComponent implements OnInit {
     this.activatedRoute.queryParams.subscribe(async () => {
       this.authService.currentUser.subscribe(async (user: IUser) => {
         this.user = user;
-
-        this.data$.subscribe((data) => {
-          this.setTitleInfoText(data);
-        });
       });
     });
   }
@@ -89,32 +83,24 @@ export class HomeComponent implements OnInit {
       : false;
   }
 
-  private setTitleInfoText(data: IHomePage) {
-    if (this.showOnboarding) {
-      this.titleInfoText =
-        "Welcome to your home page! Let's see how to get started...";
-      return;
-    }
+  public getTitleInfoText(data: IHomePage): string {
+    if (!data) return "";
 
-    if (data.favoriteJournals.length === 0) {
-      this.titleInfoText =
-        "Add journals to your favorites if you want to see their newly published articles on this page";
-      return;
-    }
+    if (this.showOnboarding)
+      return "Welcome to your home page! Let's see how to get started...";
 
-    switch (data.recentlyUpdatedFavoriteJournals.length) {
+    if (!data?.favoriteJournals?.length)
+      return "Add journals to your favorites if you want to see their newly published articles on this page";
+
+    switch (data?.recentlyUpdatedFavoriteJournals?.length) {
       case 0:
-        this.titleInfoText =
-          "Currently there are no new articles available for you";
-        break;
+        return "Currently there are no new articles available for you";
+
       case 1:
-        this.titleInfoText =
-          "One of your favorite journals has recently been updated";
-        break;
+        return "One of your favorite journals has recently been updated";
+
       default:
-        this.titleInfoText =
-          "Some of your favorite journals have recently been updated";
-        break;
+        return "Some of your favorite journals have recently been updated";
     }
   }
 

@@ -52,7 +52,7 @@ export class CategoriesComponent implements OnInit {
         this.isMobile = state.matches;
       });
 
-    this.adminService.adminModeActive.subscribe((active: boolean) => {
+    this.adminService.adminModeActive$.subscribe((active: boolean) => {
       this.adminModeActive = active;
     });
 

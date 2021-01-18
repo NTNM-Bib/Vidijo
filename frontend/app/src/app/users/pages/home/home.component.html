@@ -41,7 +41,7 @@
   <section>
     <div class="g_section-header">
       <h1>{{ greetingDependingOnTime }}, {{ user.firstName | titlecase }}</h1>
-      <p>{{ titleInfoText }}</p>
+      <p>{{ getTitleInfoText(data$ | async) }}</p>
     </div>
   </section>
 
