@@ -46,6 +46,7 @@ import { AdminModule } from "./admin/admin.module";
     AdminModule,
     ServiceWorkerModule.register("ngsw-worker.js", {
       enabled: environment.production,
+      registrationStrategy: "registerImmediately",
     }),
   ],
   providers: [],

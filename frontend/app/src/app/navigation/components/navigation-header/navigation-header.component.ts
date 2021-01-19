@@ -21,6 +21,8 @@ import { NavigationService } from "src/app/core/navigation/navigation.service";
 import { environment } from "src/environments/environment";
 import { AdminService } from "src/app/admin/shared/admin.service";
 import { AlertService } from "src/app/core/alert/alert.service";
+import { Observable } from "rxjs";
+import { DatabaseService } from "src/app/core/database/database.service";
 
 interface NavStackItem {
   route: string;
@@ -44,8 +46,7 @@ export class NavigationHeaderComponent implements OnInit {
   institutionName: string = environment.institutionName;
   privacyPolicyUrl: string = environment.privacyPolicyUrl;
 
-  // TODO: Implement online / offline checking (for background sync)
-  isOffline: boolean = false;
+  isUsingCache$: Observable<boolean>;
 
   previousScrollY: number = 0;
   showFloatingToolbar: boolean = true;
@@ -89,12 +90,12 @@ export class NavigationHeaderComponent implements OnInit {
   constructor(
     private breakpointObserver: BreakpointObserver,
     public router: Router,
-    private location: Location,
     private authService: AuthService,
     private activatedRoute: ActivatedRoute,
     private navigationService: NavigationService,
     private adminService: AdminService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private databaseService: DatabaseService
   ) {}
 
   ngOnInit() {
@@ -103,6 +104,8 @@ export class NavigationHeaderComponent implements OnInit {
       .subscribe((state: BreakpointState) => {
         this.isMobile = state.matches;
       });
+
+    this.isUsingCache$ = this.databaseService.isUsingCache$;
 
     this.authService.currentUser.subscribe((user: IUser) => {
       this.isLoggedIn = user !== null;

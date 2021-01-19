@@ -94,6 +94,14 @@
         &nbsp; Account
       </button>
 
+      <button
+        mat-icon-button
+        *ngIf="isUsingCache$ | async"
+        matTooltip="Connection lost - trying to reconnect. You can still browse cached content in the meantime."
+      >
+        <mat-icon color="warn"> offline_bolt </mat-icon>
+      </button>
+
       <button mat-icon-button class="g_button" [matMenuTriggerFor]="userMenu">
         <mat-icon>more_vert</mat-icon>
       </button>
@@ -119,10 +127,6 @@
           <span>&nbsp; Logout</span>
         </button>
       </mat-menu>
-
-      <button mat-icon-button *ngIf="isOffline">
-        <mat-icon color="warn"> offline_bolt </mat-icon>
-      </button>
     </div>
   </div>
   <!-- End of outer-right-group -->
