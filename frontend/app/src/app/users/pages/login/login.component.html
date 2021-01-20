@@ -37,6 +37,7 @@
           />
           <button
             mat-icon-button
+            type="button"
             matSuffix
             tabindex="-1"
             (click)="loginPasswordVisible = !loginPasswordVisible"
@@ -49,7 +50,12 @@
             >Please enter your password</mat-error
           >
         </mat-form-field>
-        <button mat-button color="accent" (click)="openPasswordResetRequest()">
+        <button
+          mat-button
+          type="button"
+          color="accent"
+          (click)="openPasswordResetRequest()"
+        >
           I forgot my password
         </button>
       </div>

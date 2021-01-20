@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
+import { ReplaySubject } from "rxjs";
 import { environment } from "src/environments/environment";
 import { HttpHeaders, HttpClient } from "@angular/common/http";
 import { IJournal } from "src/app/journals/shared/journal.interface";
@@ -19,14 +19,14 @@ export class AdminService {
   };
   private vidijoApiUrl = environment.vidijoApiUrl;
 
-  public adminModeActive$: BehaviorSubject<boolean>;
+  public adminModeActive$: ReplaySubject<boolean> = new ReplaySubject();
 
   constructor(
     private http: HttpClient,
     private databaseService: DatabaseService,
     private isLoadingService: IsLoadingService
   ) {
-    this.adminModeActive$ = new BehaviorSubject<boolean>(false);
+    this.adminModeActive$.next(false);
   }
 
   // Enter admin mode

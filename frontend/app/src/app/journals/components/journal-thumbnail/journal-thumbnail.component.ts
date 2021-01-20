@@ -7,6 +7,7 @@ import {
 } from "@angular/cdk/layout";
 import { NavigationService } from "src/app/core/navigation/navigation.service";
 import { AdminService } from "src/app/admin/shared/admin.service";
+import { Observable } from "rxjs";
 
 @Component({
   selector: "app-journal-thumbnail",
@@ -16,7 +17,9 @@ import { AdminService } from "src/app/admin/shared/admin.service";
 export class JournalThumbnailComponent implements OnInit {
   @Input() journal: IJournal;
   isMobile: boolean;
-  adminModeActive: boolean = false;
+  adminModeActive$: Observable<boolean>;
+
+  @Input() showTitle: boolean = true;
 
   constructor(
     private breakpointObserver: BreakpointObserver,
@@ -31,9 +34,7 @@ export class JournalThumbnailComponent implements OnInit {
         this.isMobile = state.matches;
       });
 
-    this.adminService.adminModeActive$.subscribe((active: boolean) => {
-      this.adminModeActive = active;
-    });
+    this.adminModeActive$ = this.adminService.adminModeActive$;
   }
 
   public openJournal() {

@@ -88,7 +88,7 @@
         class="g_button"
         color="accent"
         (click)="openRegister()"
-        *ngIf="!isLoggedIn"
+        *ngIf="!isLoggedIn && !(isUsingCache$ | async)"
       >
         <mat-icon> account_circle </mat-icon>
         &nbsp; Account
@@ -97,10 +97,20 @@
       <button
         mat-icon-button
         *ngIf="isUsingCache$ | async"
-        matTooltip="Connection lost - trying to reconnect. You can still browse cached content in the meantime."
+        [matMenuTriggerFor]="offlineMenu"
       >
         <mat-icon color="warn"> offline_bolt </mat-icon>
       </button>
+
+      <mat-menu #offlineMenu="matMenu">
+        <div style="padding: 0 15px">
+          <h3>Connection Lost</h3>
+          <p>
+            We are trying to reconnect... In the meantime you can access cached
+            content.
+          </p>
+        </div>
+      </mat-menu>
 
       <button mat-icon-button class="g_button" [matMenuTriggerFor]="userMenu">
         <mat-icon>more_vert</mat-icon>

@@ -1,3 +1,21 @@
+.header {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.header-left {
+  position: relative;
+}
+
+.header-right {
+  flex: 1;
+}
+
+.thumbnail-container {
+  position: relative;
+  overflow: visible;
+}
+
 // #region Journal Details
 
 .mobile-date {

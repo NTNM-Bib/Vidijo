@@ -1,4 +1,11 @@
-import { Component, OnInit, Input, HostListener } from "@angular/core";
+import {
+  Component,
+  OnInit,
+  Input,
+  HostListener,
+  ElementRef,
+  ViewChild,
+} from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { FormControl } from "@angular/forms";
 import { Observable } from "rxjs";
@@ -51,6 +58,8 @@ export class JournalComponent implements OnInit {
 
   adminModeActive$ = this.adminService.adminModeActive$;
 
+  innerWidth: number = 0;
+
   constructor(
     private route: ActivatedRoute,
     private journalService: JournalService,
@@ -90,6 +99,26 @@ export class JournalComponent implements OnInit {
           this.user.favoriteJournals.includes(this.journal._id);
       });
     });
+
+    this.onResize();
+  }
+
+  @HostListener("window:resize", ["$event"])
+  onResize() {
+    this.innerWidth = window.innerWidth;
+  }
+
+  get coverWidth(): number {
+    let width = Math.floor(this.innerWidth / 3);
+    width = Math.min(width, 300);
+
+    return width;
+  }
+
+  get coverHeight(): number {
+    const height = Math.floor(this.coverWidth * 1.6);
+
+    return height;
   }
 
   async getJournal(id: string): Promise<void> {
