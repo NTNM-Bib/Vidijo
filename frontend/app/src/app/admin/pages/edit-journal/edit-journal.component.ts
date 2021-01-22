@@ -17,11 +17,14 @@ import { Location } from "@angular/common";
 export class EditJournalComponent implements OnInit {
   @Input() journal: IJournal;
 
+  private initialCoverUrlValue: string;
+
   form: FormGroup = new FormGroup({
     title: new FormControl(""),
     issn: new FormControl(""),
     eissn: new FormControl(""),
     categories: new FormControl(""),
+    coverUrl: new FormControl(""),
     useGeneratedCover: new FormControl(false),
   });
 
@@ -43,6 +46,7 @@ export class EditJournalComponent implements OnInit {
         .getJournals(`?_id=${this.journal._id}&populate=categories`)
         .subscribe((journalsResponse: any) => {
           this.journal = journalsResponse.docs[0];
+          this.getInitialCoverUrlValue();
           this.updateForm();
         });
     });
@@ -71,21 +75,32 @@ export class EditJournalComponent implements OnInit {
       });
   }
 
+  getInitialCoverUrlValue() {
+    this.initialCoverUrlValue = this.journal.coverUrl;
+  }
+
   updateForm() {
     this.form.controls["title"].setValue(this.journal.title);
     this.form.controls["issn"].setValue(this.journal.issn);
     this.form.controls["eissn"].setValue(this.journal.eissn);
+    this.form.controls["coverUrl"].setValue(this.journal.coverUrl);
     this.form.controls["useGeneratedCover"].setValue(
       this.journal.useGeneratedCover
     );
   }
 
   updateJournalData() {
+    const coverUrl = this.form.controls["coverUrl"].value;
+    const coverDate: Date | undefined =
+      coverUrl !== this.initialCoverUrlValue ? new Date() : undefined;
+
     const updatedJournal = {
       _id: this.journal._id,
       title: this.form.controls["title"].value,
       issn: this.form.controls["issn"].value,
       eissn: this.form.controls["eissn"].value,
+      coverUrl: coverUrl,
+      coverDate: coverDate,
       categories: this.transformCategoriesToIdArray(this.journal.categories),
       useGeneratedCover: this.form.controls["useGeneratedCover"].value,
     } as IJournal;
@@ -199,29 +214,4 @@ export class EditJournalComponent implements OnInit {
   onRemoveCover() {
     this.coverFile = null;
   }
-
-  /*
-  getCurrentCover() {
-    console.log("Getting cover...");
-    const url = `/static/covers/${this.journal._id}`;
-    fetch(url)
-      .then((response) => {
-        console.log("Response", response);
-        if (response.status !== 200) {
-          throw new Error(`Cannot get cover of journal ${this.journal._id}`);
-        }
-
-        return response;
-      })
-      .then((response) => response.blob().then((blob) => blob))
-      .then((blob) => {
-        const file = new File([blob], `${this.journal._id}`);
-
-        this.coverFile = file;
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }
-  */
 }

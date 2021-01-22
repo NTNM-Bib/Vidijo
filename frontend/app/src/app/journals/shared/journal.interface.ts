@@ -1,5 +1,4 @@
 import { IArticle } from "./article.interface";
-import { ICategory } from "./category.interface";
 
 export interface IJournal {
   _id: string;
@@ -8,6 +7,8 @@ export interface IJournal {
   eissn: string;
   source: string;
   cover: string;
+  coverUrl: string;
+  coverDate: Date;
   useGeneratedCover: boolean;
   articles: IArticle[];
   added: Date;

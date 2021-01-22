@@ -3,14 +3,13 @@ import {
   OnInit,
   Input,
   HostListener,
-  ElementRef,
-  ViewChild,
+  Inject,
+  LOCALE_ID,
 } from "@angular/core";
 import { ActivatedRoute } from "@angular/router";
 import { FormControl } from "@angular/forms";
 import { Observable } from "rxjs";
 import { map, startWith } from "rxjs/operators";
-import { MatDialog } from "@angular/material/dialog";
 import { JournalService } from "../../shared/journal.service";
 import { IJournal } from "../../shared/journal.interface";
 import { IArticle } from "../../shared/article.interface";
@@ -27,6 +26,7 @@ import { Title } from "@angular/platform-browser";
 import { IsLoadingService } from "@service-work/is-loading";
 import { AdminService } from "src/app/admin/shared/admin.service";
 import { NavigationService } from "src/app/core/navigation/navigation.service";
+import { formatDate } from "@angular/common";
 
 @Component({
   selector: "app-journal",
@@ -58,19 +58,18 @@ export class JournalComponent implements OnInit {
 
   adminModeActive$ = this.adminService.adminModeActive$;
 
-  innerWidth: number = 0;
-
   constructor(
     private route: ActivatedRoute,
     private journalService: JournalService,
     private userService: UserService,
     private authService: AuthService,
     private breakpointObserver: BreakpointObserver,
-    private alertService: AlertService,
     private titleService: Title,
     private isLoadingService: IsLoadingService,
     private adminService: AdminService,
-    private navigationService: NavigationService
+    private navigationService: NavigationService,
+    private alertService: AlertService,
+    @Inject(LOCALE_ID) private locale: string
   ) {}
 
   ngOnInit() {
@@ -99,26 +98,6 @@ export class JournalComponent implements OnInit {
           this.user.favoriteJournals.includes(this.journal._id);
       });
     });
-
-    this.onResize();
-  }
-
-  @HostListener("window:resize", ["$event"])
-  onResize() {
-    this.innerWidth = window.innerWidth;
-  }
-
-  get coverWidth(): number {
-    let width = Math.floor(this.innerWidth / 3);
-    width = Math.min(width, 300);
-
-    return width;
-  }
-
-  get coverHeight(): number {
-    const height = Math.floor(this.coverWidth * 1.6);
-
-    return height;
   }
 
   async getJournal(id: string): Promise<void> {
@@ -310,5 +289,18 @@ export class JournalComponent implements OnInit {
       this.articlesPage++;
       await this.getArticlesPaginated();
     }
+  }
+
+  showMoreDetailsDialog() {
+    this.alertService.showDialogAlert(
+      "Details",
+      `Cover retrieved from ${this.journal.coverUrl} on ${formatDate(
+        this.journal.coverDate,
+        "yyyy-MM-dd",
+        this.locale
+      )}`,
+      "Okay",
+      () => {}
+    );
   }
 }

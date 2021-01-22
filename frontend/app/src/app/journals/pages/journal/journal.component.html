@@ -1,76 +1,5 @@
-<div class="g_content" *ngIf="journal">
-  <section>
-    <div class="g_section-content header">
-      <div class="header-left">
-        <div
-          class="thumbnail-container"
-          [ngStyle]="{ width: coverWidth + 'px', height: coverHeight + 'px' }"
-        >
-          <app-journal-thumbnail
-            [journal]="journal"
-            [showTitle]="false"
-          ></app-journal-thumbnail>
-        </div>
-      </div>
-      <div class="header-right">
-        <h1>{{ journal.title }}</h1>
-        <div class="journal-actions-container">
-          <button mat-button class="g_neumorphism-button" color="none">
-            <mat-icon>info</mat-icon><span>&nbsp; Details</span>
-          </button>
-          <button
-            mat-button
-            class="g_neumorphism-button"
-            color="none"
-            *ngIf="isLoggedIn && !isFavorite"
-            (click)="addToFavorites()"
-          >
-            <mat-icon>favorite</mat-icon>
-            <span>&nbsp; Follow</span>
-          </button>
-          <button
-            mat-button
-            class="g_neumorphism-button-pressed"
-            color="warn"
-            *ngIf="isLoggedIn && isFavorite"
-            (click)="removeFromFavorites()"
-          >
-            <mat-icon>favorite</mat-icon>
-            <span>&nbsp; Following</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section *ngFor="let date of articleByMonthKeys">
-    <div class="g_section-content">
-      <mat-list>
-        <h3 class="mobile-date">{{ date }}</h3>
-        <mat-list-item
-          *ngFor="let article of articlesByMonth.get(date)"
-          routerLink="/a/{{ article._id }}"
-          matRipple
-        >
-          <!-- Article Title -->
-          <h3 mat-line>{{ article.title }}</h3>
-          <!-- Authors -->
-          <p mat-line *ngIf="article.authors && article.authors.length > 0">
-            {{ article.authors[0] }}
-            <i *ngIf="article.authors.length > 1">
-              +{{ article.authors.length - 1 }}
-            </i>
-          </p>
-        </mat-list-item>
-      </mat-list>
-    </div>
-  </section>
-</div>
-
-<!-- OLD CODE BELOW -->
-
 <!-- #region Mobile -->
-<div *ngIf="false && journal && isMobile">
+<div *ngIf="journal && isMobile">
   <div class="mobile-details-container">
     <div class="mobile-journal-cover">
       <app-journal-cover [journal]="journal"></app-journal-cover>
@@ -92,13 +21,21 @@
         {{ journal.eissn }}
       </p>
     </div>
+    <button
+      mat-icon-button
+      class="mobile-cover-details-button"
+      *ngIf="journal.coverUrl"
+      (click)="showMoreDetailsDialog()"
+    >
+      <mat-icon>info</mat-icon>
+    </button>
   </div>
-  <div class="journal-actions-container" *ngIf="isLoggedIn">
+  <div class="journal-actions-container">
     <button
       mat-button
       class="g_neumorphism-button"
       color="none"
-      *ngIf="!isFavorite"
+      *ngIf="!isFavorite && isLoggedIn"
       (click)="addToFavorites()"
     >
       <mat-icon>favorite</mat-icon>
@@ -108,13 +45,14 @@
       mat-button
       class="g_neumorphism-button-pressed"
       color="warn"
-      *ngIf="isFavorite"
+      *ngIf="isFavorite && isLoggedIn"
       (click)="removeFromFavorites()"
     >
       <mat-icon>favorite</mat-icon>
       <span>&nbsp; Following</span>
     </button>
   </div>
+
   <!-- Articles -->
   <div *ngFor="let date of articleByMonthKeys">
     <mat-list>
@@ -140,7 +78,7 @@
 <!-- #endregion -->
 
 <!-- Desktop -->
-<div class="g_content" *ngIf="false && journal && !isMobile">
+<div class="g_content" *ngIf="journal && !isMobile">
   <mat-sidenav-container *ngIf="journal">
     <!-- #region Journal Details -->
     <mat-sidenav
@@ -177,12 +115,12 @@
       </div>
 
       <!-- Journal Actions (Only when logged in) -->
-      <div class="journal-actions-container" *ngIf="isLoggedIn">
+      <div class="journal-actions-container">
         <button
           mat-button
           class="g_neumorphism-button"
           color="none"
-          *ngIf="!isFavorite"
+          *ngIf="!isFavorite && isLoggedIn"
           (click)="addToFavorites()"
         >
           <mat-icon>favorite</mat-icon>
@@ -192,11 +130,20 @@
           mat-button
           class="g_neumorphism-button-pressed"
           color="warn"
-          *ngIf="isFavorite"
+          *ngIf="isFavorite && isLoggedIn"
           (click)="removeFromFavorites()"
         >
           <mat-icon>favorite</mat-icon>
           <span>&nbsp; Following</span>
+        </button>
+
+        <button
+          mat-icon-button
+          class="desktop-cover-details-button"
+          *ngIf="journal.coverUrl"
+          (click)="showMoreDetailsDialog()"
+        >
+          <mat-icon>info</mat-icon>
         </button>
       </div>
     </mat-sidenav>

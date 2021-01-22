@@ -1,22 +1,15 @@
-.header {
-  display: flex;
-  flex-flow: row wrap;
-}
-
-.header-left {
-  position: relative;
-}
-
-.header-right {
-  flex: 1;
-}
-
-.thumbnail-container {
-  position: relative;
-  overflow: visible;
-}
-
 // #region Journal Details
+
+.mobile-cover-details-button {
+  position: absolute;
+  right: 0;
+  top: 0;
+  color: white;
+}
+
+.desktop-cover-details-button {
+  color: var(--font-color-lighter);
+}
 
 .mobile-date {
   text-align: center !important;
