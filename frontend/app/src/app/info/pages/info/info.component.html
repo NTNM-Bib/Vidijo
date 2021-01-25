@@ -37,37 +37,23 @@
   <!-- Company Logos -->
   <section>
     <div class="g_section-content">
-      <div class="company-logos">
-        <mat-grid-list
-          [cols]="companyLogosColumns"
-          gutterSize="10"
-          rowHeight="100"
-        >
-          <mat-grid-tile>
-            <img
-              src="assets/logos/bmbf-logo.png"
-              class="logo"
-              alt="BMBF Logo"
-            />
-          </mat-grid-tile>
-          <mat-grid-tile>
-            <img
-              src="assets/logos/ntnm-logo.png"
-              class="logo"
-              alt="NTNM Logo"
-            />
-          </mat-grid-tile>
-          <mat-grid-tile>
-            <img src="assets/logos/inm-logo.png" class="logo" alt="INM Logo" />
-          </mat-grid-tile>
-          <mat-grid-tile>
-            <img
-              src="assets/logos/leibniz-logo.svg"
-              class="logo"
-              alt="Leibniz Logo"
-            />
-          </mat-grid-tile>
-        </mat-grid-list>
+      <div class="g_grid">
+        <mat-card *ngFor="let institution of institutions">
+          <mat-card-header>
+            <mat-card-title>{{ institution.title }}</mat-card-title>
+          </mat-card-header>
+          <img mat-card-image [src]="institution.image" />
+
+          <mat-card-actions>
+            <a
+              mat-button
+              color="accent"
+              [href]="institution.website"
+              target="_blank"
+              ><mat-icon>language</mat-icon><span>&nbsp; Website</span></a
+            >
+          </mat-card-actions>
+        </mat-card>
       </div>
     </div>
   </section>
@@ -78,21 +64,6 @@
       <h2>Contact</h2>
     </div>
     <div class="g_section-content">
-      <!--
-        <div>
-          <h3>Project Manager:</h3>
-          <p>Uwe Geith</p>
-          <p>E-mail: <a href="mailto:uwe.geith@leibniz-inm.de">uwe.geith@leibniz-inm.de</a></p>
-        </div>
-        
-        <div>
-          <h3>Programming:</h3>
-          <p>Thomas Kraß</p>
-          <p>E-mail: <a href="mailto:krass@ntnm-bib.de">krass@ntnm-bib.de</a></p>
-          
-          <p>Jara Toledo, Lorena Isabel (until May 2019)</p>
-        </div>
-      -->
       <div class="g_grid">
         <mat-card>
           <mat-card-header>
@@ -110,6 +81,9 @@
           <mat-card-header>
             <mat-card-title>Thomas Kraß</mat-card-title>
             <mat-card-subtitle>Programming</mat-card-subtitle>
+            <mat-card-subtitle
+              >September 2018 - February 2021</mat-card-subtitle
+            >
           </mat-card-header>
           <mat-card-actions>
             <a mat-button color="accent" href="mailto:krass@ntnm-bib.de">
@@ -121,7 +95,8 @@
         <mat-card>
           <mat-card-header>
             <mat-card-title>Lorena Isabel Jara Toledo</mat-card-title>
-            <mat-card-subtitle>Programming (until May 2019)</mat-card-subtitle>
+            <mat-card-subtitle>Programming</mat-card-subtitle>
+            <mat-card-subtitle>September 2018 - May 2019</mat-card-subtitle>
           </mat-card-header>
         </mat-card>
       </div>
@@ -145,6 +120,22 @@
       <p>
         <a href="https://www.leibniz-inm.de">www.leibniz-inm.de</a><br />
         <a href="mailto:contact@leibniz-inm.de">contact@leibniz-inm.de</a>
+      </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="g_section-header">
+      <h2>Sources</h2>
+    </div>
+    <div class="g_section-content">
+      <p>
+        Journals and articles are obtained using the
+        <a href="https://doaj.org/" target="_blank">DOAJ API</a>.
+      </p>
+      <p>
+        The source for each cover image can be found in the respective journal
+        under the <mat-icon>info</mat-icon> button.
       </p>
     </div>
   </section>

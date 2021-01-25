@@ -233,7 +233,7 @@ Distributed under the GPL-3.0 License. See `LICENSE.md` for more information.
 uwe.geith@leibniz-inm.de
 
 **Thomas Kraß _(Developer)_**  
-krass@ntnm-bib.de (_until February 2021_)
+krass@ntnm-bib.de (_until February 2021_)  
 https://github.com/ThomasKrass
 
 ---
