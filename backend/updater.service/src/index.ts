@@ -1,43 +1,29 @@
 import UpdaterConfig from './updater.config'
 
 import Mongoose from 'mongoose'
-import { Logger } from 'vidijo-lib'
-import * as Updater from './updater'
+import Logger from 'vidijo-lib/lib/logger'
+import { updateOldestJournal } from './updater'
 
 // Connect to MongoDB
-async function connectToDatabase() {
-  const promise: Promise<string> = new Promise(async (resolve, reject) => {
-    Mongoose.connect(UpdaterConfig.MONGODB_URI, {
-      useNewUrlParser: true,
-      useCreateIndex: true,
-      useFindAndModify: false,
-      useUnifiedTopology: true,
-    })
-      .then(() => {
-        return resolve(`${UpdaterConfig.MONGODB_URI}`)
-      })
-      .catch((err) => {
-        Logger.error(err)
-        return reject(err)
-      })
+function connectToDatabase() {
+  return Mongoose.connect(UpdaterConfig.MONGODB_URI, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+    useUnifiedTopology: true,
   })
-
-  return promise
 }
 
 // Update articles in a set interval
 function updateArticlesLoop() {
-  Updater.updateOldestJournal()
+  updateOldestJournal()
     .then(() => {
       return setTimeout(
         updateArticlesLoop,
         UpdaterConfig.UPDATE_INTERVAL * 60 * 1000
       ) // convert to ms
     })
-    .catch((err: Error) => {
-      Logger.error(err)
-      return process.exit(-1) // exit with non-zero code
-    })
+    .catch(Logger.error)
 }
 
 // Handle mongoose disconnect
@@ -58,14 +44,8 @@ process.on('SIGINT', () => {
 })
 
 // Catch unhandled promise rejections
-process.on('unhandledRejection', (reason, promise) => {
-  Logger.error(
-    new Error(
-      `Unhandled promise rejection at: promise ${JSON.stringify(
-        promise
-      )}, reason: ${reason}.`
-    )
-  )
+process.on('unhandledRejection', (reason, _) => {
+  Logger.error(new Error(`Unhandled promise rejection: ${reason}.`))
   Logger.log('Terminating application...')
   return process.exit(-1)
 })
@@ -76,8 +56,8 @@ Logger.log(`NODE_ENV=${UpdaterConfig.NODE_ENV}`)
 
 Logger.log(`Connecting to database ${UpdaterConfig.MONGODB_URI}`)
 connectToDatabase()
-  .then((databaseUrl: string) => {
-    Logger.log(`Connected to database ${databaseUrl}`)
+  .then((_) => {
+    Logger.log(`Connected to the database`)
 
     Logger.log(
       `Updating articles every ${UpdaterConfig.UPDATE_INTERVAL} minutes`

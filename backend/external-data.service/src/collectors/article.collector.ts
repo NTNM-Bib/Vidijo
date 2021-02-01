@@ -4,7 +4,6 @@ import { Article, Journal } from 'vidijo-lib/lib/models'
 import { sanitizeArticle } from '../sanitizer'
 import { Logger } from 'vidijo-lib'
 import { DOAJResponse } from './doaj.interface'
-import { toLower } from 'lodash'
 
 /**
  * Retrieve articles from the DOAJ API and add them to the given journal
@@ -121,27 +120,32 @@ export const searchAndAddArticlesPaginated = (
   return (
     Axios.get(query)
       // Get articles from DOAJ
-      .then((response: AxiosResponse<DOAJResponse>) => ({
-        doajArticles: response.data.results,
-        total: response.data.total,
-      }))
+      .then((response: AxiosResponse<DOAJResponse>) => {
+        return {
+          doajArticles: response.data.results,
+          total: response.data.total,
+        }
+      })
       // Transform DOAJ articles to Vidijo articles
       .then((v) => {
-        const articles = v.doajArticles.map((doajArticle) => {
-          const article = {
-            doi:
-              doajArticle.bibjson.identifier.find(
-                (v) => v.type.toLowerCase() === 'doi'
-              )?.id || undefined,
-            publishedIn: journalId,
-            title: doajArticle.bibjson.title || undefined,
-            authors: doajArticle.bibjson.author.map((v) => v.name) || undefined,
-            abstract: doajArticle.bibjson.abstract || undefined,
-            pubdate: new Date(doajArticle.created_date) || undefined,
-          } as IArticle
+        const articles = v.doajArticles.reduce(
+          (acc: IArticle[], doajArticle) => {
+            const article = {
+              doi:
+                doajArticle.bibjson.identifier.find(
+                  (v) => v.type.toLowerCase() === 'doi'
+                )?.id || undefined,
+              publishedIn: journalId,
+              title: doajArticle?.bibjson?.title ?? '',
+              authors: doajArticle?.bibjson?.author?.map((v) => v.name) ?? [],
+              abstract: doajArticle?.bibjson?.abstract ?? '',
+              pubdate: new Date(doajArticle.created_date) ?? undefined,
+            } as IArticle
 
-          return article
-        })
+            return article.doi ? [...acc, article] : acc
+          },
+          []
+        )
         return { articles: articles, total: v.total }
       })
       // Sanitize articles, reject failed sanitization attempts

@@ -9,7 +9,7 @@ export const sanitizeArticle = (article: IArticle): IArticle => {
   return article
 }
 
-const sanitizeTitle = (article: IArticle): string => {
+function sanitizeTitle(article: IArticle): string {
   return HtmlToText.fromString(article.title, {
     wordwrap: false,
     ignoreImage: true,
@@ -17,6 +17,8 @@ const sanitizeTitle = (article: IArticle): string => {
 }
 
 const sanitizeAuthors = (article: IArticle): string[] => {
+  if (!article.authors || !article.authors.length) return []
+
   return _.uniq(article.authors)
 }
 

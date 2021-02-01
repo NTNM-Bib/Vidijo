@@ -90,8 +90,11 @@ class App {
       if (res.headersSent) return next(err)
 
       const statusCode = err.statusCode || 500
+      /*
       const payload =
         statusCode === 500 ? CreateError(500, 'Internal server error') : err
+        */
+      const payload = err
 
       Logger.error(new Error(payload.stack || payload.message))
 

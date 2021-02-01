@@ -2,32 +2,23 @@ import UpdaterConfig from './updater.config'
 import Axios from 'axios'
 import { IJournal } from 'vidijo-lib/lib/interfaces'
 import { Journal } from 'vidijo-lib/lib/models'
-import { Logger } from 'vidijo-lib'
+import Logger from 'vidijo-lib/lib/logger'
 
-// Update the journal with oldest data
-export async function updateOldestJournal(): Promise<number> {
-  const promise: Promise<number> = new Promise(async (resolve, reject) => {
-    const oldestJournal: IJournal | null | void = await Journal.findOne()
-      .sort({ updated: 1 })
-      .exec()
-      .catch((err: any) => {
-        return reject(err)
-      })
+/**
+ * Update the journal with oldest data
+ */
+export async function updateOldestJournal() {
+  const oldestJournal: IJournal | null = await Journal.findOne()
+    .sort({ updated: 1 })
+    .exec()
 
-    if (!oldestJournal) {
-      return reject(new Error('Cannot find a journal to update'))
-    }
+  if (!oldestJournal) {
+    throw new Error('Cannot find a journal to update')
+  }
 
-    Logger.log(`Updating journal ${oldestJournal.title} (${oldestJournal._id})`)
+  Logger.log(`Updating journal ${oldestJournal.title} (${oldestJournal._id})`)
 
-    await Axios.put(
-      `${UpdaterConfig.EXTERNAL_DATA_SERVICE_URI}/v1/journals/update/${oldestJournal._id}`
-    ).catch((err: Error) => {
-      Logger.error(err)
-    })
-
-    return resolve(1)
-  })
-
-  return promise
+  return Axios.put(
+    `${UpdaterConfig.EXTERNAL_DATA_SERVICE_URI}/v1/journals/update/${oldestJournal._id}`
+  )
 }
