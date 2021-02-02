@@ -53,6 +53,7 @@ export function autoUpdateJournal(
 
       return Promise.allSettled(promises)
     })
+    .then((_: any) => res.json({ journalId: id }))
     .catch(next)
 }
 
