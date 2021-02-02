@@ -7,6 +7,7 @@ const router: Router = Router()
 router.post('/', JournalController.addNewJournal)
 
 // Fetch the newest articles of the journal with given ID
-router.put('/update/:id', JournalController.fetchNewestArticles)
+//router.put('/update/:id', JournalController.fetchNewestArticles)
+router.put('/update/:id', JournalController.autoUpdateJournal)
 
 export default router

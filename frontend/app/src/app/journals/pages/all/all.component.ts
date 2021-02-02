@@ -48,7 +48,7 @@ export class AllComponent implements OnInit {
 
   // Pagination
   currentlyLoadingJournals: boolean = false;
-  journalsPage: number = 2;
+  currentPage: number = 1;
   journalsPageLimit: number = 20;
   loadedAllJournals: boolean = false;
 
@@ -148,19 +148,20 @@ export class AllComponent implements OnInit {
 
   private resetPagination() {
     this.loadedAllJournals = false;
-    this.journalsPage = 2;
+    this.currentPage = 1;
   }
 
   getJournalsPaginated(): Promise<void> {
     const promise: Promise<void> = new Promise<void>((resolve, reject) => {
       this.currentlyLoadingJournals = true;
+      this.currentPage++;
       this.journalService
         .getJournals(
           `?select=title useGeneratedCover&sort=${
             this.sortParam ? this.sortParam : "+title"
           }&categories=${this.categoryParam ? this.categoryParam : ""}&limit=${
             this.journalsPageLimit
-          }&page=${this.journalsPage}`
+          }&page=${this.currentPage}`
         )
         .subscribe((journals: any) => {
           if (journals.docs.length < 1) {
@@ -188,7 +189,6 @@ export class AllComponent implements OnInit {
       window.scrollY + window.innerHeight >
       document.documentElement.scrollHeight - 0.3 * window.innerHeight
     ) {
-      this.journalsPage++;
       await this.getJournalsPaginated();
     }
   }

@@ -125,6 +125,11 @@ export const searchAndAddCover = (journalId: string) =>
 
           return url
         })
+        .then((url) => {
+          // Add information about the cover source
+          journal.update({ coverUrl: url, coverDate: new Date() }).exec()
+          return url
+        })
         .then((url) => saveCoverToFileSystem(url, journalId).then())
     )
     .catch((err: any) => {

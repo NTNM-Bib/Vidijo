@@ -7,6 +7,7 @@ import {
   JournalCollector,
 } from '../../collectors'
 import CreateError from 'http-errors'
+import { promises } from 'fs'
 
 // Create a new journal (with cover and articles)
 export function addNewJournal(req: Request, res: Response, next: NextFunction) {
@@ -27,6 +28,31 @@ export function fetchNewestArticles(
 
   ArticleCollector.searchAndAddArticles(id)
     .then(() => res.json({ journalId: id }))
+    .catch(next)
+}
+
+export function autoUpdateJournal(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const id: string = req.params.id
+  Journal.findById(id)
+    .exec()
+    .then((journal: IJournal | null) => {
+      if (!journal)
+        throw new Error(`Cannot update journal ${id} since it doesn't exist`)
+
+      return journal
+    })
+    .then((journal: IJournal) => {
+      let promises = [ArticleCollector.searchAndAddArticles(id)]
+      if (!journal.coverUrl || !journal.coverUrl.length) {
+        promises.push(CoverCollector.searchAndAddCover(id))
+      }
+
+      return Promise.allSettled(promises)
+    })
     .catch(next)
 }
 
