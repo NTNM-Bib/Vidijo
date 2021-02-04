@@ -191,4 +191,12 @@ export class NavigationService {
       this.insertDialogQueryParams("request-password-reset");
     }
   }
+
+  public navigateToAddJournalUploadedList() {
+    if (this.isMobile) {
+      this.router.navigate(["/add-journals/list"]);
+    } else {
+      this.insertDialogQueryParams("add-journals-list");
+    }
+  }
 }

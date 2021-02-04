@@ -31,6 +31,7 @@ import { EditUserComponent } from "src/app/admin/pages/edit-user/edit-user.compo
 import { IUser } from "src/app/users/shared/user.interface";
 import { RequestPasswordResetComponent } from "src/app/users/pages/request-password-reset/request-password-reset.component";
 import { ResetPasswordComponent } from "src/app/users/pages/reset-password/reset-password.component";
+import { AddJournalUploadedListComponent } from "src/app/admin/components/add-journal-uploaded-list/add-journal-uploaded-list.component";
 
 @Injectable({
   providedIn: "root",
@@ -84,6 +85,9 @@ export class OpenService {
           break;
         case "request-password-reset":
           this.openRequestPasswordResetDialog();
+          break;
+        case "add-journals-list":
+          this.openAddJournalUploadedListDialog();
           break;
       }
     });
@@ -334,6 +338,23 @@ export class OpenService {
         backdropClass: "g_dialog-backdrop",
         data: {
           component: RequestPasswordResetComponent,
+        },
+      }
+    );
+  }
+
+  private openAddJournalUploadedListDialog() {
+    this.closeCurrentDialog();
+
+    this.componentDialogRef = this.componentDialog.open(
+      ComponentDialogComponent,
+      {
+        autoFocus: false,
+        disableClose: true,
+        panelClass: "g_dialog-sm",
+        backdropClass: "g_dialog-backdrop",
+        data: {
+          component: AddJournalUploadedListComponent,
         },
       }
     );

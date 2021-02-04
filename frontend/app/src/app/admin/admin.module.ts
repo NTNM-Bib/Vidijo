@@ -8,7 +8,8 @@ import { AddCategoryComponent } from './pages/add-category/add-category.componen
 import { EditCategoryComponent } from './pages/edit-category/edit-category.component';
 import { AddCategoryThumbnailComponent } from './components/add-category-thumbnail/add-category-thumbnail.component';
 import { EditUserComponent } from './pages/edit-user/edit-user.component';
-import { NgxDropzoneModule } from "ngx-dropzone"
+import { NgxDropzoneModule } from "ngx-dropzone";
+import { AddJournalUploadedListComponent } from './components/add-journal-uploaded-list/add-journal-uploaded-list.component'
 
 
 
@@ -21,7 +22,8 @@ import { NgxDropzoneModule } from "ngx-dropzone"
     AddCategoryComponent,
     EditCategoryComponent,
     AddCategoryThumbnailComponent,
-    EditUserComponent
+    EditUserComponent,
+    AddJournalUploadedListComponent
   ],
   imports: [
     SharedModule,

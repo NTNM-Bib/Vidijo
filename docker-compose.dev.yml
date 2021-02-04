@@ -9,6 +9,7 @@ networks:
 volumes:
   covers:
   mongodb-data:
+  importer-files:
 
 # =-- SERVICES --=
 services:
@@ -27,6 +28,7 @@ services:
       - backend
     volumes:
       - covers:/var/www/static/covers
+      - importer-files:/var/www/static/importer-files
     ports:
       - 80:80
       - 443:443
@@ -46,6 +48,7 @@ services:
       - covers:/var/vidijo/covers
       - ./backend/api:/usr/src/app
       - /usr/src/app/node_modules
+      - importer-files:/var/vidijo/importer-files
     env_file:
       - ./services.dev.env
       - ./config.dev/api.dev.env

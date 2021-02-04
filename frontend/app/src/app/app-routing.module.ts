@@ -21,6 +21,7 @@ import { ErrorComponent } from "./info/pages/error/error.component";
 import { RequestPasswordResetComponent } from "./users/pages/request-password-reset/request-password-reset.component";
 import { ResetPasswordComponent } from "./users/pages/reset-password/reset-password.component";
 import { VerifyAccountComponent } from "./users/pages/verify-account/verify-account.component";
+import { AddJournalUploadedListComponent } from "./admin/components/add-journal-uploaded-list/add-journal-uploaded-list.component";
 
 const routes: Routes = [
   { path: "", redirectTo: "journals", pathMatch: "full" },
@@ -83,6 +84,11 @@ const routes: Routes = [
     path: "add-journals",
     component: AddJournalComponent,
     data: { title: "Add Journals - Vidijo" },
+  },
+  {
+    path: "add-journals/list",
+    component: AddJournalUploadedListComponent,
+    data: { title: "Uploaded Lists - Vidijo" },
   },
   {
     path: "edit-journal/:id",

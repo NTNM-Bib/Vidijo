@@ -71,13 +71,18 @@
         </ngx-dropzone-preview>
       </ngx-dropzone>
       <!-- Example file-->
-      <div>
-        <p>
-          <a mat-button color="accent" href="static/examples/vidijo.xlsx">
-            <mat-icon>get_app</mat-icon>&nbsp;Download
-          </a>
-          an example file to get started
-        </p>
+      <div class="xlsx-actions">
+        <button mat-icon-button class="g_button" (click)="openHelpDialog()">
+          <mat-icon>help</mat-icon>
+        </button>
+        <button
+          mat-button
+          class="g_button"
+          color="accent"
+          (click)="showUploadHistory()"
+        >
+          <mat-icon>download</mat-icon>&nbsp;Show Uploaded Files
+        </button>
       </div>
       <!-- File info -->
       <div *ngIf="info">

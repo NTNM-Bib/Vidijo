@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from "@angular/core";
+import { Component, OnInit, HostListener, OnDestroy } from "@angular/core";
 import * as _ from "lodash";
 import {
   BreakpointObserver,
@@ -13,13 +13,16 @@ import { IJournalsPage } from "../../shared/journals-page.interface";
 import { Observable } from "rxjs";
 import { DatabaseService } from "src/app/core/database/database.service";
 import { JournalService } from "../../shared/journal.service";
+import { SubSink } from "subsink";
 
 @Component({
   selector: "app-all",
   templateUrl: "./all.component.html",
   styleUrls: ["./all.component.scss"],
 })
-export class AllComponent implements OnInit {
+export class AllComponent implements OnInit, OnDestroy {
+  private subs = new SubSink();
+
   isMobile: boolean;
   adminModeActive$: Observable<boolean>;
 
@@ -65,8 +68,8 @@ export class AllComponent implements OnInit {
     private journalService: JournalService
   ) {}
 
-  async ngOnInit() {
-    this.breakpointObserver
+  ngOnInit() {
+    this.subs.sink = this.breakpointObserver
       .observe([Breakpoints.Handset])
       .subscribe((state: BreakpointState) => {
         this.isMobile = state.matches;
@@ -74,34 +77,42 @@ export class AllComponent implements OnInit {
 
     this.adminModeActive$ = this.adminService.adminModeActive$;
 
-    this.databaseService.journalsPageData$.subscribe((data) => {
-      this.resetPagination();
-      this.data = data;
-      this.titleService.setTitle(`${data?.category?.title} - Vidijo`);
-    });
+    this.subs.sink = this.databaseService.journalsPageData$.subscribe(
+      (data) => {
+        this.resetPagination();
+        this.data = data;
+        this.titleService.setTitle(`${data?.category?.title} - Vidijo`);
+      }
+    );
 
     // Check for route changes
-    this.activatedRoute.queryParams.subscribe(async (params) => {
-      this.sortParam = params.sort;
-      this.categoryParam = params.category;
+    this.subs.sink = this.activatedRoute.queryParams.subscribe(
+      async (params) => {
+        this.sortParam = params.sort;
+        this.categoryParam = params.category;
 
-      this.databaseService.reloadJournalsPageIfParamsChanged(
-        this.categoryParam,
-        this.sortParam
-      );
-    });
+        this.databaseService.reloadJournalsPageIfParamsChanged(
+          this.categoryParam,
+          this.sortParam
+        );
+      }
+    );
   }
 
-  getTitle(data: IJournalsPage): string {
-    if (!data) return "";
+  ngOnDestroy() {
+    this.subs.unsubscribe();
+  }
 
-    switch (data.category._id) {
+  getTitle(): string {
+    if (!this.data) return "";
+
+    switch (this.data.category._id) {
       case "all":
         return "All Journals";
       case "favorites":
         return "My Favorites";
       default:
-        return data.category.title;
+        return this.data.category.title;
     }
   }
 

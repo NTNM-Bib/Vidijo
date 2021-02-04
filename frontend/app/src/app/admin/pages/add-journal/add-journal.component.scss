@@ -27,3 +27,8 @@ ngx-dropzone-preview {
   background: var(--background-color);
   filter: brightness(0.9);
 }
+
+.xlsx-actions {
+  display: flex;
+  flex-flow: row nowrap;
+}

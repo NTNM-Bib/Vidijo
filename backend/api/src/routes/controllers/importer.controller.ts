@@ -7,6 +7,26 @@ import fileUpload from 'express-fileupload'
 import { IJournal, VidijoData, VidijoDataInfo } from 'vidijo-lib/lib/interfaces'
 import { Logger } from 'vidijo-lib'
 import { Journal } from 'vidijo-lib/lib/models'
+import FS from 'fs'
+import Path from 'path'
+
+/**
+ * Return a list of all uploaded .xlsx files
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
+export function getUploadedFiles(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  Promise.resolve()
+    .then(getListOfUploadedFiles)
+    .then((list) => res.json(list))
+    .catch(next)
+}
 
 /**
  * Import the uploaded list of Vidijo data to this route
@@ -18,6 +38,8 @@ import { Journal } from 'vidijo-lib/lib/models'
 export function importXLSX(req: Request, res: Response, next: NextFunction) {
   Promise.resolve(req)
     .then(checkUploadedFile)
+    .then(fileToWorkbook)
+    .then(saveUploadedXlsx)
     .then(convertXLSXToVidijoData)
     .then(importVidijoData)
     .then((status) => res.json(status))
@@ -34,10 +56,48 @@ export function importXLSX(req: Request, res: Response, next: NextFunction) {
 export function checkXLSX(req: Request, res: Response, next: NextFunction) {
   Promise.resolve(req)
     .then(checkUploadedFile)
+    .then(fileToWorkbook)
     .then(convertXLSXToVidijoData)
     .then(createInfoObject)
     .then((info) => res.json(info))
     .catch(next)
+}
+
+function getListOfUploadedFiles(): { name: string; time: number }[] {
+  const directory = Path.normalize(`/var/vidijo/importer-files/`)
+  let existingFiles: { name: string; time: number }[] = []
+  try {
+    existingFiles = FS.readdirSync(directory).map((file) => {
+      let res: { name: string; time: number }
+      try {
+        res = {
+          name: file,
+          time: FS.statSync(Path.join(directory, file)).mtimeMs,
+        }
+      } catch {
+        res = { name: file, time: Infinity }
+      }
+
+      return res
+    })
+  } catch (err) {
+    Logger.warn(`Cannot read existing importer files: ${err}`)
+  }
+
+  return existingFiles
+}
+
+function fileToWorkbook(uploadedFile: fileUpload.UploadedFile): XLSX.WorkBook {
+  return XLSX.read(uploadedFile.data, { type: 'buffer' })
+}
+
+function saveUploadedXlsx(workbook: XLSX.WorkBook): XLSX.WorkBook {
+  try {
+    saveXlsxAndDeleteOldestFiles(workbook)
+  } catch (err) {
+    Logger.error(err)
+  }
+  return workbook
 }
 
 /**
@@ -108,12 +168,8 @@ function createInfoObject(vidijoData: VidijoData): Promise<VidijoDataInfo> {
  *
  * @param uploadedFile
  */
-function convertXLSXToVidijoData(
-  uploadedFile: fileUpload.UploadedFile
-): VidijoData {
+function convertXLSXToVidijoData(workbook: XLSX.WorkBook): VidijoData {
   const data = { journals: [], categories: [] } as VidijoData
-
-  const workbook = XLSX.read(uploadedFile.data, { type: 'buffer' })
 
   const journals = <any[]>XLSX.utils.sheet_to_json(workbook.Sheets['journals'])
   for (let journal of journals) {
@@ -121,6 +177,56 @@ function convertXLSXToVidijoData(
   }
 
   return data
+}
+
+/**
+ *
+ * @param workbook The XLSX workbook to save to the filesystem
+ * @param versions The number of latest versions to keep on the disk (older ones are removed)
+ */
+function saveXlsxAndDeleteOldestFiles(
+  workbook: XLSX.WorkBook,
+  versions: number = 10
+) {
+  const directory = Path.normalize(`/var/vidijo/importer-files/`)
+  let existingWorkbooks: { name: string; time: number }[] = []
+  try {
+    existingWorkbooks = FS.readdirSync(directory).map((file) => {
+      let res: { name: string; time: number }
+      try {
+        res = {
+          name: file,
+          time: FS.statSync(Path.join(directory, file)).mtimeMs,
+        }
+      } catch {
+        res = { name: file, time: Infinity }
+      }
+
+      return res
+    })
+  } catch (err) {
+    throw new Error(`Cannot read existing importer files: ${err}`)
+  }
+
+  if (existingWorkbooks.length >= versions) {
+    const fileToDelete = existingWorkbooks.sort((a, b) => a.time - b.time)[0]
+      .name
+    try {
+      FS.unlinkSync(Path.join(directory, fileToDelete))
+    } catch (err) {
+      Logger.warn(`Cannot delete oldest importer-file. Ignoring... ${err}`)
+    }
+  }
+
+  try {
+    const fileName = Path.normalize(
+      `vidijo_imports-${new Date().getTime()}.xlsx`
+    )
+
+    XLSX.writeFile(workbook, Path.join(directory, fileName))
+  } catch (err) {
+    throw new Error(`Cannot save imported XLSX file ${err}`)
+  }
 }
 
 /**

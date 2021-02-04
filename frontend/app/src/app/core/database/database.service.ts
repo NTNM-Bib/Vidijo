@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { IHomePage } from "src/app/journals/shared/home-page.interface";
 import { IDiscoverPage } from "src/app/journals/shared/discover-page.interface";
 import { ICategoriesPage } from "src/app/journals/shared/categories-page.interface";
-import { ReplaySubject } from "rxjs";
+import { BehaviorSubject } from "rxjs";
 import { IsLoadingService } from "@service-work/is-loading";
 import { environment } from "src/environments/environment";
 import Axios from "axios";
@@ -13,12 +13,22 @@ import * as LocalForage from "localforage";
   providedIn: "root",
 })
 export class DatabaseService {
-  public homePageData$: ReplaySubject<IHomePage> = new ReplaySubject<IHomePage>();
-  public discoverPageData$: ReplaySubject<IDiscoverPage> = new ReplaySubject<IDiscoverPage>();
-  public journalsPageData$: ReplaySubject<IJournalsPage> = new ReplaySubject<IJournalsPage>();
-  public categoriesPageData$: ReplaySubject<ICategoriesPage> = new ReplaySubject<ICategoriesPage>();
+  public homePageData$: BehaviorSubject<IHomePage> = new BehaviorSubject<IHomePage>(
+    null
+  );
+  public discoverPageData$: BehaviorSubject<IDiscoverPage> = new BehaviorSubject<IDiscoverPage>(
+    null
+  );
+  public journalsPageData$: BehaviorSubject<IJournalsPage> = new BehaviorSubject<IJournalsPage>(
+    null
+  );
+  public categoriesPageData$: BehaviorSubject<ICategoriesPage> = new BehaviorSubject<ICategoriesPage>(
+    null
+  );
 
-  public isUsingCache$: ReplaySubject<boolean> = new ReplaySubject<boolean>();
+  public isUsingCache$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(
+    false
+  );
 
   private vidijoApiUrl = environment.vidijoApiUrl;
 

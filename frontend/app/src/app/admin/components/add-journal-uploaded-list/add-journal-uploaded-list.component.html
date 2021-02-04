@@ -1,0 +1,63 @@
+<div class="g_content">
+  <section>
+    <div class="g_section-header">
+      <h1>Uploaded Lists</h1>
+    </div>
+  </section>
+  <section
+    *ngIf="
+      (finishedLoadingCurrentFile$ | async) &&
+      (finishedLoadingPreviousVersions$ | async) &&
+      !(currentFile$ | async)
+    "
+  >
+    <div class="g_section-content">
+      <p>
+        You have not uploaded a list yet! After you uploaded your first list, it
+        will be shown here together with previous versions
+      </p>
+    </div>
+  </section>
+  <section *ngIf="currentFile$ | async">
+    <div class="g_section-header">
+      <h2>Current List</h2>
+    </div>
+    <div class="g_section-content">
+      <div class="list-item">
+        <div>
+          <p>{{ (currentFile$ | async).name }}</p>
+          <p class="lighter">
+            {{ (currentFile$ | async).time | date: "medium" }}
+          </p>
+        </div>
+        <a
+          mat-icon-button
+          color="accent"
+          [href]="'static/importer-files/' + (currentFile$ | async).name"
+        >
+          <mat-icon>download</mat-icon>
+        </a>
+      </div>
+    </div>
+  </section>
+  <section *ngIf="(previousVersions$ | async)?.length">
+    <div class="g_section-header">
+      <h2>Previous Versions</h2>
+    </div>
+    <div class="g_section-content">
+      <div class="list-item" *ngFor="let v of previousVersions$ | async">
+        <div>
+          <p>{{ v.name }}</p>
+          <p class="lighter">{{ v.time | date: "medium" }}</p>
+        </div>
+        <a
+          mat-icon-button
+          color="accent"
+          [href]="'static/importer-files/' + v.name"
+        >
+          <mat-icon>download</mat-icon>
+        </a>
+      </div>
+    </div>
+  </section>
+</div>

@@ -6,6 +6,8 @@ import { AdminService, VidijoData } from "../../shared/admin.service";
 import { debounceTime } from "rxjs/operators";
 import { ICategory } from "src/app/journals/shared/category.interface";
 import { AlertService } from "src/app/core/alert/alert.service";
+import { Router } from "@angular/router";
+import { NavigationService } from "src/app/core/navigation/navigation.service";
 
 @Component({
   selector: "app-add-journal",
@@ -29,7 +31,8 @@ export class AddJournalComponent implements OnInit {
   constructor(
     private journalService: JournalService,
     private adminService: AdminService,
-    private alertService: AlertService
+    private alertService: AlertService,
+    private navigationService: NavigationService
   ) {}
 
   ngOnInit() {
@@ -172,5 +175,20 @@ export class AddJournalComponent implements OnInit {
         );
       }
     );
+  }
+
+  openHelpDialog() {
+    this.alertService.showDialogAlert(
+      "How to Import",
+      "You can upload an XLSX file that contains the journals for Vidijo instead of adding them one by one. Download an example file by clicking the button below to get started.",
+      "Download Example",
+      () => {
+        window.open(`static/examples/vidijo.xlsx`);
+      }
+    );
+  }
+
+  showUploadHistory() {
+    this.navigationService.navigateToAddJournalUploadedList();
   }
 }

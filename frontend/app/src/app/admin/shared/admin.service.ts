@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { ReplaySubject } from "rxjs";
+import { Observable, ReplaySubject } from "rxjs";
 import { environment } from "src/environments/environment";
 import { HttpHeaders, HttpClient } from "@angular/common/http";
 import { IJournal } from "src/app/journals/shared/journal.interface";
@@ -294,6 +294,18 @@ export class AdminService {
     return this.http
       .post(`${this.vidijoApiUrl}/import/xlsx`, body, options)
       .pipe(tap((uploaded) => console.log(uploaded)));
+  }
+
+  public getUploadedFiles(): Observable<{ name: string; time: number }[]> {
+    const options = {
+      headers: new HttpHeaders({}),
+      withCredentials: true,
+    };
+
+    return this.http.get<{ name: string; time: number }[]>(
+      `${this.vidijoApiUrl}/import/xlsx/list`,
+      options
+    );
   }
 }
 
