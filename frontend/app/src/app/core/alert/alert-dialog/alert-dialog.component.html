@@ -1,8 +1,11 @@
 <div class="container">
-  <button mat-icon-button class="close-button g_neumorphism-button" tabindex="-1" (click)="closeDialog()">
-    <mat-icon>
-      close
-    </mat-icon>
+  <button
+    mat-icon-button
+    class="close-button g_neumorphism-button"
+    tabindex="-1"
+    (click)="closeDialog()"
+  >
+    <mat-icon> close </mat-icon>
   </button>
 
   <div class="g_content">
@@ -14,8 +17,21 @@
         <p>{{ message }}</p>
       </div>
       <div class="g_section-action-row">
-        <button mat-raised-button [color]="actionButtonColor"
-          (click)="performActionAndClose()">{{ actionTitle }}</button>
+        <button
+          mat-raised-button
+          class="g_rounded-button"
+          [color]="actionButtonColor"
+          [ngClass]="
+            actionButtonColor === 'warn'
+              ? 'warn'
+              : actionButtonColor === 'accent'
+              ? 'accent'
+              : ''
+          "
+          (click)="performActionAndClose()"
+        >
+          {{ actionTitle }}
+        </button>
       </div>
     </section>
   </div>

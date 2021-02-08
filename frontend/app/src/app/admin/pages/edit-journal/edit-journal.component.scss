@@ -5,7 +5,14 @@ mat-form-field {
 
 .split-content {
   display: grid;
-  grid-template-columns: 20% 80%;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 1000px) {
+  .split-content {
+    display: grid;
+    grid-template-columns: 20% 80%;
+  }
 }
 
 .cover-section {

@@ -1,25 +1,39 @@
 <div class="list">
-    <div class="article-and-button" *ngFor="let journal of journals">
-        <div class="list-item"
-            [ngStyle]="true ? { 'grid-template-columns': '50px auto 60px' } : { 'grid-template-columns': 'auto' }">
-            <app-journal-cover [journal]="journal"></app-journal-cover>
-            <div class="list-item-text">
-                <p>{{ journal.title }}</p>
-                <p class="lighter">ISSN:&nbsp;{{ journal.issn ? journal.issn : "" }}</p>
-                <p class="lighter">eISSN:&nbsp;{{ journal.eissn ? journal.eissn : "" }}</p>
-            </div>
-        </div>
-        <button mat-button class="button g_neumorphism-button" *ngIf="!isMobile && showInstallButton" (click)="install(journal)">
-            <mat-icon>
-                save_alt
-            </mat-icon>
-            <span>&nbsp; {{ false ? "Installing..." : "Install" }}</span>
-        </button>
-        <button mat-button class="button g_neumorphism-button" *ngIf="!isMobile && showAddButton" (click)="addToCategory(journal)">
-            <mat-icon>
-                add
-            </mat-icon>
-            <span>&nbsp; Add</span>
-        </button>
+  <div class="article-and-button" *ngFor="let journal of journals">
+    <div
+      class="list-item"
+      [ngStyle]="
+        true
+          ? { 'grid-template-columns': '50px auto 60px' }
+          : { 'grid-template-columns': 'auto' }
+      "
+    >
+      <app-journal-cover [journal]="journal"></app-journal-cover>
+      <div class="list-item-text">
+        <p>{{ journal.title }}</p>
+        <p class="lighter">ISSN:&nbsp;{{ journal.issn ? journal.issn : "" }}</p>
+        <p class="lighter">
+          eISSN:&nbsp;{{ journal.eissn ? journal.eissn : "" }}
+        </p>
+      </div>
     </div>
+    <button
+      mat-button
+      class="button g_neumorphism-button"
+      *ngIf="showInstallButton"
+      (click)="install(journal)"
+    >
+      <mat-icon> save_alt </mat-icon>
+      <span>&nbsp; {{ isMobile ? "" : "Install" }}</span>
+    </button>
+    <button
+      mat-button
+      class="button g_neumorphism-button"
+      *ngIf="!isMobile && showAddButton"
+      (click)="addToCategory(journal)"
+    >
+      <mat-icon> add </mat-icon>
+      <span>&nbsp; Add</span>
+    </button>
+  </div>
 </div>

@@ -1,16 +1,16 @@
 <div class="container">
-    <!-- Journal -->
-    <div class="journal">
-        <button mat-button class="g_rounded-button" (click)="navigateToAddJournal()">
-            <mat-icon>
-                add
-            </mat-icon>
-            &nbsp;
-            Add Journals
-        </button>
-    </div>
+  <!-- Journal -->
+  <div class="journal">
+    <button
+      mat-button
+      class="g_rounded-button"
+      (click)="navigateToAddJournal()"
+    >
+      <mat-icon> add </mat-icon>
+      <span *ngIf="!isMobile"> &nbsp; Add Journals </span>
+    </button>
+  </div>
 
-    <!-- Info Box -->
-    <div class="info-box">
-    </div>
+  <!-- Info Box -->
+  <div class="info-box"></div>
 </div>

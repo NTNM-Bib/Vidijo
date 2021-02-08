@@ -1,8 +1,6 @@
 <div class="container">
   <button mat-button class="g_rounded-button" (click)="navigateToAddCategory()">
-    <mat-icon>
-      add
-    </mat-icon>
-    &nbsp; Add Category
+    <mat-icon> add </mat-icon>
+    <span *ngIf="!isMobile"> &nbsp; Add Category </span>
   </button>
 </div>

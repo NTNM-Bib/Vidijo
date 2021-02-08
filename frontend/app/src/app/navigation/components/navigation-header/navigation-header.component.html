@@ -117,6 +117,24 @@
       </button>
 
       <mat-menu #userMenu="matMenu">
+        <button
+          mat-menu-item
+          (click)="enterAdminMode()"
+          *ngIf="isMobile && isAdmin && !adminModeActive"
+        >
+          <mat-icon>person</mat-icon>
+          <span>&nbsp; Admin Mode</span>
+        </button>
+
+        <button
+          mat-menu-item
+          (click)="exitAdminMode()"
+          *ngIf="isMobile && isAdmin && adminModeActive"
+        >
+          <mat-icon>close</mat-icon>
+          <span>&nbsp; Admin Mode</span>
+        </button>
+
         <button mat-menu-item (click)="openInfo()">
           <mat-icon>info</mat-icon>
           <span>&nbsp; About Vidijo</span>

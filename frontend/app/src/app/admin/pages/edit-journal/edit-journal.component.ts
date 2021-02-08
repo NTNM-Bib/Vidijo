@@ -8,6 +8,11 @@ import { AdminService } from "../../shared/admin.service";
 import { ICategory } from "src/app/journals/shared/category.interface";
 import { debounceTime } from "rxjs/operators";
 import { Location } from "@angular/common";
+import {
+  BreakpointObserver,
+  Breakpoints,
+  BreakpointState,
+} from "@angular/cdk/layout";
 
 @Component({
   selector: "app-edit-journal",
@@ -16,6 +21,8 @@ import { Location } from "@angular/common";
 })
 export class EditJournalComponent implements OnInit {
   @Input() journal: IJournal;
+
+  isMobile: boolean;
 
   private initialCoverUrlValue: string;
 
@@ -37,13 +44,21 @@ export class EditJournalComponent implements OnInit {
     private adminService: AdminService,
     private route: ActivatedRoute,
     private alertService: AlertService,
-    private location: Location
+    private location: Location,
+    private breakpointObserver: BreakpointObserver
   ) {}
 
   ngOnInit() {
+    this.breakpointObserver
+      .observe([Breakpoints.Handset])
+      .subscribe((state: BreakpointState) => {
+        this.isMobile = state.matches;
+      });
+
     this.route.params.subscribe(async (params) => {
+      const id = this.journal?._id ?? params.id;
       this.journalService
-        .getJournals(`?_id=${this.journal._id}&populate=categories`)
+        .getJournals(`?_id=${id}&populate=categories`)
         .subscribe((journalsResponse: any) => {
           this.journal = journalsResponse.docs[0];
           this.getInitialCoverUrlValue();

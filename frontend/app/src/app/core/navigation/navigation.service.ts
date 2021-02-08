@@ -1,8 +1,8 @@
 /**
  * =-- NavigationService --=
  * This service handles navigation throughout the app.
- * TODO: It automatically keeps track of the navigation history.
- * TODO: It automatically sets the correct route titles.
+ * It automatically keeps track of the navigation history.
+ * It automatically sets the correct route titles.
  */
 
 import { Injectable } from "@angular/core";
@@ -140,7 +140,7 @@ export class NavigationService {
   // Admin: Add a journal
   public navigateToAddJournal(categoryId?: string) {
     if (this.isMobile) {
-      this.router.navigate(["/admin/add-journal"]);
+      this.router.navigate(["/add-journals"]);
     } else {
       this.insertDialogQueryParams("add-journal", categoryId);
     }
@@ -149,7 +149,7 @@ export class NavigationService {
   // Admin: Edit a journal
   public navigateToEditJournal(journalId: string) {
     if (this.isMobile) {
-      this.router.navigate([`/admin/edit-journal/${journalId}`]);
+      this.router.navigate([`/edit-journal/${journalId}`]);
     } else {
       this.insertDialogQueryParams("edit-journal", journalId);
     }
@@ -158,7 +158,7 @@ export class NavigationService {
   // Admin: Add a category
   public navigateToAddCategory() {
     if (this.isMobile) {
-      this.router.navigate(["/admin/add-category"]);
+      this.router.navigate(["/add-category"]);
     } else {
       this.insertDialogQueryParams("add-category");
     }
@@ -167,7 +167,7 @@ export class NavigationService {
   // Admin: Edit a category
   public navigateToEditCategory(categoryId: string) {
     if (this.isMobile) {
-      this.router.navigate([`/admin/edit-category/${categoryId}`]);
+      this.router.navigate([`/edit-category/${categoryId}`]);
     } else {
       this.insertDialogQueryParams("edit-category", categoryId);
     }
@@ -176,7 +176,7 @@ export class NavigationService {
   // Admin: Edit a user
   public navigateToEditUser(userId: string) {
     if (this.isMobile) {
-      this.router.navigate([`/admin/edit-user/${userId}`]);
+      this.router.navigate([`/edit-user/${userId}`]);
     } else {
       this.insertDialogQueryParams("edit-user", userId);
     }

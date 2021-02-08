@@ -275,7 +275,7 @@ export class OpenService {
       {
         autoFocus: false,
         disableClose: true,
-        panelClass: "g_dialog-lg",
+        panelClass: "g_dialog-md",
         backdropClass: "g_dialog-backdrop",
         data: {
           component: AddCategoryComponent,
@@ -293,7 +293,7 @@ export class OpenService {
       {
         autoFocus: false,
         disableClose: true,
-        panelClass: "g_dialog-lg",
+        panelClass: "g_dialog-md",
         backdropClass: "g_dialog-backdrop",
         data: {
           component: EditCategoryComponent,
@@ -314,7 +314,7 @@ export class OpenService {
       {
         autoFocus: false,
         disableClose: true,
-        panelClass: "g_dialog-lg",
+        panelClass: "g_dialog-sm",
         backdropClass: "g_dialog-backdrop",
         data: {
           component: EditUserComponent,

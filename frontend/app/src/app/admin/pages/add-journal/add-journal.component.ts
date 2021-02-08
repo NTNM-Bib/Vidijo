@@ -63,7 +63,7 @@ export class AddJournalComponent implements OnInit {
   }
 
   getCategory() {
-    if (!this.category._id) {
+    if (!this.category?._id) {
       this.category = {
         _id: "all",
         title: "All Journals",

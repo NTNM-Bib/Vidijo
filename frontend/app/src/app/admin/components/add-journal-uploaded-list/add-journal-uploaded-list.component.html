@@ -25,15 +25,15 @@
     <div class="g_section-content">
       <div class="list-item">
         <div>
-          <p>{{ (currentFile$ | async).name }}</p>
+          <p>{{ (currentFile$ | async)?.name }}</p>
           <p class="lighter">
-            {{ (currentFile$ | async).time | date: "medium" }}
+            {{ (currentFile$ | async)?.time | date: "medium" }}
           </p>
         </div>
         <a
           mat-icon-button
           color="accent"
-          [href]="'static/importer-files/' + (currentFile$ | async).name"
+          [href]="'static/importer-files/' + (currentFile$ | async)?.name"
         >
           <mat-icon>download</mat-icon>
         </a>

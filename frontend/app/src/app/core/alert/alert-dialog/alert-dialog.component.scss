@@ -1,10 +1,20 @@
 .container {
-    position: relative;
+  position: relative;
 }
 
 .close-button {
-    position: absolute;
-    z-index: var(--layer-f4);
-    top: 0px;
-    right: 0px;
+  position: absolute;
+  z-index: var(--layer-f4);
+  top: 0px;
+  right: 0px;
+}
+
+.accent {
+  background: var(--accent-color) !important;
+  color: #fafafa !important;
+}
+
+.warn {
+  background: var(--warn-color) !important;
+  color: #fafafa !important;
 }

@@ -97,7 +97,7 @@
           (click)="confirmDeletingJournal()"
         >
           <mat-icon> delete </mat-icon>
-          &nbsp; Delete Journal
+          <span *ngIf="!isMobile"> &nbsp; Delete Journal </span>
         </button>
 
         <button
