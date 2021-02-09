@@ -1,7 +1,7 @@
 import { BrowserModule } from "@angular/platform-browser";
 import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { HttpClientModule } from "@angular/common/http";
+import { HttpClient, HttpClientModule } from "@angular/common/http";
 import { BrowserAnimationsModule } from "@angular/platform-browser/animations";
 
 import { MaterialModule } from "./material.module";
@@ -24,6 +24,8 @@ import { environment } from "../environments/environment";
 import { NavigationModule } from "./navigation/navigation.module";
 import { DatabaseModule } from "./core/database/database.module";
 import { AdminModule } from "./admin/admin.module";
+
+import { MarkdownModule } from "ngx-markdown";
 
 @NgModule({
   declarations: [AppComponent, ToolbarComponent],
@@ -48,6 +50,7 @@ import { AdminModule } from "./admin/admin.module";
       enabled: environment.production,
       registrationStrategy: "registerImmediately",
     }),
+    MarkdownModule.forRoot({ loader: HttpClient }),
   ],
   providers: [],
   entryComponents: [

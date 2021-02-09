@@ -8,7 +8,7 @@ COPY nginx.conf /etc/nginx/nginx.conf
 RUN mkdir -p /etc/nginx/conf.d/sites-available/
 COPY ./app.conf /etc/nginx/conf.d/sites-available/app.conf
 
-COPY ./config/privacy-policy.html /var/www/static/privacy-policy/privacy-policy.html
+COPY ./config/privacy-policy.md /var/www/static/privacy-policy/privacy-policy.md
 
 COPY ./examples/ /var/www/static/examples
 

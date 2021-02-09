@@ -120,7 +120,7 @@ Locate the `config.example` folder at `/backend/api-gateway` and make a copy of 
 - Replace the file `certificate.example.cer` with your own certificate (you may have to combine the intermediate certificate and your websites certificate into one file using the following command: `cat website.cer intermediate.cer > certificate.cer`). The resulting file must be called `certificate.cer`
 - Replace `private_key.example.key` with your own private key file (obtained when creating the certificate) and rename it to `private_key.key`
 - Replace the `icon.example.png` file with your own icon and rename it to `icon.png`. Make sure that the icon is square (e.g. use a resolution of 96 x 96 pixels)
-- Edit the `privacy-policy.example.html` file and save it as `privacy-policy.html`. This file is served when a user wants wants to read your privacy policy. You can use the provided template and edit the HTML body or create your own HTML file
+- Edit the `privacy-policy.example.md` file and save it as `privacy-policy.md`. The content of this file is embedded into the _About Vidijo_ section. You can use markdown headings, list, links and more to build your own privacy policy.
 
 The final config folder should look like this:
 

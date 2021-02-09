@@ -28,4 +28,23 @@ export class InfoComponent {
       website: "https://www.leibniz-gemeinschaft.de/",
     },
   ];
+
+  authors = [
+    {
+      name: "Uwe Geith",
+      role: "Project Manager",
+      contact: "uwe.geith@leibniz-inm.de",
+    },
+    {
+      name: "Thomas Kraß",
+      role: "Programmer",
+      contact: "krass@ntnm-bib.de",
+      description: "September 2018 - February 2021",
+    },
+    {
+      name: "Lorena Isabel Jara Toledo",
+      role: "Programmer",
+      description: "September 2018 - May 2019",
+    },
+  ];
 }

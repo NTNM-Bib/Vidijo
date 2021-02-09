@@ -36,24 +36,30 @@
 
   <!-- Company Logos -->
   <section>
-    <div class="g_section-content">
-      <div class="g_grid">
-        <mat-card *ngFor="let institution of institutions">
-          <mat-card-header>
-            <mat-card-title>{{ institution.title }}</mat-card-title>
-          </mat-card-header>
-          <img mat-card-image [src]="institution.image" />
+    <div class="g_section-content institutions-container">
+      <div class="institution" *ngFor="let institution of institutions">
+        <img [src]="institution.image" [alt]="institution.title + 'logo'" />
+        <div>
+          <h3>{{ institution.title }}</h3>
+          <a [href]="institution.website" target="_blank">{{
+            institution.website
+          }}</a>
+        </div>
+      </div>
+    </div>
+  </section>
 
-          <mat-card-actions>
-            <a
-              mat-button
-              color="accent"
-              [href]="institution.website"
-              target="_blank"
-              ><mat-icon>language</mat-icon><span>&nbsp; Website</span></a
-            >
-          </mat-card-actions>
-        </mat-card>
+  <!-- Authors -->
+  <section>
+    <div class="g_section-header"><h2>Authors</h2></div>
+    <div class="g_section-content">
+      <div class="authors-container">
+        <div class="author" *ngFor="let author of authors">
+          <h3>{{ author.name }}</h3>
+          <p>{{ author.role }}</p>
+          <p>{{ author.description }}</p>
+          <a [href]="'mailto:' + author.contact" *ngIf="author.contact">Mail</a>
+        </div>
       </div>
     </div>
   </section>
@@ -64,50 +70,13 @@
       <h2>Contact</h2>
     </div>
     <div class="g_section-content">
-      <div class="g_grid">
-        <mat-card>
-          <mat-card-header>
-            <mat-card-title>Uwe Geith</mat-card-title>
-            <mat-card-subtitle>Project Manager</mat-card-subtitle>
-          </mat-card-header>
-          <mat-card-actions>
-            <a mat-button color="accent" href="mailto:uwe.geith@leibniz-inm.de">
-              <mat-icon> mail </mat-icon>
-              &nbsp; Email
-            </a>
-          </mat-card-actions>
-        </mat-card>
-        <mat-card>
-          <mat-card-header>
-            <mat-card-title>Thomas Kraß</mat-card-title>
-            <mat-card-subtitle>Programming</mat-card-subtitle>
-            <mat-card-subtitle
-              >September 2018 - February 2021</mat-card-subtitle
-            >
-          </mat-card-header>
-          <mat-card-actions>
-            <a mat-button color="accent" href="mailto:krass@ntnm-bib.de">
-              <mat-icon> mail </mat-icon>
-              &nbsp; Email
-            </a>
-          </mat-card-actions>
-        </mat-card>
-        <mat-card>
-          <mat-card-header>
-            <mat-card-title>Lorena Isabel Jara Toledo</mat-card-title>
-            <mat-card-subtitle>Programming</mat-card-subtitle>
-            <mat-card-subtitle>September 2018 - May 2019</mat-card-subtitle>
-          </mat-card-header>
-        </mat-card>
-      </div>
-
       <p>
-        <b>Responsible in terms of §5 TMG is:</b><br />
+        <strong>Responsible in terms of §5 TMG is:</strong><br />
         INM – Leibniz-Institut für Neue Materialien gGmbH Campus D2 2 D-66123
         Saarbrücken
       </p>
       <p>
-        <b>Authorized managing director:</b> <br />
+        <strong>Authorized managing director:</strong> <br />
         Scientific Director: Prof. Dr. Eduard Arzt (Chairman) <br />
         Scientific Director: Prof. Dr. Aránzazu del Campo Bécares
         <br />
@@ -137,6 +106,15 @@
         The source for each cover image can be found in the respective journal
         under the <mat-icon>info</mat-icon> button.
       </p>
+    </div>
+  </section>
+
+  <section>
+    <div class="g_section-content">
+      <markdown
+        src="static/privacy-policy/privacy-policy.md"
+        class="markdown-container"
+      ></markdown>
     </div>
   </section>
 </div>

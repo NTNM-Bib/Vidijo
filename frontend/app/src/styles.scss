@@ -148,6 +148,15 @@ p {
   color: var(--font-color);
 }
 
+a {
+  color: var(--accent-color);
+  text-decoration: none;
+}
+
+strong {
+  font-weight: 500;
+}
+
 mat-checkbox {
   color: var(--font-color) !important;
 }
