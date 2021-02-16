@@ -81,7 +81,9 @@ export class AllComponent implements OnInit, OnDestroy {
       (data) => {
         this.resetPagination();
         this.data = data;
-        this.titleService.setTitle(`${data?.category?.title} - Vidijo`);
+        this.titleService.setTitle(
+          `${data?.category?.title ?? "All Journals"} - Vidijo`
+        );
       }
     );
 
@@ -179,7 +181,10 @@ export class AllComponent implements OnInit, OnDestroy {
             this.loadedAllJournals = true;
           }
 
-          this.data.journals = this.data.journals.concat(journals.docs);
+          this.data = {
+            ...this.data,
+            journals: [...this.data.journals, ...journals.docs],
+          };
 
           this.currentlyLoadingJournals = false;
           return resolve();
