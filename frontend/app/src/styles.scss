@@ -58,7 +58,7 @@ body {
   margin: 0;
   font-family: "Roboto", sans-serif;
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: auto;
   color: var(--font-color);
   background: var(--background-color);
 }
@@ -392,12 +392,13 @@ section {
 }
 
 .g_content-centered {
-  position: relative;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   flex-flow: column nowrap;
-  margin: 0 auto;
   max-width: 500px;
-  top: 30vh;
   justify-content: center;
   align-items: center;
 }

@@ -19,7 +19,6 @@ import { LoginComponent } from "src/app/users/pages/login/login.component";
 import { RegisterComponent } from "src/app/users/pages/register/register.component";
 import { OnboardingComponent } from "src/app/info/pages/onboarding/onboarding.component";
 import { ReadingListComponent } from "src/app/users/pages/reading-list/reading-list.component";
-import { Overlay } from "@angular/cdk/overlay";
 import { JournalService } from "src/app/journals/shared/journal.service";
 import { AddJournalComponent } from "src/app/admin/pages/add-journal/add-journal.component";
 import { EditJournalComponent } from "src/app/admin/pages/edit-journal/edit-journal.component";
@@ -30,7 +29,6 @@ import { EditCategoryComponent } from "src/app/admin/pages/edit-category/edit-ca
 import { EditUserComponent } from "src/app/admin/pages/edit-user/edit-user.component";
 import { IUser } from "src/app/users/shared/user.interface";
 import { RequestPasswordResetComponent } from "src/app/users/pages/request-password-reset/request-password-reset.component";
-import { ResetPasswordComponent } from "src/app/users/pages/reset-password/reset-password.component";
 import { AddJournalUploadedListComponent } from "src/app/admin/components/add-journal-uploaded-list/add-journal-uploaded-list.component";
 
 @Injectable({
@@ -41,7 +39,6 @@ export class OpenService {
 
   constructor(
     private componentDialog: MatDialog,
-    private overlay: Overlay,
     private activatedRoute: ActivatedRoute,
     private journalService: JournalService
   ) {
