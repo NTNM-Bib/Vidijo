@@ -64,11 +64,12 @@
   left: 0;
   right: 0;
   height: 25%;
+
   background: linear-gradient(
-    0deg,
-    var(--background-color) 0%,
-    var(--background-color) 25%,
-    rgba(0, 0, 0, 0) 100%
+    to bottom,
+    var(--background-color-transparent) 0%,
+    var(--background-color) 75%,
+    var(--background-color) 100%
   );
   pointer-events: none;
 }

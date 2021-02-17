@@ -19,8 +19,9 @@ $section-gap: 50px;
   --layer-b4: -1000;
 
   // Colors
-  --background-color: rgb(250, 250, 250);
+  --background-color: rgba(250, 250, 250, 1);
   --background-color-translucent: rgba(250, 250, 250, 0.9);
+  --background-color-transparent: rgba(250, 250, 250, 0);
   --primary-color: #37474f;
   --accent-color: #0097a7;
   --warn-color: #d62f05;
@@ -38,8 +39,9 @@ $section-gap: 50px;
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background-color: #303030;
-    --background-color-translucent: #303030e0;
+    --background-color: rgba(48, 48, 48, 1);
+    --background-color-translucent: rgba(48, 48, 48, 0.9);
+    --background-color-transparent: rgba(48, 48, 48, 0);
     --primary-color: #fafafa;
     --font-color: #f0f0f0;
     --font-color-lighter: #c5c5c5;

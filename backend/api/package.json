@@ -1,6 +1,6 @@
 {
   "name": "vidijo-api",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "The API of Vidijo. Requests data from other vidijo services and aggregates them for end users.",
   "main": "dist/index.js",
   "scripts": {

@@ -1,6 +1,6 @@
 {
   "name": "vidijo-updater-service",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "This service fetches the newest articles of journals in the database",
   "main": "dist/index.js",
   "scripts": {
