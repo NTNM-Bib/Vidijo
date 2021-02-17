@@ -1,29 +1,31 @@
 .title {
-    padding-bottom: 10px;
-    margin-right: 30px;
-    color: var(--accent-color);
+  padding-bottom: 10px;
+  margin-right: 30px;
+  color: var(--accent-color);
 }
 
 .authors,
 .date,
+.published-in,
 .doi {
-    display: flex;
-    flex-flow: row nowrap;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
 }
 
 .authors > *,
 .date > *,
+.published-in > *,
 .doi > * {
-    margin-right: 10px;
+  margin-right: 10px;
 }
 
 .abstract-heading {
-    color: var(--accent-color);
+  color: var(--accent-color);
 }
 
 .abstract {
-    font-family: "Roboto Slab";
-    font-size: larger;
+  font-family: "Roboto Slab";
+  font-size: larger;
 }

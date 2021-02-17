@@ -39,33 +39,23 @@ export class ArticleComponent implements OnInit {
     private isLoadingService: IsLoadingService
   ) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     this.breakpointObserver
       .observe([Breakpoints.Handset])
       .subscribe((state: BreakpointState) => {
         this.isMobile = state.matches;
       });
 
-    if (!this.article) {
-      this.route.params.subscribe(async (params) => {
-        await this.getArticle(params.id);
+    this.getArticleAndUser();
+  }
 
-        // User
-        this.authService.currentUser.subscribe((user: IUser) => {
-          this.user = user;
-          this.isLoggedIn = user !== null;
-          this.isInReadingList = this.userService.isInReadingList(
-            this.article._id
-          );
-        });
+  private getArticleAndUser() {
+    const id = this.article?._id ?? this.route.snapshot.params.id;
+    const query = `?_id=${id}&populate=publishedIn&populateSelect=title`;
+    this.journalService.getArticles(query).subscribe((articles) => {
+      this.article = articles[0] ?? this.article;
+      this.titleService.setTitle(`${this.article.title} - Vidijo`);
 
-        // Set the title to ${article.title} - Vidijo
-        this.titleService.setTitle(`${this.article.title} - Vidijo`);
-      });
-    } else {
-      await this.getArticle(this.article._id);
-
-      // User
       this.authService.currentUser.subscribe((user: IUser) => {
         this.user = user;
         this.isLoggedIn = user !== null;
@@ -73,23 +63,7 @@ export class ArticleComponent implements OnInit {
           this.article._id
         );
       });
-
-      // Set the title to ${article.title} - Vidijo
-      this.titleService.setTitle(`${this.article.title} - Vidijo`);
-    }
-  }
-
-  private async getArticle(id: string): Promise<void> {
-    const promise: Promise<void> = new Promise((resolve, reject) => {
-      this.isLoadingService.add();
-      this.journalService.getArticle(id).subscribe((article: IArticle) => {
-        this.article = article;
-        this.isLoadingService.remove();
-        return resolve();
-      });
     });
-
-    return promise;
   }
 
   // Add this article to the Reading List

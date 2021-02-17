@@ -127,11 +127,11 @@ export class JournalComponent implements OnInit {
           `?publishedIn=${this.journal._id}&select=title authors pubdate abstract&sort=-pubdate&limit=${this.articlesPageLimit}&page=${this.articlesPage}`
         )
         .subscribe((articles: any) => {
-          if (articles.docs.length < 1) {
+          if (articles.length < 1) {
             this.loadedAllArticles = true;
           }
 
-          this.journal.articles = this.journal.articles.concat(articles.docs);
+          this.journal.articles = this.journal.articles.concat(articles);
           // Sanitize publication dates.
           for (const article of this.journal.articles) {
             let timestamp: number;

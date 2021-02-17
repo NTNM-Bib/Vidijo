@@ -29,6 +29,15 @@
     >
       <mat-icon>info</mat-icon>
     </button>
+    <button
+      mat-button
+      class="mobile-admin-mode-button"
+      *ngIf="adminModeActive$ | async"
+      (click)="editJournal()"
+    >
+      <mat-icon>edit</mat-icon>
+      &nbsp; Edit
+    </button>
   </div>
   <div class="journal-actions-container">
     <button
